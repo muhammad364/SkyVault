@@ -20,4 +20,5 @@ public interface IUserFileRepository
         CancellationToken cancellationToken = default);
 
     void Update(Userfile userFile);
+    void Remove(Userfile userFile);
 }

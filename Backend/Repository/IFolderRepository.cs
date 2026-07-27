@@ -21,4 +21,5 @@ public interface IFolderRepository
         CancellationToken cancellationToken = default);
 
     void Update(Folder folder);
+    void Remove(Folder folder);
 }
