@@ -1,0 +1,6 @@
+@SkyVault_HostAddress = http://localhost:5122
+
+GET {{SkyVault_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
