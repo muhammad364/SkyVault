@@ -1,11 +1,22 @@
+using Microsoft.AspNetCore.Identity;
 using SkyVault.Mappings;
+using SkyVault.Services.Authentication.Security;
+using SkyVault.Repository;
+using SkyVault.Configurations;
+using SkyVault.Services.Authentication.Email;
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+builder.Services.AddScoped<IPasswordHashService, PasswordHashService>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
