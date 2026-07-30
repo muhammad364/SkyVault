@@ -13,43 +13,32 @@ public class UserFileRepository : IUserFileRepository
         _dbcontext = skyVaultDbContext;
     }
 
-    public async Task AddAsync(
-        Userfile userFile,
-        CancellationToken cancellationToken = default)
+    public async Task AddAsync(Userfile userFile, CancellationToken cancellationToken = default)
     {
-        await _dbcontext.Userfiles
-            .AddAsync(userFile, cancellationToken);
+        await _dbcontext.Userfiles.AddAsync(userFile, cancellationToken);
     }
 
-    public async Task<Userfile?> GetByIdAsync(
-        Guid fileId,
-        CancellationToken cancellationToken = default)
+    public async Task<Userfile?> GetByIdAsync(Guid fileId, CancellationToken cancellationToken = default)
     {
-        return await _dbcontext.Userfiles
-            .FirstOrDefaultAsync(
-                f => f.Fileid == fileId,
-                cancellationToken);
+        return await _dbcontext.Userfiles.FirstOrDefaultAsync(f => f.Fileid == fileId, cancellationToken);
     }
 
-    public async Task<IEnumerable<Userfile>> GetByUserIdAsync(
-        Guid ownerId,
-        CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Userfile>> GetByUserIdAsync(Guid ownerId, CancellationToken cancellationToken = default)
     {
-        return await _dbcontext.Userfiles
-            .Where(f => f.Ownerid == ownerId)
+        return await _dbcontext.Userfiles.Where(f => f.Ownerid == ownerId).ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Userfile>> GetByFolderIdAsync(Guid ownerId, Guid? folderId, CancellationToken cancellationToken = default)
+    {
+        return await _dbcontext.Userfiles.Where(f => f.Ownerid == ownerId && f.Folderid == folderId && !f.Isdeleted)
+            .OrderBy(f => f.Filename)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<bool> ExistsAsync(
-        Guid folderId,
-        string fileName,
-        CancellationToken cancellationToken = default)
+
+    public async Task<bool> ExistsAsync(Guid folderId, string fileName, CancellationToken cancellationToken = default)
     {
-        return await _dbcontext.Userfiles.AnyAsync(
-            f => f.Folderid == folderId &&
-                 !f.Isdeleted &&
-                 f.Filename == fileName,
-            cancellationToken);
+        return await _dbcontext.Userfiles.AnyAsync(f => f.Folderid == folderId && !f.Isdeleted && f.Filename == fileName, cancellationToken);
     }
 
     public void Update(Userfile userFile)

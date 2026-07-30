@@ -27,6 +27,12 @@ public class FolderRepository : IFolderRepository
     {
         return await _dbcontext.Folders.Where(f => f.Ownerid == ownerId).ToListAsync(cancellationToken);
     }
+    public async Task<IEnumerable<Folder>> GetChildFoldersAsync(Guid ownerId, Guid? parentFolderId, CancellationToken cancellationToken = default)
+    {
+        return await _dbcontext.Folders.Where(f =>f.Ownerid == ownerId && f.Parentfolderid == parentFolderId && !f.Isdeleted)
+            .OrderBy(f => f.Name)
+            .ToListAsync(cancellationToken);
+    }
 
     public async Task<bool> ExistsAsync(Guid ownerId, Guid? parentFolderId, string folderName, CancellationToken cancellationToken = default)
     {

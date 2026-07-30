@@ -14,6 +14,11 @@ public interface IFolderRepository
         Guid ownerId,
         CancellationToken cancellationToken = default);
 
+    Task<IEnumerable<Folder>> GetChildFoldersAsync(
+        Guid ownerId,
+        Guid? parentFolderId,
+        CancellationToken cancellationToken = default);
+
     Task<bool> ExistsAsync(
         Guid ownerId,
         Guid? parentFolderId,
