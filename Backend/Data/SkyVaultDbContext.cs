@@ -7,6 +7,10 @@ namespace SkyVault.Data;
 
 public partial class SkyVaultDbContext : DbContext
 {
+    public SkyVaultDbContext()
+    {
+    }
+
     public SkyVaultDbContext(DbContextOptions<SkyVaultDbContext> options)
         : base(options)
     {
@@ -32,6 +36,10 @@ public partial class SkyVaultDbContext : DbContext
 
     public virtual DbSet<Userfile> Userfiles { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=skyvaultdb;Username=postgres;Password=harry10");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension("pgcrypto");
@@ -52,7 +60,6 @@ public partial class SkyVaultDbContext : DbContext
                 .HasColumnName("price");
             entity.Property(e => e.Purchasedate)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
                 .HasColumnName("purchasedate");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.Storageamountgb).HasColumnName("storageamountgb");
@@ -89,7 +96,6 @@ public partial class SkyVaultDbContext : DbContext
                 .HasColumnName("entityname");
             entity.Property(e => e.Performedat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
                 .HasColumnName("performedat");
 
             entity.HasOne(d => d.Administrator).WithMany(p => p.Auditlogs)
@@ -119,11 +125,8 @@ public partial class SkyVaultDbContext : DbContext
                 .HasColumnName("folderid");
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
                 .HasColumnName("createdat");
-            entity.Property(e => e.Deletedat)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("deletedat");
+            entity.Property(e => e.Deletedat).HasColumnName("deletedat");
             entity.Property(e => e.Isdeleted)
                 .HasDefaultValue(false)
                 .HasColumnName("isdeleted");
@@ -135,7 +138,6 @@ public partial class SkyVaultDbContext : DbContext
             entity.Property(e => e.Parentfolderid).HasColumnName("parentfolderid");
             entity.Property(e => e.Updatedat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
                 .HasColumnName("updatedat");
 
             entity.HasOne(d => d.Originalparentfolder).WithMany(p => p.InverseOriginalparentfolder)
@@ -174,11 +176,8 @@ public partial class SkyVaultDbContext : DbContext
                 .HasColumnName("sharelinkid");
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
                 .HasColumnName("createdat");
-            entity.Property(e => e.Expiresat)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("expiresat");
+            entity.Property(e => e.Expiresat).HasColumnName("expiresat");
             entity.Property(e => e.Fileid).HasColumnName("fileid");
             entity.Property(e => e.Isrevoked)
                 .HasDefaultValue(false)
@@ -215,7 +214,6 @@ public partial class SkyVaultDbContext : DbContext
                 .HasColumnName("accountname");
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
                 .HasColumnName("createdat");
             entity.Property(e => e.Isactive)
                 .HasDefaultValue(true)
@@ -270,7 +268,6 @@ public partial class SkyVaultDbContext : DbContext
                 .HasColumnName("providerid");
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
                 .HasColumnName("createdat");
             entity.Property(e => e.Isactive)
                 .HasDefaultValue(true)
@@ -300,12 +297,8 @@ public partial class SkyVaultDbContext : DbContext
             entity.Property(e => e.Subscriptionid)
                 .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("subscriptionid");
-            entity.Property(e => e.Enddate)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("enddate");
-            entity.Property(e => e.Startdate)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("startdate");
+            entity.Property(e => e.Enddate).HasColumnName("enddate");
+            entity.Property(e => e.Startdate).HasColumnName("startdate");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.Storageplanid).HasColumnName("storageplanid");
             entity.Property(e => e.Userid).HasColumnName("userid");
@@ -336,7 +329,6 @@ public partial class SkyVaultDbContext : DbContext
                 .HasColumnName("allocatedstoragebytes");
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
                 .HasColumnName("createdat");
             entity.Property(e => e.Email)
                 .HasMaxLength(255)
@@ -359,7 +351,6 @@ public partial class SkyVaultDbContext : DbContext
             entity.Property(e => e.Role).HasColumnName("role");
             entity.Property(e => e.Updatedat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
                 .HasColumnName("updatedat");
             entity.Property(e => e.Usedstoragebytes)
                 .HasDefaultValue(0L)
@@ -391,9 +382,7 @@ public partial class SkyVaultDbContext : DbContext
             entity.Property(e => e.Fileid)
                 .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("fileid");
-            entity.Property(e => e.Deletedat)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("deletedat");
+            entity.Property(e => e.Deletedat).HasColumnName("deletedat");
             entity.Property(e => e.Extension)
                 .HasMaxLength(20)
                 .HasColumnName("extension");
@@ -415,11 +404,9 @@ public partial class SkyVaultDbContext : DbContext
             entity.Property(e => e.Storageaccountid).HasColumnName("storageaccountid");
             entity.Property(e => e.Updatedat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
                 .HasColumnName("updatedat");
             entity.Property(e => e.Uploadedat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
                 .HasColumnName("uploadedat");
 
             entity.HasOne(d => d.Folder).WithMany(p => p.Userfiles)

@@ -2,7 +2,7 @@ using SkyVault.DTOs.Authentication.Requests;
 using SkyVault.DTOs.Authentication.Responses;
 using SkyVault.DTOs.Common.Responses;
 
-namespace SkyVault.Services;
+namespace SkyVault.Services.Authentication;
 
 public interface IAuthService
 {
