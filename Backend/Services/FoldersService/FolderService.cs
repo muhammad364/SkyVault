@@ -79,7 +79,7 @@ public class FolderService : IFolderService
             Files = _mapper.Map<List<FileSummaryDto>>(files)
         };
     }
-
+//Get
     public async Task<FolderContentsResponseDto> GetFolderAsync(Guid folderId, Guid userId, CancellationToken cancellationToken = default)
     {
         var folder = await _folderRepository.GetByIdAsync(folderId, cancellationToken);
