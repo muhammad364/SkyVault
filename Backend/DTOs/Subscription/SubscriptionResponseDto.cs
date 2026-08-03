@@ -4,8 +4,6 @@ public class SubscriptionResponseDto
 {
     public Guid SubscriptionId { get; set; }
 
-    public Guid UserId { get; set; }
-
     public Guid StoragePlanId { get; set; }
 
     public string StoragePlanName { get; set; } = null!;
