@@ -7,7 +7,7 @@ public interface ISubscriptionRepository
 
     Task<Subscription?> GetByIdAsync(Guid subscriptionId, CancellationToken cancellationToken = default);
 
-    Task<Subscription?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Subscription>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<Subscription>> GetAllAsync(CancellationToken cancellationToken = default);
 

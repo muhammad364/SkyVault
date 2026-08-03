@@ -4,6 +4,7 @@ using SkyVault.DTOs.Authentication.Responses;
 using SkyVault.DTOs.Folder.Responses;
 using SkyVault.DTOs.StoragePlan.Requests;
 using SkyVault.DTOs.StoragePlan.Responses;
+using SkyVault.DTOs.AdditionalStoragePurchase;
 using SkyVault.Models;
 
 namespace SkyVault.Mappings;
@@ -27,5 +28,9 @@ public class AutoMapperProfile : Profile
         CreateMap<CreateStoragePlanRequestDto, Storageplan>();
 
         CreateMap<UpdateStoragePlanRequestDto, Storageplan>();
+
+        CreateMap<Additionalstoragepurchase, PurchaseAdditionalStorageResponseDto>();
+
+        CreateMap<PurchaseAdditionalStorageRequestDto, Additionalstoragepurchase>();
     }
 }

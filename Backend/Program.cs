@@ -13,7 +13,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using SkyVault.Data;
 using SkyVault.Services.StorageService;
-
+using SkyVault.Services.StorageService.PaymentService;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -75,6 +75,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFolderService, FolderService>();
 builder.Services.AddScoped<IStoragePlanService, StoragePlanService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
