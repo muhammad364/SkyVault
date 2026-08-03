@@ -2,6 +2,8 @@ using AutoMapper;
 using SkyVault.DTOs.Authentication.Requests;
 using SkyVault.DTOs.Authentication.Responses;
 using SkyVault.DTOs.Folder.Responses;
+using SkyVault.DTOs.StoragePlan.Requests;
+using SkyVault.DTOs.StoragePlan.Responses;
 using SkyVault.Models;
 
 namespace SkyVault.Mappings;
@@ -19,5 +21,11 @@ public class AutoMapperProfile : Profile
         CreateMap<Folder, FolderSummaryDto>();
 
         CreateMap<Userfile, FileSummaryDto>();
+
+        CreateMap<Storageplan, StoragePlanResponseDto>();
+
+        CreateMap<CreateStoragePlanRequestDto, Storageplan>();
+
+        CreateMap<UpdateStoragePlanRequestDto, Storageplan>();
     }
 }

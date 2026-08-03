@@ -5,6 +5,7 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics;
 
 namespace SkyVault.Services.Authentication.Security;
 
@@ -23,6 +24,12 @@ public class JwtTokenService : IJwtTokenService
     }
      private string CreateToken(User user, string purpose, int expiryInMinutes)
     {
+        var role = user.Role switch
+        {
+            0 => "User",
+            1 => "Admin",
+            _ => throw new InvalidOperationException("Invalid user role.")
+        };
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Userid.ToString()),

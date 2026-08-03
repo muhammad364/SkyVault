@@ -8,9 +8,11 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SkyVault.Services.Authentication;
+using SkyVault.Services.FoldersService;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using SkyVault.Data;
+using SkyVault.Services.StorageService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,6 +73,8 @@ builder.Services.AddScoped<IPasswordHashService, PasswordHashService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IFolderService, FolderService>();
+builder.Services.AddScoped<IStoragePlanService, StoragePlanService>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
