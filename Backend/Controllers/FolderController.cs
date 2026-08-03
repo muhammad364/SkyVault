@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkyVault.DTOs.Folder.Requests;
 using SkyVault.DTOs.Folder.Responses;
-using SkyVault.DTOs.Common;
-using SkyVault.Services.Folder;
+using SkyVault.DTOs.Common.Responses;
+using SkyVault.Services.FoldersService;
 
 namespace SkyVault.Controllers;
 
