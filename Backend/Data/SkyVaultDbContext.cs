@@ -300,6 +300,9 @@ public partial class SkyVaultDbContext : DbContext
             entity.Property(e => e.Enddate).HasColumnName("enddate");
             entity.Property(e => e.Startdate).HasColumnName("startdate");
             entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.Graceperiodenddate)
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("graceperiodenddate");
             entity.Property(e => e.Storageplanid).HasColumnName("storageplanid");
             entity.Property(e => e.Userid).HasColumnName("userid");
 

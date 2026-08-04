@@ -132,8 +132,8 @@ CREATE TABLE AdditionalStoragePurchases
 
     Status SMALLINT NOT NULL
         CHECK (Status IN (0,1)),
-        -- 0=Pending
-        -- 1=Completed
+        -- 0=Active
+        -- 1=Inactive
 
     CONSTRAINT FK_AdditionalStorage_User
         FOREIGN KEY (UserId)

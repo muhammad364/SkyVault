@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+using System.Text.Json.Serialization;
+
 namespace SkyVault.DTOs.Payments;
 
 public class ProcessPaymentRequestDto
@@ -22,6 +24,7 @@ public class ProcessPaymentRequestDto
     [RegularExpression(@"^\d{3,4}$", ErrorMessage = "CVV must contain 3 or 4 digits.")]
     public string Cvv { get; set; } = null!;
 
-    [Range(0.01, double.MaxValue, ErrorMessage = "Payment amount must be greater than zero.")]
+
+    [JsonIgnore]
     public decimal Amount { get; set; }
 }

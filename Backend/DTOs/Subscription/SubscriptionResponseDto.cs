@@ -19,4 +19,6 @@ public class SubscriptionResponseDto
     public DateTime EndDate { get; set; }
 
     public short Status { get; set; }
+
+    public DateTime? GracePeriodEndDate { get; set; }
 }

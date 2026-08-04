@@ -17,6 +17,8 @@ public partial class Subscription
 
     public short Status { get; set; }
 
+    public DateTime? Graceperiodenddate { get; set; }
+
     public virtual Storageplan Storageplan { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
