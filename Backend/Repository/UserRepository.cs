@@ -39,4 +39,57 @@ public class UserRepository : IUserRepository
     {
         _dbContext.Users.Update(user);
     }
+
+    public async Task<bool> TryReserveStorageAsync(Guid userId, long storageBytes, CancellationToken cancellationToken = default)
+    {
+        if (storageBytes <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(storageBytes), "Storage reservation must be greater than zero.");
+        }
+
+        var now = DateTime.UtcNow;
+
+        var affectedRows = await _dbContext.Users
+            .Where(u =>
+                u.Userid == userId &&
+                u.Isactive &&
+                u.Usedstoragebytes + storageBytes <= u.Allocatedstoragebytes)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(
+                        u => u.Usedstoragebytes,
+                        u => u.Usedstoragebytes + storageBytes)
+                    .SetProperty(
+                        u => u.Updatedat,
+                        _ => now),
+                cancellationToken);
+
+        return affectedRows == 1;
+    }
+
+    public async Task<bool> ReleaseStorageAsync(Guid userId, long storageBytes, CancellationToken cancellationToken = default)
+    {
+        if (storageBytes <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(storageBytes), "Storage release must be greater than zero.");
+        }
+
+        var now = DateTime.UtcNow;
+
+        var affectedRows = await _dbContext.Users
+            .Where(u =>
+                u.Userid == userId &&
+                u.Usedstoragebytes >= storageBytes)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(
+                        u => u.Usedstoragebytes,
+                        u => u.Usedstoragebytes - storageBytes)
+                    .SetProperty(
+                        u => u.Updatedat,
+                        _ => now),
+                cancellationToken);
+
+        return affectedRows == 1;
+    }
 }

@@ -48,4 +48,14 @@ public interface IStorageQuotaService
     Task RecalculateUsedStorageAsync(
         Guid userId,
         CancellationToken cancellationToken = default);
+
+    Task ReserveStorageAsync(
+        Guid userId,
+        long storageBytes,
+        CancellationToken cancellationToken = default);
+    
+    Task ReleaseStorageAsync(
+        Guid userId,
+        long storageBytes,
+        CancellationToken cancellationToken = default);
 }

@@ -140,53 +140,34 @@ public class StorageQuotaService : IStorageQuotaService
         }
     }
 
-    public async Task AdjustUsedStorageAsync(
-        Guid userId,
-        long deltaBytes,
-        CancellationToken cancellationToken = default)
+    public async Task AdjustUsedStorageAsync(Guid userId, long deltaBytes, CancellationToken cancellationToken = default)
     {
         if (deltaBytes == 0)
         {
             return;
         }
 
-        var user = await GetUserOrThrowAsync(
-            userId,
-            cancellationToken);
-
         if (deltaBytes > 0)
         {
-            await EnsureSufficientStorageAsync(
+            await ReserveStorageAsync(
                 userId,
                 deltaBytes,
                 cancellationToken);
 
-            user.Usedstoragebytes = checked(
-                user.Usedstoragebytes + deltaBytes);
+            return;
         }
-        else
+
+        if (deltaBytes == long.MinValue)
         {
-            if (deltaBytes == long.MinValue)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(deltaBytes),
-                    "The requested storage adjustment is outside the supported range.");
-            }
-
-            var storageToRelease = -deltaBytes;
-
-            if (storageToRelease > user.Usedstoragebytes)
-            {
-                throw new InvalidOperationException(
-                    "Storage usage cannot be reduced below zero.");
-            }
-
-            user.Usedstoragebytes -= storageToRelease;
+            throw new ArgumentOutOfRangeException(
+                nameof(deltaBytes),
+                "The requested storage adjustment is outside the supported range.");
         }
 
-        user.Updatedat = DateTime.UtcNow;
-
-        _userRepository.Update(user);
+        await ReleaseStorageAsync(
+            userId,
+            -deltaBytes,
+            cancellationToken);
     }
 
     public async Task EnsureSubscriptionAllocationSufficientAsync(
@@ -455,6 +436,61 @@ public class StorageQuotaService : IStorageQuotaService
         }
 
         return user;
+    }
+
+    public async Task ReserveStorageAsync(
+        Guid userId,
+        long storageBytes,
+        CancellationToken cancellationToken = default)
+    {
+        if (storageBytes <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(storageBytes),
+                "Storage reservation must be greater than zero.");
+        }
+
+        await EnsureStorageManagementAccessAsync(
+            userId,
+            cancellationToken);
+
+        var reserved = await _userRepository.TryReserveStorageAsync(
+            userId,
+            storageBytes,
+            cancellationToken);
+
+        if (!reserved)
+        {
+            throw new InvalidOperationException(
+                "Insufficient storage quota. " +
+                "The requested operation cannot be completed because " +
+                "there is not enough available storage.");
+        }
+    }
+
+    public async Task ReleaseStorageAsync(
+        Guid userId,
+        long storageBytes,
+        CancellationToken cancellationToken = default)
+    {
+        if (storageBytes <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(storageBytes),
+                "Storage release must be greater than zero.");
+        }
+
+        var released = await _userRepository.ReleaseStorageAsync(
+            userId,
+            storageBytes,
+            cancellationToken);
+
+        if (!released)
+        {
+            throw new InvalidOperationException(
+                "Storage usage could not be released because " +
+                "the requested amount exceeds the user's recorded usage.");
+        }
     }
 
     private static long ConvertGbToBytes(int storageGb)

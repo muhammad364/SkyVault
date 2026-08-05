@@ -15,4 +15,8 @@ public interface IUserRepository
     Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default);
 
     void Update(User user);
+
+    Task<bool> TryReserveStorageAsync(Guid userId, long storageBytes, CancellationToken cancellationToken = default);
+
+    Task<bool> ReleaseStorageAsync(Guid userId, long storageBytes, CancellationToken cancellationToken = default);
 }
