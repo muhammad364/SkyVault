@@ -15,6 +15,8 @@ using SkyVault.Data;
 using SkyVault.Services.StorageService;
 using SkyVault.Services.StorageService.PaymentService;
 using SkyVault.Services.SubscriptionService;
+using SkyVault.Services.StorageQuotaService;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -80,6 +82,8 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 
 builder.Services.AddScoped<IAdditionalStoragePurchaseService, AdditionalStoragePurchaseService>();
+
+builder.Services.AddScoped<IStorageQuotaService, StorageQuotaService>();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
