@@ -7,7 +7,7 @@ namespace SkyVault.Controllers;
 
 [ApiController]
 [Route("api/storage-providers")]
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class StorageProviderController : ControllerBase
 {
     private readonly IStorageProviderService _storageProviderService;

@@ -6,6 +6,8 @@ using SkyVault.DTOs.StoragePlan.Requests;
 using SkyVault.DTOs.StoragePlan.Responses;
 using SkyVault.DTOs.AdditionalStoragePurchase;
 using SkyVault.DTOs.Subscription;
+using SkyVault.DTOs.StorageAccount;
+using SkyVault.DTOs.StorageProvider;
 using SkyVault.Models;
 
 namespace SkyVault.Mappings;
@@ -67,5 +69,81 @@ public class AutoMapperProfile : Profile
             .ForMember(
                 dest => dest.GracePeriodEndDate,
                 opt => opt.MapFrom(src => src.Graceperiodenddate));
+        
+        CreateMap<CreateStorageProviderRequestDto, Storageprovider>();
+
+        CreateMap<UpdateStorageProviderRequestDto, Storageprovider>();
+
+        CreateMap<Storageprovider, StorageProviderResponseDto>()
+            .ForMember(
+                dest => dest.ProviderId,
+                opt => opt.MapFrom(
+                    src => src.Providerid))
+            .ForMember(
+                dest => dest.ProviderType,
+                opt => opt.MapFrom(
+                    src => src.Providertype))
+            .ForMember(
+                dest => dest.IsActive,
+                opt => opt.MapFrom(
+                    src => src.Isactive))
+            .ForMember(
+                dest => dest.CreatedAt,
+                opt => opt.MapFrom(
+                    src => src.Createdat));
+
+        CreateMap<CreateStorageAccountRequestDto, Storageaccount>();
+
+        CreateMap<UpdateStorageAccountRequestDto, Storageaccount>();
+
+        CreateMap<Storageaccount, StorageAccountResponseDto>()
+            .ForMember(
+                dest => dest.StorageAccountId,
+                opt => opt.MapFrom(
+                    src => src.Storageaccountid))
+            .ForMember(
+                dest => dest.ProviderId,
+                opt => opt.MapFrom(
+                    src => src.Providerid))
+            .ForMember(
+                dest => dest.ProviderName,
+                opt => opt.MapFrom(
+                    src => src.Provider.Name))
+            .ForMember(
+                dest => dest.ProviderType,
+                opt => opt.MapFrom(
+                    src => src.Provider.Providertype))
+            .ForMember(
+                dest => dest.AccountName,
+                opt => opt.MapFrom(
+                    src => src.Accountname))
+            .ForMember(
+                dest => dest.TotalCapacityBytes,
+                opt => opt.MapFrom(
+                    src => src.Totalcapacitybytes))
+            .ForMember(
+                dest => dest.UsedCapacityBytes,
+                opt => opt.MapFrom(
+                    src => src.Usedcapacitybytes))
+            .ForMember(
+                dest => dest.AvailableCapacityBytes,
+                opt => opt.MapFrom(
+                    src =>
+                        Math.Max(
+                            0,
+                            src.Totalcapacitybytes -
+                            src.Usedcapacitybytes)))
+            .ForMember(
+                dest => dest.Priority,
+                opt => opt.MapFrom(
+                    src => src.Priority))
+            .ForMember(
+                dest => dest.IsActive,
+                opt => opt.MapFrom(
+                    src => src.Isactive))
+            .ForMember(
+                dest => dest.CreatedAt,
+                opt => opt.MapFrom(
+                    src => src.Createdat));
     }
 }
