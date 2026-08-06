@@ -23,6 +23,11 @@ public class StorageProviderRepository : IStorageProviderRepository
         return await _dbcontext.Storageproviders.FirstOrDefaultAsync(p => p.Providerid == storageProviderId, cancellationToken);
     }
 
+    public async Task<Storageprovider?> GetByNameAsync(string name,CancellationToken cancellationToken = default)
+    {
+        return await _dbcontext.Storageproviders.FirstOrDefaultAsync(p => p.Name == name, cancellationToken);
+    }
+
     public async Task AddAsync(Storageprovider storageProvider, CancellationToken cancellationToken = default)
     {
         await _dbcontext.Storageproviders.AddAsync(storageProvider, cancellationToken);
