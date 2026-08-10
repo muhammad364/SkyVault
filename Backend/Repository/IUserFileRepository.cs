@@ -12,7 +12,7 @@ public interface IUserFileRepository
 
     Task<IEnumerable<Userfile>> GetByFolderIdAsync(Guid ownerId, Guid? folderId, CancellationToken cancellationToken = default);
 
-    Task<bool> ExistsAsync(Guid folderId, string fileName, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(Guid? folderId, string fileName, CancellationToken cancellationToken = default);
 
     void Update(Userfile userFile);
     void Remove(Userfile userFile);

@@ -30,12 +30,7 @@ public interface IStorageAccountService
         Guid storageAccountId,
         CancellationToken cancellationToken = default);
 
-    Task<Storageaccount> ReserveCapacityAsync(
-        long requestedBytes,
-        CancellationToken cancellationToken = default);
+    Task ReserveCapacityForAccountAsync(Guid storageAccountId,long requestedBytes,CancellationToken cancellationToken = default);
 
-    Task ReleaseCapacityAsync(
-        Guid storageAccountId,
-        long capacityBytes,
-        CancellationToken cancellationToken = default);
+    Task ReleaseCapacityAsync(Guid storageAccountId,long capacityBytes,CancellationToken cancellationToken = default);
 }

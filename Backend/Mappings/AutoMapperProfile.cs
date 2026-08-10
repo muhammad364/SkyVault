@@ -8,6 +8,8 @@ using SkyVault.DTOs.AdditionalStoragePurchase;
 using SkyVault.DTOs.Subscription;
 using SkyVault.DTOs.StorageAccount;
 using SkyVault.DTOs.StorageProvider;
+using SkyVault.DTOs.UserFile.Responses;
+using SkyVault.DTOs.UserFile.Requests;
 using SkyVault.Models;
 
 namespace SkyVault.Mappings;
@@ -145,5 +147,31 @@ public class AutoMapperProfile : Profile
                 dest => dest.CreatedAt,
                 opt => opt.MapFrom(
                     src => src.Createdat));
+    
+        CreateMap<Userfile, FileResponseDto>()
+            .ForMember(
+                dest => dest.FileId,
+                opt => opt.MapFrom(src => src.Fileid))
+            .ForMember(
+                dest => dest.FolderId,
+                opt => opt.MapFrom(src => src.Folderid))
+            .ForMember(
+                dest => dest.FileName,
+                opt => opt.MapFrom(src => src.Filename))
+            .ForMember(
+                dest => dest.Extension,
+                opt => opt.MapFrom(src => src.Extension))
+            .ForMember(
+                dest => dest.MimeType,
+                opt => opt.MapFrom(src => src.Mimetype))
+            .ForMember(
+                dest => dest.FileSizeBytes,
+                opt => opt.MapFrom(src => src.Filesizebytes))
+            .ForMember(
+                dest => dest.UploadedAt,
+                opt => opt.MapFrom(src => src.Uploadedat))
+            .ForMember(
+                dest => dest.UpdatedAt,
+                opt => opt.MapFrom(src => src.Updatedat));
     }
 }

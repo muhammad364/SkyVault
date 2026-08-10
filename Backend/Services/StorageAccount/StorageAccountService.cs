@@ -185,37 +185,36 @@ public class StorageAccountService : IStorageAccountService
         return _mapper.Map<StorageAccountResponseDto>(storageAccount);
     }
 
-    public async Task<Storageaccount> ReserveCapacityAsync (long requestedBytes, CancellationToken cancellationToken = default)
+    public async Task ReserveCapacityForAccountAsync(Guid storageAccountId,long requestedBytes,CancellationToken cancellationToken = default)
     {
         if (requestedBytes <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(requestedBytes),"Requested storage capacity must be greater than zero.");
         }
 
-        var storageAccounts = await _storageAccountRepository.GetAllAsync(true,cancellationToken);
+        var storageAccount = await _storageAccountRepository.GetByIdAsync(storageAccountId,cancellationToken);
 
-        var candidates = storageAccounts.Where(s => s.Provider.Isactive &&
-                s.Totalcapacitybytes - s.Usedcapacitybytes >= requestedBytes)
-            .OrderBy(s => s.Priority)
-            .ThenByDescending(s => s.Totalcapacitybytes - s.Usedcapacitybytes)
-            .ToList();
-
-        foreach (var storageAccount in candidates)
+        if (storageAccount is null)
         {
-            var reserved = await _storageAccountRepository.TryReserveCapacityAsync(
-                storageAccount.Storageaccountid,
-                requestedBytes,
-                cancellationToken);
-
-            if (!reserved)
-            {
-                continue;
-            }
-
-            return storageAccount;
+            throw new InvalidOperationException("Storage account was not found.");
         }
 
-        throw new InvalidOperationException("No active storage account has enough available physical storage " + "for the requested file.");
+        if (!storageAccount.Isactive)
+        {
+            throw new InvalidOperationException("The selected storage account is inactive.");
+        }
+
+        if (storageAccount.Provider is null || !storageAccount.Provider.Isactive)
+        {
+            throw new InvalidOperationException("The storage provider associated with the account is inactive.");
+        }
+
+        var reserved = await _storageAccountRepository.TryReserveCapacityAsync(storageAccountId,requestedBytes,cancellationToken);
+
+        if (!reserved)
+        {
+            throw new InvalidOperationException("The selected storage account does not have enough physical storage capacity.");
+        }
     }
 
     public async Task ReleaseCapacityAsync(Guid storageAccountId, long capacityBytes, CancellationToken cancellationToken = default)
