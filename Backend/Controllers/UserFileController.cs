@@ -87,9 +87,7 @@ public class UserFileController : ControllerBase
             userId,
             cancellationToken);
 
-        return File(
-            result.Stream,
-            result.ContentType);
+        return File(result.Stream, result.ContentType);
     }
 
     [HttpPut("{fileId:guid}/rename")]
