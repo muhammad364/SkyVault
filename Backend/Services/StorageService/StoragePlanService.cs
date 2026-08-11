@@ -82,4 +82,50 @@ public class StoragePlanService : IStoragePlanService
 
         return _mapper.Map<StoragePlanResponseDto>(existingPlan);
     }
+
+    public async Task<StoragePlanResponseDto> ActivateAsync(Guid storagePlanId,CancellationToken cancellationToken = default)
+    {
+        var plan = await _storagePlanRepository.GetByIdAsync(storagePlanId, cancellationToken);
+
+        if (plan is null)
+        {
+            throw new KeyNotFoundException($"Storage plan with ID '{storagePlanId}' was not found.");
+        }
+
+        if (plan.Isactive)
+        {
+            throw new InvalidOperationException("Storage plan is already active.");
+        }
+
+        plan.Isactive = true;
+
+        _storagePlanRepository.Update(plan);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return _mapper.Map<StoragePlanResponseDto>(plan);
+    }
+
+    public async Task<StoragePlanResponseDto> DeactivateAsync(Guid storagePlanId,CancellationToken cancellationToken = default)
+    {
+        var plan = await _storagePlanRepository.GetByIdAsync(storagePlanId, cancellationToken);
+
+        if (plan is null)
+        {
+            throw new KeyNotFoundException($"Storage plan with ID '{storagePlanId}' was not found.");
+        }
+
+        if (!plan.Isactive)
+        {
+            throw new InvalidOperationException("Storage plan is already inactive.");
+        }
+
+        plan.Isactive = false;
+
+        _storagePlanRepository.Update(plan);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return _mapper.Map<StoragePlanResponseDto>(plan);
+    }
 }

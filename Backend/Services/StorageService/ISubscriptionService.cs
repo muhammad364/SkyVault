@@ -13,4 +13,11 @@ public interface ISubscriptionService
     Task<SubscriptionResponseDto> CancelAsync(Guid userId, CancellationToken cancellationToken = default);
 
     Task<int> ExpireDueSubscriptionsAsync(CancellationToken cancellationToken = default);
+
+    // For admin operations only
+    Task<IEnumerable<SubscriptionResponseDto>> GetAllAsync(CancellationToken cancellationToken = default);
+
+    Task<SubscriptionResponseDto> GetByIdAsync(Guid subscriptionId, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<SubscriptionResponseDto>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 }

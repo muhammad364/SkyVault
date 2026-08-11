@@ -12,4 +12,8 @@ public interface IStoragePlanService
     Task<StoragePlanResponseDto> CreateAsync(CreateStoragePlanRequestDto request, CancellationToken cancellationToken = default);
 
     Task<StoragePlanResponseDto> UpdateAsync(Guid storagePlanId, UpdateStoragePlanRequestDto request, CancellationToken cancellationToken = default);
+
+    Task<StoragePlanResponseDto> ActivateAsync(Guid storagePlanId, CancellationToken cancellationToken = default);
+
+    Task<StoragePlanResponseDto> DeactivateAsync(Guid storagePlanId, CancellationToken cancellationToken = default);
 }

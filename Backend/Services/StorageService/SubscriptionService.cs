@@ -322,4 +322,30 @@ public class SubscriptionService : ISubscriptionService
 
         return dueSubscriptions.Count;
     }
+
+    public async Task<IEnumerable<SubscriptionResponseDto>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        var subscriptions = await _subscriptionRepository.GetAllAsync(cancellationToken);
+
+        return _mapper.Map<IEnumerable<SubscriptionResponseDto>>(subscriptions);
+    }
+
+    public async Task<SubscriptionResponseDto> GetByIdAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
+    {
+        var subscription = await _subscriptionRepository.GetByIdAsync(subscriptionId, cancellationToken);
+
+        if (subscription is null)
+        {
+            throw new KeyNotFoundException($"Subscription with ID '{subscriptionId}' was not found.");
+        }
+
+        return _mapper.Map<SubscriptionResponseDto>(subscription);
+    }
+
+    public async Task<IEnumerable<SubscriptionResponseDto>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var subscriptions = await _subscriptionRepository.GetByUserIdAsync(userId, cancellationToken);
+
+        return _mapper.Map<IEnumerable<SubscriptionResponseDto>>(subscriptions);
+    }
 }
