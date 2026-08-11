@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SkyVault.Services.Authentication;
 using SkyVault.Services.FoldersService;
+using SkyVault.Services.UserFileService;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using SkyVault.Data;
@@ -89,6 +90,7 @@ builder.Services.AddScoped<IStorageProviderService, StorageProviderService>();
 builder.Services.AddScoped<IStorageAccountService, StorageAccountService>();
 builder.Services.AddScoped<IAdditionalStoragePurchaseService, AdditionalStoragePurchaseService>();
 builder.Services.AddScoped<IStorageQuotaService, StorageQuotaService>();
+builder.Services.AddScoped<IUserFileService, UserFileService>();
 
 builder.Services.Configure<GoogleDriveOptions>(builder.Configuration.GetSection("GoogleDrive"));
 builder.Services.AddScoped<IPhysicalStorageProvider,GoogleDriveStorageProvider>();
