@@ -1,8 +1,9 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using SkyVault.DTOs.Common.Responses;
 using SkyVault.DTOs.UserFile.Requests;
 using SkyVault.DTOs.UserFile.Responses;
-using SkyVault.DTOs.Folder.Responses;
+using SkyVault.DTOs.StorageAccount;
 using SkyVault.Models;
 using SkyVault.Repository;
 using SkyVault.Services.PhysicalProviderService;
@@ -17,8 +18,8 @@ public class UserFileService : IUserFileService
 
     private readonly IUserFileRepository _userFileRepository;
     private readonly IFolderRepository _folderRepository;
-    private readonly IStorageAccountService _storageAccountService;
     private readonly IStorageQuotaService _storageQuotaService;
+    private readonly IStorageAccountService _storageAccountService;
     private readonly IPhysicalStorageProvider _physicalStorageProvider;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
@@ -26,253 +27,286 @@ public class UserFileService : IUserFileService
     public UserFileService(
         IUserFileRepository userFileRepository,
         IFolderRepository folderRepository,
-        IStorageAccountService storageAccountService,
         IStorageQuotaService storageQuotaService,
+        IStorageAccountService storageAccountService,
         IPhysicalStorageProvider physicalStorageProvider,
         IMapper mapper,
         IUnitOfWork unitOfWork)
     {
         _userFileRepository = userFileRepository;
         _folderRepository = folderRepository;
-        _storageAccountService = storageAccountService;
         _storageQuotaService = storageQuotaService;
+        _storageAccountService = storageAccountService;
         _physicalStorageProvider = physicalStorageProvider;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
+
+    // ============================================================
+    // UPLOAD
+    // ============================================================
 
     public async Task<FileResponseDto> UploadAsync(
         UploadFileRequestDto request,
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        if (request.File is null || request.File.Length <= 0)
-        {
-            throw new InvalidOperationException("A valid file is required.");
-        }
-
-        if (request.File.Length > MaxFileSizeBytes)
-        {
-            throw new InvalidOperationException(
-                "The maximum allowed file size is 100 MB.");
-        }
+        ValidateUploadFile(request.File);
 
         await ValidateDestinationFolderAsync(
             request.FolderId,
             userId,
             cancellationToken);
 
-        var originalFileName = Path.GetFileName(request.File.FileName);
+        var originalFileName =
+            Path.GetFileName(request.File.FileName);
 
-        if (string.IsNullOrWhiteSpace(originalFileName))
-        {
-            throw new InvalidOperationException("File name is required.");
-        }
-
-        var fileName = await GenerateUniqueFileNameAsync(
-            request.FolderId,
-            originalFileName,
-            cancellationToken);
+        var fileName =
+            await GenerateUniqueFileNameAsync(
+                request.FolderId,
+                originalFileName,
+                cancellationToken);
 
         var requestedSize = request.File.Length;
 
+        /*
+         * First reserve the user's logical quota.
+         * StorageQuotaService also verifies that the user has
+         * an active account/subscription and sufficient quota.
+         */
         await _storageQuotaService.ReserveStorageAsync(
             userId,
             requestedSize,
             cancellationToken);
 
+        /*
+         * Select an active physical storage account having
+         * sufficient remaining capacity.
+         */
         var storageAccount =
-            await _storageAccountService.ReserveCapacityAsync(
+            await GetAvailableStorageAccountAsync(
                 requestedSize,
                 cancellationToken);
 
-        var logicalQuotaReserved = true;
-        var physicalCapacityReserved = true;
-        var providerObjectId = string.Empty;
+        /*
+         * Reserve the requested physical capacity against
+         * the exact account selected above.
+         */
+        await _storageAccountService.ReserveCapacityForAccountAsync(
+            storageAccount.StorageAccountId,
+            requestedSize,
+            cancellationToken);
 
-        try
+        await using var stream =
+            request.File.OpenReadStream();
+
+        /*
+         * The provider is authoritative for the actual stored
+         * file size and provider metadata.
+         */
+        var providerFile =
+            await _physicalStorageProvider.UploadAsync(
+                storageAccount.StorageAccountId,
+                stream,
+                fileName,
+                request.File.ContentType,
+                cancellationToken);
+
+        if (providerFile.FileSizeBytes <= 0)
         {
-            await using var content = request.File.OpenReadStream();
-
-            var providerResult =
-                await _physicalStorageProvider.UploadAsync(
-                    storageAccount.Storageaccountid,
-                    content,
-                    fileName,
-                    request.File.ContentType,
-                    cancellationToken);
-
-            providerObjectId = providerResult.ProviderObjectId;
-
-            var actualSize = providerResult.FileSizeBytes;
-
-            await ReconcileStorageAsync(
-                userId,
-                storageAccount.Storageaccountid,
-                requestedSize,
-                actualSize,
-                cancellationToken);
-
-            logicalQuotaReserved = false;
-            physicalCapacityReserved = false;
-
-            var extension = Path.GetExtension(fileName);
-
-            if (string.IsNullOrWhiteSpace(extension))
-            {
-                extension = string.Empty;
-            }
-            else
-            {
-                extension = extension.TrimStart('.');
-            }
-
-            var userFile = new Userfile
-            {
-                Fileid = Guid.NewGuid(),
-                Ownerid = userId,
-                Folderid = request.FolderId,
-                Storageaccountid = storageAccount.Storageaccountid,
-                Filename = fileName,
-                Extension = extension,
-                Mimetype = providerResult.MimeType
-                            ?? request.File.ContentType
-                            ?? "application/octet-stream",
-                Filesizebytes = actualSize,
-                Providerobjectid = providerResult.ProviderObjectId,
-                Isdeleted = false,
-                Deletedat = null,
-                Uploadedat = providerResult.CreatedAt
-                              ?? DateTime.UtcNow,
-                Updatedat = providerResult.ModifiedAt
-                              ?? DateTime.UtcNow
-            };
-
-            await _userFileRepository.AddAsync(
-                userFile,
-                cancellationToken);
-
-            await _unitOfWork.SaveChangesAsync(
-                cancellationToken);
-
-            return _mapper.Map<FileResponseDto>(userFile);
+            throw new InvalidOperationException(
+                "The storage provider returned an invalid file size.");
         }
-        catch
+
+        /*
+         * Reconcile logical quota against the actual provider size.
+         */
+        await ReconcileLogicalStorageAsync(
+            userId,
+            requestedSize,
+            providerFile.FileSizeBytes,
+            cancellationToken);
+
+        /*
+         * Reconcile physical account capacity against the actual
+         * provider size.
+         */
+        await ReconcilePhysicalStorageAsync(
+            storageAccount.StorageAccountId,
+            requestedSize,
+            providerFile.FileSizeBytes,
+            cancellationToken);
+
+        var userFile = new Userfile
         {
-            if (!string.IsNullOrWhiteSpace(providerObjectId))
-            {
-                try
-                {
-                    await _physicalStorageProvider.DeleteAsync(
-                        storageAccount.Storageaccountid,
-                        providerObjectId,
-                        cancellationToken);
-                }
-                catch
-                {
-                    // Do not hide the original upload failure.
-                }
-            }
+            Fileid = Guid.NewGuid(),
 
-            if (physicalCapacityReserved)
-            {
-                try
-                {
-                    await _storageAccountService.ReleaseCapacityAsync(
-                        storageAccount.Storageaccountid,
-                        requestedSize,
-                        cancellationToken);
-                }
-                catch
-                {
-                    // Preserve the original exception.
-                }
-            }
+            Ownerid = userId,
 
-            if (logicalQuotaReserved)
-            {
-                try
-                {
-                    await _storageQuotaService.ReleaseStorageAsync(
-                        userId,
-                        requestedSize,
-                        cancellationToken);
-                }
-                catch
-                {
-                    // Preserve the original exception.
-                }
-            }
+            /*
+             * null represents the user's root directory.
+             */
+            Folderid = request.FolderId,
 
-            throw;
-        }
+            Storageaccountid =
+                storageAccount.StorageAccountId,
+
+            Filename =
+                providerFile.FileName,
+
+            Extension =
+                Path.GetExtension(providerFile.FileName),
+
+            Mimetype =
+                providerFile.MimeType,
+
+            Filesizebytes =
+                providerFile.FileSizeBytes,
+
+            Providerobjectid =
+                providerFile.ProviderObjectId,
+
+            Isdeleted = false,
+
+            Deletedat = null,
+
+            Uploadedat = DateTime.UtcNow,
+
+            Updatedat = DateTime.UtcNow
+        };
+
+        await _userFileRepository.AddAsync(
+            userFile,
+            cancellationToken);
+
+        await _unitOfWork.SaveChangesAsync(
+            cancellationToken);
+
+        return _mapper.Map<FileResponseDto>(userFile);
     }
+
+    // ============================================================
+    // LIST USER FILES
+    // ============================================================
+
+    public async Task<IEnumerable<FileResponseDto>> GetUserFilesAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        var files =
+            await _userFileRepository.GetByUserIdAsync(
+                userId,
+                cancellationToken);
+
+        var activeFiles = files
+            .Where(f => !f.Isdeleted)
+            .OrderBy(f => f.Filename);
+
+        return _mapper.Map<IEnumerable<FileResponseDto>>(
+            activeFiles);
+    }
+
+    // ============================================================
+    // LIST FILES IN FOLDER
+    // ============================================================
+
+    public async Task<IEnumerable<FileResponseDto>> GetByFolderIdAsync(
+        Guid? folderId,
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        await ValidateDestinationFolderAsync(
+            folderId,
+            userId,
+            cancellationToken);
+
+        var files =
+            await _userFileRepository.GetByFolderIdAsync(
+                userId,
+                folderId,
+                cancellationToken);
+
+        return _mapper.Map<IEnumerable<FileResponseDto>>(
+            files);
+    }
+
+    // ============================================================
+    // GET FILE
+    // ============================================================
 
     public async Task<FileResponseDto> GetByIdAsync(
         Guid fileId,
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var file = await GetOwnedActiveFileAsync(
-            fileId,
-            userId,
-            cancellationToken);
+        var file =
+            await GetOwnedActiveFileAsync(
+                fileId,
+                userId,
+                cancellationToken);
 
         return _mapper.Map<FileResponseDto>(file);
     }
 
-    public async Task<IEnumerable<FileSummaryDto>> GetByFolderIdAsync(
-        Guid? folderId,
-        Guid userId,
-        CancellationToken cancellationToken = default)
+    // ============================================================
+    // DOWNLOAD
+    // ============================================================
+
+    public async Task<(Stream Stream, string ContentType, string FileName)>
+        DownloadAsync(
+            Guid fileId,
+            Guid userId,
+            CancellationToken cancellationToken = default)
     {
-        if (folderId.HasValue)
-        {
-            await ValidateDestinationFolderAsync(
-                folderId.Value,
+        var file =
+            await GetOwnedActiveFileAsync(
+                fileId,
                 userId,
                 cancellationToken);
-        }
 
-        var files = await _userFileRepository.GetByFolderIdAsync(
-            userId,
-            folderId,
-            cancellationToken);
+        var stream =
+            await _physicalStorageProvider.DownloadAsync(
+                file.Storageaccountid,
+                file.Providerobjectid,
+                cancellationToken);
 
-        return _mapper.Map<IEnumerable<FileSummaryDto>>(files);
+        return (
+            stream,
+            file.Mimetype,
+            file.Filename);
     }
 
-    public async Task<Stream> DownloadAsync(
-        Guid fileId,
-        Guid userId,
-        CancellationToken cancellationToken = default)
+    // ============================================================
+    // PREVIEW
+    // ============================================================
+
+    public async Task<(Stream Stream, string ContentType, string FileName)>
+        PreviewAsync(
+            Guid fileId,
+            Guid userId,
+            CancellationToken cancellationToken = default)
     {
-        var file = await GetOwnedActiveFileAsync(
-            fileId,
-            userId,
-            cancellationToken);
+        var file =
+            await GetOwnedActiveFileAsync(
+                fileId,
+                userId,
+                cancellationToken);
 
-        return await _physicalStorageProvider.DownloadAsync(
-            file.Storageaccountid,
-            file.Providerobjectid,
-            cancellationToken);
+        var stream =
+            await _physicalStorageProvider.DownloadAsync(
+                file.Storageaccountid,
+                file.Providerobjectid,
+                cancellationToken);
+
+        return (
+            stream,
+            file.Mimetype,
+            file.Filename);
     }
 
-    public async Task<Stream> PreviewAsync(
-        Guid fileId,
-        Guid userId,
-        CancellationToken cancellationToken = default)
-    {
-        var file = await GetOwnedActiveFileAsync(
-            fileId,
-            userId,
-            cancellationToken);
-
-        return await _physicalStorageProvider.DownloadAsync(
-            file.Storageaccountid,
-            file.Providerobjectid,
-            cancellationToken);
-    }
+    // ============================================================
+    // RENAME
+    // ============================================================
 
     public async Task<MessageResponseDto> RenameAsync(
         Guid fileId,
@@ -280,12 +314,15 @@ public class UserFileService : IUserFileService
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var file = await GetOwnedActiveFileAsync(
-            fileId,
-            userId,
-            cancellationToken);
+        var file =
+            await GetOwnedActiveFileAsync(
+                fileId,
+                userId,
+                cancellationToken);
 
-        var newName = Path.GetFileName(request.FileName);
+        var newName =
+            Path.GetFileName(
+                request.FileName.Trim());
 
         if (string.IsNullOrWhiteSpace(newName))
         {
@@ -299,32 +336,36 @@ public class UserFileService : IUserFileService
                 "File name cannot exceed 255 characters.");
         }
 
-        var exists = await _userFileRepository.ExistsAsync(
-            file.Folderid,
-            newName,
-            cancellationToken);
-
-        if (exists &&
-            !string.Equals(
+        if (string.Equals(
                 file.Filename,
                 newName,
                 StringComparison.Ordinal))
         {
-            newName = await GenerateUniqueFileNameAsync(
+            return new MessageResponseDto
+            {
+                Message = "File renamed successfully."
+            };
+        }
+
+        var exists =
+            await _userFileRepository.ExistsAsync(
                 file.Folderid,
                 newName,
                 cancellationToken);
+
+        if (exists)
+        {
+            throw new InvalidOperationException(
+                "A file with the same name already exists in the destination folder.");
         }
 
         file.Filename = newName;
 
-        var extension = Path.GetExtension(newName);
+        file.Extension =
+            Path.GetExtension(newName);
 
-        file.Extension = string.IsNullOrWhiteSpace(extension)
-            ? string.Empty
-            : extension.TrimStart('.');
-
-        file.Updatedat = DateTime.UtcNow;
+        file.Updatedat =
+            DateTime.UtcNow;
 
         _userFileRepository.Update(file);
 
@@ -337,39 +378,53 @@ public class UserFileService : IUserFileService
         };
     }
 
+    // ============================================================
+    // MOVE
+    // ============================================================
+
     public async Task<MessageResponseDto> MoveAsync(
         Guid fileId,
         MoveFileRequestDto request,
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var file = await GetOwnedActiveFileAsync(
-            fileId,
-            userId,
-            cancellationToken);
+        var file =
+            await GetOwnedActiveFileAsync(
+                fileId,
+                userId,
+                cancellationToken);
 
         await ValidateDestinationFolderAsync(
             request.DestinationFolderId,
             userId,
             cancellationToken);
 
-        if (file.Folderid == request.DestinationFolderId)
+        if (file.Folderid ==
+            request.DestinationFolderId)
         {
             return new MessageResponseDto
             {
-                Message = "File is already in the selected folder."
+                Message = "File moved successfully."
             };
         }
 
-        var destinationFileName =
-            await GenerateUniqueFileNameAsync(
+        var exists =
+            await _userFileRepository.ExistsAsync(
                 request.DestinationFolderId,
                 file.Filename,
                 cancellationToken);
 
-        file.Folderid = request.DestinationFolderId;
-        file.Filename = destinationFileName;
-        file.Updatedat = DateTime.UtcNow;
+        if (exists)
+        {
+            throw new InvalidOperationException(
+                "A file with the same name already exists in the destination folder.");
+        }
+
+        file.Folderid =
+            request.DestinationFolderId;
+
+        file.Updatedat =
+            DateTime.UtcNow;
 
         _userFileRepository.Update(file);
 
@@ -382,361 +437,303 @@ public class UserFileService : IUserFileService
         };
     }
 
-    public async Task<FileResponseDto> ReplaceAsync(
+    // ============================================================
+    // REPLACE
+    // ============================================================
+
+    public async Task<MessageResponseDto> ReplaceAsync(
         Guid fileId,
         ReplaceFileRequestDto request,
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var existingFile = await GetOwnedActiveFileAsync(
-            fileId,
-            userId,
-            cancellationToken);
+        ValidateUploadFile(request.File);
 
-        if (request.File is null || request.File.Length <= 0)
-        {
-            throw new InvalidOperationException(
-                "A valid replacement file is required.");
-        }
+        var existingFile =
+            await GetOwnedActiveFileAsync(
+                fileId,
+                userId,
+                cancellationToken);
 
-        if (request.File.Length > MaxFileSizeBytes)
-        {
-            throw new InvalidOperationException(
-                "The maximum allowed file size is 100 MB.");
-        }
+        var oldSize =
+            existingFile.Filesizebytes;
 
-        var requestedSize = request.File.Length;
-        var previousSize = existingFile.Filesizebytes;
+        var requestedSize =
+            request.File.Length;
 
-        var delta = checked(requestedSize - previousSize);
+        /*
+         * Only the positive difference requires additional
+         * logical and physical storage.
+         */
+        var requestedAdditionalBytes =
+            Math.Max(
+                0,
+                requestedSize - oldSize);
 
-        if (delta > 0)
+        if (requestedAdditionalBytes > 0)
         {
             await _storageQuotaService.ReserveStorageAsync(
                 userId,
-                delta,
+                requestedAdditionalBytes,
                 cancellationToken);
 
-            try
-            {
-                await _storageAccountService.ReserveCapacityForAccountAsync(
-                    existingFile.Storageaccountid,
-                    delta,
-                    cancellationToken);
-            }
-            catch
-            {
-                await _storageQuotaService.ReleaseStorageAsync(
-                    userId,
-                    delta,
-                    cancellationToken);
-
-                throw;
-            }
+            /*
+             * Replacement remains on the same physical storage
+             * account as the existing file.
+             */
+            await _storageAccountService.ReserveCapacityForAccountAsync(
+                existingFile.Storageaccountid,
+                requestedAdditionalBytes,
+                cancellationToken);
         }
 
-        var additionalLogicalReservation = delta > 0;
-        var additionalPhysicalReservation = delta > 0;
+        await using var stream =
+            request.File.OpenReadStream();
 
-        try
-        {
-            await using var content = request.File.OpenReadStream();
-
-            var providerResult =
-                await _physicalStorageProvider.ReplaceAsync(
-                    existingFile.Storageaccountid,
-                    existingFile.Providerobjectid,
-                    content,
-                    existingFile.Filename,
-                    request.File.ContentType,
-                    cancellationToken);
-
-            var actualSize = providerResult.FileSizeBytes;
-
-            var actualDelta =
-                checked(actualSize - previousSize);
-
-            if (actualDelta > delta)
-            {
-                var extra = actualDelta - delta;
-
-                await _storageQuotaService.ReserveStorageAsync(
-                    userId,
-                    extra,
-                    cancellationToken);
-
-                try
-                {
-                    await _storageAccountService
-                        .ReserveCapacityForAccountAsync(
-                            existingFile.Storageaccountid,
-                            extra,
-                            cancellationToken);
-                }
-                catch
-                {
-                    await _storageQuotaService.ReleaseStorageAsync(
-                        userId,
-                        extra,
-                        cancellationToken);
-
-                    throw;
-                }
-            }
-
-            if (actualDelta < delta)
-            {
-                var excessReservation = delta - actualDelta;
-
-                if (excessReservation > 0)
-                {
-                    await _storageQuotaService.ReleaseStorageAsync(
-                        userId,
-                        excessReservation,
-                        cancellationToken);
-
-                    await _storageAccountService.ReleaseCapacityAsync(
-                        existingFile.Storageaccountid,
-                        excessReservation,
-                        cancellationToken);
-                }
-            }
-
-            existingFile.Filesizebytes = actualSize;
-
-            if (!string.IsNullOrWhiteSpace(
-                    providerResult.MimeType))
-            {
-                existingFile.Mimetype =
-                    providerResult.MimeType;
-            }
-            else if (!string.IsNullOrWhiteSpace(
-                         request.File.ContentType))
-            {
-                existingFile.Mimetype =
-                    request.File.ContentType;
-            }
-
-            existingFile.Updatedat =
-                providerResult.ModifiedAt
-                ?? DateTime.UtcNow;
-
-            _userFileRepository.Update(existingFile);
-
-            await _unitOfWork.SaveChangesAsync(
+        var providerFile =
+            await _physicalStorageProvider.ReplaceAsync(
+                existingFile.Storageaccountid,
+                existingFile.Providerobjectid,
+                stream,
+                existingFile.Filename,
+                request.File.ContentType,
                 cancellationToken);
 
-            additionalLogicalReservation = false;
-            additionalPhysicalReservation = false;
-
-            return _mapper.Map<FileResponseDto>(
-                existingFile);
-        }
-        catch
+        if (providerFile.FileSizeBytes <= 0)
         {
-            if (additionalPhysicalReservation)
-            {
-                try
-                {
-                    await _storageAccountService.ReleaseCapacityAsync(
-                        existingFile.Storageaccountid,
-                        delta,
-                        cancellationToken);
-                }
-                catch
-                {
-                }
-            }
-
-            if (additionalLogicalReservation)
-            {
-                try
-                {
-                    await _storageQuotaService.ReleaseStorageAsync(
-                        userId,
-                        delta,
-                        cancellationToken);
-                }
-                catch
-                {
-                }
-            }
-
-            throw;
+            throw new InvalidOperationException(
+                "The storage provider returned an invalid file size.");
         }
+
+        var actualDelta =
+            checked(
+                providerFile.FileSizeBytes -
+                oldSize);
+
+        /*
+         * Adjust the logical quota from the requested reservation
+         * to the provider's actual size difference.
+         */
+        await ReconcileLogicalStorageAsync(
+            userId,
+            requestedAdditionalBytes,
+            Math.Max(0, actualDelta),
+            cancellationToken);
+
+        /*
+         * Adjust physical capacity in the same way.
+         */
+        await ReconcilePhysicalStorageAsync(
+            existingFile.Storageaccountid,
+            requestedAdditionalBytes,
+            Math.Max(0, actualDelta),
+            cancellationToken);
+
+        existingFile.Extension =
+            Path.GetExtension(request.File.FileName);
+
+        existingFile.Mimetype =
+            providerFile.MimeType;
+
+        existingFile.Filesizebytes =
+            providerFile.FileSizeBytes;
+
+        existingFile.Updatedat =
+            DateTime.UtcNow;
+
+        _userFileRepository.Update(existingFile);
+
+        await _unitOfWork.SaveChangesAsync(
+            cancellationToken);
+
+        return new MessageResponseDto
+        {
+            Message = "File replaced successfully."
+        };
     }
 
-    public async Task<FileResponseDto> CopyAsync(
-        Guid fileId,
+    // ============================================================
+    // COPY
+    // ============================================================
+
+    public async Task<IEnumerable<FileResponseDto>> CopyAsync(
         CopyFileRequestDto request,
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var sourceFile = await GetOwnedActiveFileAsync(
-            fileId,
-            userId,
-            cancellationToken);
+        if (request.FileIds is null ||
+            request.FileIds.Count == 0)
+        {
+            throw new InvalidOperationException(
+                "At least one file must be selected for copying.");
+        }
 
         await ValidateDestinationFolderAsync(
             request.DestinationFolderId,
             userId,
             cancellationToken);
 
-        var destinationFileName =
-            await GenerateUniqueFileNameAsync(
-                request.DestinationFolderId,
-                sourceFile.Filename,
-                cancellationToken);
+        var distinctFileIds =
+            request.FileIds
+                .Distinct()
+                .ToList();
 
-        var requestedSize = sourceFile.Filesizebytes;
+        var sourceFiles = new List<Userfile>();
 
-        await _storageQuotaService.ReserveStorageAsync(
-            userId,
-            requestedSize,
-            cancellationToken);
-
-        var storageAccount =
-            await _storageAccountService.ReserveCapacityAsync(
-                requestedSize,
-                cancellationToken);
-
-        var logicalQuotaReserved = true;
-        var physicalCapacityReserved = true;
-        var providerObjectId = string.Empty;
-
-        try
+        foreach (var fileId in distinctFileIds)
         {
-            /*
-             * IMPORTANT:
-             * We do NOT download the original file.
-             *
-             * Google Drive copies the existing provider object directly.
-             */
-            var providerResult =
-                await _physicalStorageProvider.CopyAsync(
-                    storageAccount.Storageaccountid,
-                    sourceFile.Providerobjectid,
-                    destinationFileName,
+            var sourceFile = await GetOwnedActiveFileAsync(
+                    fileId,
+                    userId,
                     cancellationToken);
 
-            providerObjectId =
-                providerResult.ProviderObjectId;
+            sourceFiles.Add(sourceFile);
+        }
 
-            var actualSize =
-                providerResult.FileSizeBytes;
+        var createdFiles =
+            new List<Userfile>();
 
-            await ReconcileStorageAsync(
+        foreach (var sourceFile in sourceFiles)
+        {
+            var newFileName =
+                await GenerateUniqueFileNameAsync(
+                    request.DestinationFolderId,
+                    sourceFile.Filename,
+                    cancellationToken);
+
+            /*
+             * A copy is a new physical object and therefore
+             * consumes additional logical quota.
+             */
+            await _storageQuotaService.ReserveStorageAsync(
                 userId,
-                storageAccount.Storageaccountid,
-                requestedSize,
-                actualSize,
+                sourceFile.Filesizebytes,
                 cancellationToken);
 
-            logicalQuotaReserved = false;
-            physicalCapacityReserved = false;
+            /*
+             * The copy remains on the source file's physical
+             * storage account.
+             */
+            await _storageAccountService.ReserveCapacityForAccountAsync(
+                sourceFile.Storageaccountid,
+                sourceFile.Filesizebytes,
+                cancellationToken);
 
-            var extension =
-                Path.GetExtension(destinationFileName);
+            /*
+             * Direct provider-side copy.
+             * No download/upload round trip is performed.
+             */
+            var copiedProviderFile =
+                await _physicalStorageProvider.CopyAsync(
+                    sourceFile.Storageaccountid,
+                    sourceFile.Providerobjectid,
+                    newFileName,
+                    cancellationToken);
 
-            extension = string.IsNullOrWhiteSpace(extension)
-                ? string.Empty
-                : extension.TrimStart('.');
+            if (copiedProviderFile.FileSizeBytes <= 0)
+            {
+                throw new InvalidOperationException(
+                    "The storage provider returned an invalid copied file size.");
+            }
+
+            /*
+             * Reconcile both logical and physical reservations
+             * against the provider's authoritative copied size.
+             */
+            await ReconcileLogicalStorageAsync(
+                userId,
+                sourceFile.Filesizebytes,
+                copiedProviderFile.FileSizeBytes,
+                cancellationToken);
+
+            await ReconcilePhysicalStorageAsync(
+                sourceFile.Storageaccountid,
+                sourceFile.Filesizebytes,
+                copiedProviderFile.FileSizeBytes,
+                cancellationToken);
 
             var copiedFile = new Userfile
             {
                 Fileid = Guid.NewGuid(),
+
                 Ownerid = userId,
+
+                Folderid =
+                    request.DestinationFolderId,
+
                 Storageaccountid =
-                    storageAccount.Storageaccountid,
-                Filename = destinationFileName,
-                Extension = extension,
+                    sourceFile.Storageaccountid,
+
+                Filename =
+                    copiedProviderFile.FileName,
+
+                Extension =
+                    Path.GetExtension(
+                        copiedProviderFile.FileName),
+
                 Mimetype =
-                    providerResult.MimeType
-                    ?? sourceFile.Mimetype,
-                Filesizebytes = actualSize,
+                    copiedProviderFile.MimeType,
+
+                Filesizebytes =
+                    copiedProviderFile.FileSizeBytes,
+
                 Providerobjectid =
-                    providerResult.ProviderObjectId,
+                    copiedProviderFile.ProviderObjectId,
+
                 Isdeleted = false,
+
                 Deletedat = null,
-                Uploadedat =
-                    providerResult.CreatedAt
-                    ?? DateTime.UtcNow,
-                Updatedat =
-                    providerResult.ModifiedAt
-                    ?? DateTime.UtcNow
+
+                Uploadedat = DateTime.UtcNow,
+
+                Updatedat = DateTime.UtcNow
             };
 
-            await _userFileRepository.AddAsync(
-                copiedFile,
-                cancellationToken);
-
-            await _unitOfWork.SaveChangesAsync(
-                cancellationToken);
-
-            return _mapper.Map<FileResponseDto>(
-                copiedFile);
+            createdFiles.Add(copiedFile);
         }
-        catch
+
+        foreach (var createdFile in createdFiles)
         {
-            if (!string.IsNullOrWhiteSpace(providerObjectId))
-            {
-                try
-                {
-                    await _physicalStorageProvider.DeleteAsync(
-                        storageAccount.Storageaccountid,
-                        providerObjectId,
-                        cancellationToken);
-                }
-                catch
-                {
-                }
-            }
-
-            if (physicalCapacityReserved)
-            {
-                try
-                {
-                    await _storageAccountService.ReleaseCapacityAsync(
-                        storageAccount.Storageaccountid,
-                        requestedSize,
-                        cancellationToken);
-                }
-                catch
-                {
-                }
-            }
-
-            if (logicalQuotaReserved)
-            {
-                try
-                {
-                    await _storageQuotaService.ReleaseStorageAsync(
-                        userId,
-                        requestedSize,
-                        cancellationToken);
-                }
-                catch
-                {
-                }
-            }
-
-            throw;
+            await _userFileRepository.AddAsync(
+                createdFile,
+                cancellationToken);
         }
+
+        await _unitOfWork.SaveChangesAsync(
+            cancellationToken);
+
+        return _mapper.Map<IEnumerable<FileResponseDto>>(
+            createdFiles);
     }
+
+    // ============================================================
+    // SOFT DELETE
+    // ============================================================
 
     public async Task<MessageResponseDto> DeleteAsync(
         Guid fileId,
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var file = await GetOwnedActiveFileAsync(
-            fileId,
-            userId,
-            cancellationToken);
+        var file =
+            await GetOwnedActiveFileAsync(
+                fileId,
+                userId,
+                cancellationToken);
 
+        /*
+         * The provider object is deliberately NOT deleted.
+         *
+         * Recycle Bin files continue consuming storage until
+         * permanent deletion is performed by the Recycle Bin module.
+         */
         file.Isdeleted = true;
-        file.Deletedat = DateTime.UtcNow;
-        file.Updatedat = DateTime.UtcNow;
+
+        file.Deletedat =
+            DateTime.UtcNow;
+
+        file.Updatedat =
+            DateTime.UtcNow;
 
         _userFileRepository.Update(file);
 
@@ -749,14 +746,19 @@ public class UserFileService : IUserFileService
         };
     }
 
+    // ============================================================
+    // PRIVATE HELPERS
+    // ============================================================
+
     private async Task<Userfile> GetOwnedActiveFileAsync(
         Guid fileId,
         Guid userId,
         CancellationToken cancellationToken)
     {
-        var file = await _userFileRepository.GetByIdAsync(
-            fileId,
-            cancellationToken);
+        var file =
+            await _userFileRepository.GetByIdAsync(
+                fileId,
+                cancellationToken);
 
         if (file is null ||
             file.Ownerid != userId ||
@@ -774,14 +776,18 @@ public class UserFileService : IUserFileService
         Guid userId,
         CancellationToken cancellationToken)
     {
+        /*
+         * null represents the user's root directory.
+         */
         if (!folderId.HasValue)
         {
             return;
         }
 
-        var folder = await _folderRepository.GetByIdAsync(
-            folderId.Value,
-            cancellationToken);
+        var folder =
+            await _folderRepository.GetByIdAsync(
+                folderId.Value,
+                cancellationToken);
 
         if (folder is null ||
             folder.Ownerid != userId ||
@@ -797,91 +803,165 @@ public class UserFileService : IUserFileService
         string originalFileName,
         CancellationToken cancellationToken)
     {
-        var extension = Path.GetExtension(originalFileName);
+        originalFileName =
+            Path.GetFileName(
+                originalFileName).Trim();
 
-        var baseName = Path.GetFileNameWithoutExtension(
-            originalFileName);
-
-        if (string.IsNullOrWhiteSpace(baseName))
+        if (string.IsNullOrWhiteSpace(originalFileName))
         {
-            baseName = originalFileName;
+            throw new InvalidOperationException(
+                "A valid file name is required.");
         }
 
-        var candidate = originalFileName;
+        if (originalFileName.Length > 255)
+        {
+            throw new InvalidOperationException(
+                "File name cannot exceed 255 characters.");
+        }
+
+        var extension =
+            Path.GetExtension(
+                originalFileName);
+
+        var baseName =
+            Path.GetFileNameWithoutExtension(
+                originalFileName);
+
+        var candidate =
+            originalFileName;
+
         var counter = 1;
 
         while (await _userFileRepository.ExistsAsync(
-                   folderId ?? Guid.Empty,
+                   folderId,
                    candidate,
                    cancellationToken))
         {
-            candidate = $"{baseName} ({counter}){extension}";
+            candidate =
+                $"{baseName} ({counter}){extension}";
+
             counter++;
         }
 
         return candidate;
     }
 
-    private async Task ReconcileStorageAsync(
+    private async Task<StorageAccountResponseDto>
+        GetAvailableStorageAccountAsync(
+            long requestedBytes,
+            CancellationToken cancellationToken)
+    {
+        if (requestedBytes <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(requestedBytes),
+                "Requested storage capacity must be greater than zero.");
+        }
+
+        var storageAccounts =
+            await _storageAccountService.GetAllAsync(
+                true,
+                cancellationToken);
+
+        var availableAccount =
+            storageAccounts
+                .Where(account =>
+                    account.IsActive &&
+                    account.AvailableCapacityBytes >= requestedBytes)
+                .OrderBy(account => account.Priority)
+                .ThenByDescending(account => account.AvailableCapacityBytes)
+                .FirstOrDefault();
+
+        if (availableAccount is null)
+        {
+            throw new InvalidOperationException(
+                "No active storage account has sufficient physical storage capacity.");
+        }
+
+        return availableAccount;
+    }
+
+    private static void ValidateUploadFile(
+        IFormFile file)
+    {
+        if (file is null)
+        {
+            throw new InvalidOperationException(
+                "A file is required.");
+        }
+
+        if (file.Length <= 0)
+        {
+            throw new InvalidOperationException(
+                "Empty files cannot be uploaded.");
+        }
+
+        if (file.Length > MaxFileSizeBytes)
+        {
+            throw new InvalidOperationException(
+                "The maximum supported file size is 100 MB.");
+        }
+
+        var fileName =
+            Path.GetFileName(file.FileName);
+
+        if (string.IsNullOrWhiteSpace(fileName))
+        {
+            throw new InvalidOperationException(
+                "A valid file name is required.");
+        }
+
+        if (fileName.Length > 255)
+        {
+            throw new InvalidOperationException(
+                "File name cannot exceed 255 characters.");
+        }
+    }
+
+    private async Task ReconcileLogicalStorageAsync(
         Guid userId,
+        long reservedBytes,
+        long actualBytes,
+        CancellationToken cancellationToken)
+    {
+        if (reservedBytes == actualBytes)
+        {
+            return;
+        }
+
+        var delta =
+            checked(actualBytes - reservedBytes);
+
+        await _storageQuotaService.AdjustUsedStorageAsync(
+            userId,
+            delta,
+            cancellationToken);
+    }
+
+    private async Task ReconcilePhysicalStorageAsync(
         Guid storageAccountId,
         long reservedBytes,
         long actualBytes,
         CancellationToken cancellationToken)
     {
-        if (actualBytes <= 0)
-        {
-            throw new InvalidOperationException(
-                "The storage provider returned an invalid file size.");
-        }
-
-        if (actualBytes == reservedBytes)
+        if (reservedBytes == actualBytes)
         {
             return;
         }
 
         if (actualBytes > reservedBytes)
         {
-            var additionalBytes =
-                checked(actualBytes - reservedBytes);
-
-            await _storageQuotaService.ReserveStorageAsync(
-                userId,
-                additionalBytes,
+            await _storageAccountService.ReserveCapacityForAccountAsync(
+                storageAccountId,
+                actualBytes - reservedBytes,
                 cancellationToken);
-
-            try
-            {
-                await _storageAccountService
-                    .ReserveCapacityForAccountAsync(
-                        storageAccountId,
-                        additionalBytes,
-                        cancellationToken);
-            }
-            catch
-            {
-                await _storageQuotaService.ReleaseStorageAsync(
-                    userId,
-                    additionalBytes,
-                    cancellationToken);
-
-                throw;
-            }
 
             return;
         }
 
-        var excessBytes =
-            checked(reservedBytes - actualBytes);
-
-        await _storageQuotaService.ReleaseStorageAsync(
-            userId,
-            excessBytes,
-            cancellationToken);
-
         await _storageAccountService.ReleaseCapacityAsync(
             storageAccountId,
-            excessBytes,
+            reservedBytes - actualBytes,
             cancellationToken);
     }
 }

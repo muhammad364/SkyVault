@@ -393,10 +393,8 @@ public partial class SkyVaultDbContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("filename");
             entity.Property(e => e.Filesizebytes).HasColumnName("filesizebytes");
-            entity.Property(e => e.Folderid).HasColumnName("folderid");
-            entity.Property(e => e.Isdeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("isdeleted");
+            entity.Property(e => e.Folderid).HasColumnName("folderid").IsRequired(false);
+            entity.Property(e => e.Isdeleted).HasDefaultValue(false).HasColumnName("isdeleted");
             entity.Property(e => e.Mimetype)
                 .HasMaxLength(100)
                 .HasColumnName("mimetype");

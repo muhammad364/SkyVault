@@ -36,9 +36,11 @@ public class UserFileRepository : IUserFileRepository
     }
 
 
-    public async Task<bool> ExistsAsync(Guid? folderId, string fileName, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(Guid? folderId,string fileName,CancellationToken cancellationToken = default)
     {
-        return await _dbcontext.Userfiles.AnyAsync(f => f.Folderid == folderId && !f.Isdeleted && f.Filename == fileName, cancellationToken);
+        return await _dbcontext.Userfiles.AnyAsync(
+            f => f.Folderid == folderId && !f.Isdeleted &&
+                f.Filename == fileName, cancellationToken);
     }
 
     public void Update(Userfile userFile)

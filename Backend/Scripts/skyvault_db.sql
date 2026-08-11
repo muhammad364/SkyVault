@@ -184,7 +184,7 @@ CREATE TABLE UserFile
 
     OwnerId UUID NOT NULL,
 
-    FolderId UUID NOT NULL,
+    FolderId UUID,
 
     StorageAccountId UUID NOT NULL,
 

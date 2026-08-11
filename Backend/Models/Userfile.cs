@@ -9,7 +9,7 @@ public partial class Userfile
 
     public Guid Ownerid { get; set; }
 
-    public Guid Folderid { get; set; }
+    public Guid? Folderid { get; set; }
 
     public Guid Storageaccountid { get; set; }
 
@@ -31,7 +31,7 @@ public partial class Userfile
 
     public DateTime Updatedat { get; set; }
 
-    public virtual Folder Folder { get; set; } = null!;
+    public virtual Folder? Folder { get; set; } = null!;
 
     public virtual User Owner { get; set; } = null!;
 
