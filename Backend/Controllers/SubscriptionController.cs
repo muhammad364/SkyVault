@@ -8,7 +8,6 @@ namespace SkyVault.Controllers;
 
 [ApiController]
 [Route("api/subscriptions")]
-[Authorize]
 public class SubscriptionController : ControllerBase
 {
     private readonly ISubscriptionService _subscriptionService;
@@ -19,6 +18,7 @@ public class SubscriptionController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<SubscriptionResponseDto>> Subscribe(
         [FromBody] SubscribeRequestDto request, CancellationToken cancellationToken)
     {
@@ -30,6 +30,7 @@ public class SubscriptionController : ControllerBase
     }
 
     [HttpGet("me")]
+    [Authorize]
     public async Task<ActionResult<SubscriptionResponseDto>> GetCurrentSubscription(CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
@@ -45,6 +46,7 @@ public class SubscriptionController : ControllerBase
     }
 
     [HttpPost("renew")]
+    [Authorize]
     public async Task<ActionResult<SubscriptionResponseDto>> Renew(
         [FromBody] RenewSubscriptionRequestDto request, CancellationToken cancellationToken)
     {
@@ -56,6 +58,7 @@ public class SubscriptionController : ControllerBase
     }
 
     [HttpPost("cancel")]
+    [Authorize]
     public async Task<ActionResult<SubscriptionResponseDto>> Cancel(CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
@@ -75,5 +78,35 @@ public class SubscriptionController : ControllerBase
         }
 
         return Guid.Parse(userId);
+    }
+
+    // Admin only.
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<IEnumerable<SubscriptionResponseDto>>> GetAll(CancellationToken cancellationToken)
+    {
+        var response = await _subscriptionService.GetAllAsync(cancellationToken);
+
+        return Ok(response);
+    }
+
+    // Admin only.
+    [HttpGet("{subscriptionId:guid}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<SubscriptionResponseDto>> GetById(Guid subscriptionId, CancellationToken cancellationToken)
+    {
+        var response = await _subscriptionService.GetByIdAsync(subscriptionId, cancellationToken);
+
+        return Ok(response);
+    }
+
+    // Admin only.
+    [HttpGet("user/{userId:guid}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<IEnumerable<SubscriptionResponseDto>>> GetByUserId(Guid userId, CancellationToken cancellationToken)
+    {
+        var response = await _subscriptionService.GetByUserIdAsync(userId, cancellationToken);
+
+        return Ok(response);
     }
 }
