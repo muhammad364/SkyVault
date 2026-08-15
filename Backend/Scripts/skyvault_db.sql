@@ -66,6 +66,23 @@ CREATE TABLE StorageAccounts
         ON DELETE RESTRICT
 );
 
+CREATE TABLE EmailConfigurations
+(
+    EmailConfigurationId UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    SmtpHost VARCHAR(255) NOT NULL,
+    SmtpPort INTEGER NOT NULL CHECK (SmtpPort > 0 AND SmtpPort <= 65535),
+    UseSsl BOOLEAN NOT NULL DEFAULT TRUE,
+    RequiresAuthentication BOOLEAN NOT NULL DEFAULT TRUE,
+    SenderEmail VARCHAR(255) NOT NULL,
+    SenderDisplayName VARCHAR(255) NULL,
+    Username VARCHAR(255) NULL,
+    EncryptedPassword TEXT NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
+    CreatedAt TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE StoragePlans
 (
     StoragePlanId UUID PRIMARY KEY DEFAULT gen_random_uuid(),

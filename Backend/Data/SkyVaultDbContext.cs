@@ -20,6 +20,8 @@ public partial class SkyVaultDbContext : DbContext
 
     public virtual DbSet<Auditlog> Auditlogs { get; set; }
 
+    public virtual DbSet<Emailconfiguration> Emailconfigurations { get; set; }
+
     public virtual DbSet<Folder> Folders { get; set; }
 
     public virtual DbSet<Sharelink> Sharelinks { get; set; }
@@ -102,6 +104,48 @@ public partial class SkyVaultDbContext : DbContext
                 .HasForeignKey(d => d.Administratorid)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_auditlog_admin");
+        });
+
+        modelBuilder.Entity<Emailconfiguration>(entity =>
+        {
+            entity.HasKey(e => e.Emailconfigurationid).HasName("emailconfigurations_pkey");
+
+            entity.ToTable("emailconfigurations");
+
+            entity.HasIndex(e => e.Isactive, "ix_emailconfigurations_isactive");
+
+            entity.HasIndex(e => e.Senderemail, "ix_emailconfigurations_senderemail");
+
+            entity.Property(e => e.Emailconfigurationid)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("emailconfigurationid");
+            entity.Property(e => e.Createdat)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("createdat");
+            entity.Property(e => e.Encryptedpassword).HasColumnName("encryptedpassword");
+            entity.Property(e => e.Isactive)
+                .HasDefaultValue(true)
+                .HasColumnName("isactive");
+            entity.Property(e => e.Requiresauthentication)
+                .HasDefaultValue(true)
+                .HasColumnName("requiresauthentication");
+            entity.Property(e => e.Senderdisplayname).HasColumnName("senderdisplayname");
+            entity.Property(e => e.Senderemail)
+                .HasMaxLength(255)
+                .HasColumnName("senderemail");
+            entity.Property(e => e.Smtphost)
+                .HasMaxLength(255)
+                .HasColumnName("smtphost");
+            entity.Property(e => e.Smtpport).HasColumnName("smtpport");
+            entity.Property(e => e.Updatedat)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("updatedat");
+            entity.Property(e => e.Usessl)
+                .HasDefaultValue(true)
+                .HasColumnName("usessl");
+            entity.Property(e => e.Username)
+                .HasMaxLength(255)
+                .HasColumnName("username");
         });
 
         modelBuilder.Entity<Folder>(entity =>

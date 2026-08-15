@@ -22,6 +22,8 @@ using SkyVault.Services.StorageProvider;
 using SkyVault.Services.PhysicalProviderService.GoogleDriveService;
 using SkyVault.Services.PhysicalProviderService;
 using SkyVault.Services.Admin;
+using SkyVault.Services.BackgroundJobs;
+using SkyVault.Services.Identity;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,6 +78,9 @@ builder.Services.AddScoped<IStorageAccountRepository, StorageAccountRepository>(
 builder.Services.AddScoped<IFolderRepository, FolderRepository>();
 builder.Services.AddScoped<IUserFileRepository, UserFileRepository>();
 builder.Services.AddScoped<IShareLinkRepository, ShareLinkRepository>();
+builder.Services.AddScoped<IEmailConfigurationRepository, EmailConfigurationRepository>();
+builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+builder.Services.AddSingleton<IEmailJobScheduler, EmailJobScheduler>();
 
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -93,8 +98,15 @@ builder.Services.AddScoped<IAdditionalStoragePurchaseService, AdditionalStorageP
 builder.Services.AddScoped<IStorageQuotaService, StorageQuotaService>();
 builder.Services.AddScoped<IUserFileService, UserFileService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IEmailConfigurationAdminService, EmailConfigurationAdminService>();
+builder.Services.AddScoped<IEmailConfigurationProvider, EmailConfigurationProvider>();
+builder.Services.AddDataProtection();
 builder.Services.Configure<GoogleDriveOptions>(builder.Configuration.GetSection("GoogleDrive"));
 builder.Services.AddScoped<IPhysicalStorageProvider,GoogleDriveStorageProvider>();
+builder.Services.Configure<BackgroundTaskSchedulerOptions>(
+    builder.Configuration.GetSection(BackgroundTaskSchedulerOptions.SectionName));
+builder.Services.AddHostedService<QueuedBackgroundWorker>();
+builder.Services.AddHostedService<SubscriptionExpiryScheduler>();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
