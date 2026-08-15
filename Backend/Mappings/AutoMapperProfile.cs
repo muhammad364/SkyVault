@@ -12,6 +12,7 @@ using SkyVault.DTOs.UserFile.Responses;
 using SkyVault.DTOs.UserFile.Requests;
 using SkyVault.DTOs.Admin;
 using SkyVault.DTOs.Admin.EmailConfiguration;
+using SkyVault.DTOs.Search.Responses;
 using SkyVault.Models;
 
 namespace SkyVault.Mappings;
@@ -174,6 +175,35 @@ public class AutoMapperProfile : Profile
                 opt => opt.MapFrom(src => src.Uploadedat))
             .ForMember(
                 dest => dest.UpdatedAt,
+                opt => opt.MapFrom(src => src.Updatedat));
+
+        CreateMap<Userfile, SearchResultDto>()
+            .ForMember(
+                dest => dest.FileId,
+                opt => opt.MapFrom(src => src.Fileid))
+            .ForMember(
+                dest => dest.FileName,
+                opt => opt.MapFrom(src => src.Filename))
+            .ForMember(
+                dest => dest.FileExtension,
+                opt => opt.MapFrom(src => src.Extension))
+            .ForMember(
+                dest => dest.MimeType,
+                opt => opt.MapFrom(src => src.Mimetype))
+            .ForMember(
+                dest => dest.FileSizeBytes,
+                opt => opt.MapFrom(src => src.Filesizebytes))
+            .ForMember(
+                dest => dest.FolderId,
+                opt => opt.MapFrom(src => src.Folderid))
+            .ForMember(
+                dest => dest.FolderName,
+                opt => opt.MapFrom(src => src.Folder != null ? src.Folder.Name : null))
+            .ForMember(
+                dest => dest.UploadedAt,
+                opt => opt.MapFrom(src => src.Uploadedat))
+            .ForMember(
+                dest => dest.LastModifiedAt,
                 opt => opt.MapFrom(src => src.Updatedat));
 
         CreateMap<User, AdminUserDto>()
