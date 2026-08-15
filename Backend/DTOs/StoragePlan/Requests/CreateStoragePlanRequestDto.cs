@@ -14,6 +14,7 @@ public class CreateStoragePlanRequestDto
     [Range(0, double.MaxValue)]
     public decimal Price { get; set; }
 
+    [Range(1, 12)]
     public short BillingCycle { get; set; }
 
     public bool IsActive { get; set; } = true;

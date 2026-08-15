@@ -96,6 +96,8 @@ CREATE TABLE Subscriptions
 
     EndDate TIMESTAMPTZ NOT NULL,
 
+    GracePeriodEndDate TIMESTAMPTZ NULL,
+
     Status SMALLINT NOT NULL
         CHECK (Status IN (0,1,2)),
         -- 0=Active
