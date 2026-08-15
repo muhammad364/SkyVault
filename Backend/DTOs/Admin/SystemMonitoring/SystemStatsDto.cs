@@ -1,4 +1,4 @@
-namespace Skyvault.DTOs.Admin;
+namespace SkyVault.DTOs.Admin;
 public class SystemStatisticsDto
 {
     public int TotalUsers { get; set; }

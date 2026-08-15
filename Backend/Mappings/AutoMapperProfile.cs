@@ -10,6 +10,7 @@ using SkyVault.DTOs.StorageAccount;
 using SkyVault.DTOs.StorageProvider;
 using SkyVault.DTOs.UserFile.Responses;
 using SkyVault.DTOs.UserFile.Requests;
+using SkyVault.DTOs.Admin;
 using SkyVault.Models;
 
 namespace SkyVault.Mappings;
@@ -173,5 +174,31 @@ public class AutoMapperProfile : Profile
             .ForMember(
                 dest => dest.UpdatedAt,
                 opt => opt.MapFrom(src => src.Updatedat));
+
+        CreateMap<User, AdminUserDto>()
+            .ForMember(dest => dest.UserId,
+                opt => opt.MapFrom(src => src.Userid))
+            .ForMember(dest => dest.Email,
+                opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.FirstName,
+                opt => opt.MapFrom(src => src.Firstname))
+            .ForMember(dest => dest.LastName,
+                opt => opt.MapFrom(src => src.Lastname))
+            .ForMember(dest => dest.IsActive,
+                opt => opt.MapFrom(src => src.Isactive))
+            .ForMember(dest => dest.IsVerified,
+                opt => opt.MapFrom(src => src.Isemailverified));
+
+        CreateMap<User, UserStorageAllocationDto>()
+            .ForMember(dest => dest.UserId,
+                opt => opt.MapFrom(src => src.Userid))
+            .ForMember(dest => dest.UserEmail,
+                opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.AllocatedBytes,
+                opt => opt.MapFrom(src => src.Allocatedstoragebytes))
+            .ForMember(dest => dest.UsedBytes,
+                opt => opt.MapFrom(src => src.Usedstoragebytes))
+            .ForMember(dest => dest.AvailableBytes,
+                opt => opt.MapFrom(src => src.Allocatedstoragebytes - src.Usedstoragebytes));
     }
 }

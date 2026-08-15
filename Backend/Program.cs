@@ -21,6 +21,7 @@ using SkyVault.Services.StorageAccount;
 using SkyVault.Services.StorageProvider;
 using SkyVault.Services.PhysicalProviderService.GoogleDriveService;
 using SkyVault.Services.PhysicalProviderService;
+using SkyVault.Services.Admin;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -91,7 +92,7 @@ builder.Services.AddScoped<IStorageAccountService, StorageAccountService>();
 builder.Services.AddScoped<IAdditionalStoragePurchaseService, AdditionalStoragePurchaseService>();
 builder.Services.AddScoped<IStorageQuotaService, StorageQuotaService>();
 builder.Services.AddScoped<IUserFileService, UserFileService>();
-
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.Configure<GoogleDriveOptions>(builder.Configuration.GetSection("GoogleDrive"));
 builder.Services.AddScoped<IPhysicalStorageProvider,GoogleDriveStorageProvider>();
 
