@@ -54,4 +54,24 @@ public class StoragePlanController : ControllerBase
 
         return Ok(updatedStoragePlan);
     }
+
+    // Admin only.
+    [HttpPatch("{storagePlanId:guid}/activate")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<StoragePlanResponseDto>> Activate(Guid storagePlanId,CancellationToken cancellationToken)
+    {
+        var response = await _storagePlanService.ActivateAsync(storagePlanId,cancellationToken);
+
+        return Ok(response);
+    }
+
+    // Admin only.
+    [HttpPatch("{storagePlanId:guid}/deactivate")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<StoragePlanResponseDto>> Deactivate(Guid storagePlanId,CancellationToken cancellationToken)
+    {
+        var response = await _storagePlanService.DeactivateAsync(storagePlanId,cancellationToken);
+
+        return Ok(response);
+    }
 }

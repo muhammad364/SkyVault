@@ -76,4 +76,34 @@ public class SubscriptionController : ControllerBase
 
         return Guid.Parse(userId);
     }
+
+    // Admin only.
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<IEnumerable<SubscriptionResponseDto>>> GetAll(CancellationToken cancellationToken)
+    {
+        var response = await _subscriptionService.GetAllAsync(cancellationToken);
+
+        return Ok(response);
+    }
+
+    // Admin only.
+    [HttpGet("{subscriptionId:guid}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<SubscriptionResponseDto>> GetById(Guid subscriptionId,CancellationToken cancellationToken)
+    {
+        var response = await _subscriptionService.GetByIdAsync(subscriptionId,cancellationToken);
+
+        return Ok(response);
+    }
+
+    // Admin only.
+    [HttpGet("user/{userId:guid}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<IEnumerable<SubscriptionResponseDto>>> GetByUserId(Guid userId,CancellationToken cancellationToken)
+    {
+        var response = await _subscriptionService.GetByUserIdAsync(userId,cancellationToken);
+
+        return Ok(response);
+    }
 }
