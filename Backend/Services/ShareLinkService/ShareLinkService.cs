@@ -34,10 +34,7 @@ public class ShareLinkService : IShareLinkService
         _mapper = mapper;
     }
 
-    public async Task<ShareLinkDto> GenerateAsync(
-        GenerateShareLinkRequestDto request,
-        Guid ownerId,
-        CancellationToken cancellationToken = default)
+    public async Task<ShareLinkDto> GenerateAsync(GenerateShareLinkRequestDto request,Guid ownerId,CancellationToken cancellationToken = default)
     {
         if (request is null)
         {
@@ -54,9 +51,7 @@ public class ShareLinkService : IShareLinkService
             throw new InvalidOperationException("Expiration date must be in the future.");
         }
 
-        var file = await _userFileRepository.GetByIdAsync(
-            request.FileId,
-            cancellationToken);
+        var file = await _userFileRepository.GetByIdAsync(request.FileId,cancellationToken);
 
         if (file is null || file.Ownerid != ownerId || file.Isdeleted)
         {
@@ -83,24 +78,18 @@ public class ShareLinkService : IShareLinkService
         return _mapper.Map<ShareLinkDto>(shareLink);
     }
 
-    public async Task<IEnumerable<ShareLinkDto>> GetOwnerLinksAsync(
-        Guid ownerId,
-        CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<ShareLinkDto>> GetOwnerLinksAsync(Guid ownerId,CancellationToken cancellationToken = default)
     {
         var shareLinks = await _shareLinkRepository.GetByOwnerIdAsync(
             ownerId,
             cancellationToken);
 
-        var orderedLinks = shareLinks
-            .OrderByDescending(link => link.Createdat);
+        var orderedLinks = shareLinks.OrderByDescending(link => link.Createdat);
 
         return _mapper.Map<IEnumerable<ShareLinkDto>>(orderedLinks);
     }
 
-    public async Task<MessageResponseDto> RevokeAsync(
-        Guid shareLinkId,
-        Guid ownerId,
-        CancellationToken cancellationToken = default)
+    public async Task<MessageResponseDto> RevokeAsync(Guid shareLinkId,Guid ownerId,CancellationToken cancellationToken = default)
     {
         if (shareLinkId == Guid.Empty)
         {
