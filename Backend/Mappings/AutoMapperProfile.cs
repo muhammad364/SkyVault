@@ -13,6 +13,7 @@ using SkyVault.DTOs.UserFile.Requests;
 using SkyVault.DTOs.Admin;
 using SkyVault.DTOs.Admin.EmailConfiguration;
 using SkyVault.DTOs.Search.Responses;
+using SkyVault.DTOs.ShareLink.Responses;
 using SkyVault.Models;
 
 namespace SkyVault.Mappings;
@@ -205,6 +206,26 @@ public class AutoMapperProfile : Profile
             .ForMember(
                 dest => dest.LastModifiedAt,
                 opt => opt.MapFrom(src => src.Updatedat));
+
+        CreateMap<Sharelink, ShareLinkDto>()
+            .ForMember(
+                dest => dest.ShareLinkId,
+                opt => opt.MapFrom(src => src.Sharelinkid))
+            .ForMember(
+                dest => dest.FileId,
+                opt => opt.MapFrom(src => src.Fileid))
+            .ForMember(
+                dest => dest.ShareToken,
+                opt => opt.MapFrom(src => src.Sharetoken))
+            .ForMember(
+                dest => dest.ExpiresAt,
+                opt => opt.MapFrom(src => src.Expiresat))
+            .ForMember(
+                dest => dest.IsRevoked,
+                opt => opt.MapFrom(src => src.Isrevoked))
+            .ForMember(
+                dest => dest.CreatedAt,
+                opt => opt.MapFrom(src => src.Createdat));
 
         CreateMap<User, AdminUserDto>()
             .ForMember(dest => dest.UserId,

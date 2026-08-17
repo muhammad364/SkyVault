@@ -25,6 +25,7 @@ using SkyVault.Services.Admin;
 using SkyVault.Services.BackgroundJobs;
 using SkyVault.Services.Identity;
 using SkyVault.Services.SearchService;
+using SkyVault.Services.ShareLinkService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -99,6 +100,7 @@ builder.Services.AddScoped<IAdditionalStoragePurchaseService, AdditionalStorageP
 builder.Services.AddScoped<IStorageQuotaService, StorageQuotaService>();
 builder.Services.AddScoped<IUserFileService, UserFileService>();
 builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IShareLinkService, ShareLinkService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IEmailConfigurationAdminService, EmailConfigurationAdminService>();
 builder.Services.AddScoped<IEmailConfigurationProvider, EmailConfigurationProvider>();

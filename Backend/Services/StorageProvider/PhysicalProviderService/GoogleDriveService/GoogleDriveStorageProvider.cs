@@ -54,7 +54,10 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
 
         if (uploadProgress.Status != UploadStatus.Completed || uploadRequest.ResponseBody?.Id is null)
         {
-            throw new InvalidOperationException("The file could not be uploaded to Google Drive.");
+            throw new InvalidOperationException(
+                $"Upload failed.\n" +
+                $"Status: {uploadProgress.Status}\n" +
+                $"Exception: {uploadProgress.Exception}");
         }
 
         var uploadedFile = uploadRequest.ResponseBody;
