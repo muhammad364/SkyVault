@@ -4,20 +4,25 @@ namespace SkyVault.Services.Admin;
 
 public interface IAdminService
 {
-    //Managing Users
-    Task<IEnumerable<AdminUserDto>> GetUsersAsync(CancellationToken cancellationToken = default);
+    // User Management
 
-    Task<AdminUserDto> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AdminUserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default);
 
-    Task<AdminUserDto> ActivateUserAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<AdminUserDto> GetUserByIdAsync(Guid userId,CancellationToken cancellationToken = default);
 
-    Task<AdminUserDto> DeactivateUserAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<AdminUserDto> ActivateUserAsync(Guid userId,CancellationToken cancellationToken = default);
 
-    // Storage Monitoring
+    Task<AdminUserDto> DeactivateUserAsync(Guid userId,CancellationToken cancellationToken = default);
+
+
+    //Storage Monitoring
+
     Task<StorageOverviewDto> GetStorageOverviewAsync(CancellationToken cancellationToken = default);
 
-    Task<UserStorageAllocationDto> GetUserStorageAllocationAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<UserStorageAllocationDto> GetUserStorageAllocationAsync(Guid userId,CancellationToken cancellationToken = default);
 
-    // System Monitoring
+
+    // Dashboard Statistics
+
     Task<SystemStatisticsDto> GetSystemStatisticsAsync(CancellationToken cancellationToken = default);
 }

@@ -2,6 +2,7 @@ using AutoMapper;
 using SkyVault.DTOs.AdditionalStoragePurchase;
 using SkyVault.Models;
 using SkyVault.Repository;
+using SkyVault.Services.BackgroundJobs;
 using SkyVault.Services.StorageService.PaymentService;
 using SkyVault.Services.StorageQuotaService;
 
@@ -24,6 +25,10 @@ public class AdditionalStoragePurchaseService : IAdditionalStoragePurchaseServic
 
     private readonly IMapper _mapper;
 
+    private readonly IEmailJobScheduler _emailJobScheduler;
+
+    private readonly IUserRepository _userRepository;
+
     private readonly IUnitOfWork _unitOfWork;
 
     public AdditionalStoragePurchaseService(
@@ -32,7 +37,10 @@ public class AdditionalStoragePurchaseService : IAdditionalStoragePurchaseServic
         IStorageQuotaService storageQuotaService,
         IStoragePlanRepository storagePlanRepository,
         IPaymentService paymentService,
-        IMapper mapper, IUnitOfWork unitOfWork)
+        IMapper mapper,
+        IEmailJobScheduler emailJobScheduler,
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork)
     {
         _purchaseRepository = purchaseRepository;
         _subscriptionRepository = subscriptionRepository;
@@ -40,6 +48,8 @@ public class AdditionalStoragePurchaseService : IAdditionalStoragePurchaseServic
         _storagePlanRepository = storagePlanRepository;
         _paymentService = paymentService;
         _mapper = mapper;
+        _emailJobScheduler = emailJobScheduler;
+        _userRepository = userRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -115,6 +125,16 @@ public class AdditionalStoragePurchaseService : IAdditionalStoragePurchaseServic
         await _storageQuotaService.IncreaseAllocatedStorageAsync(userId, purchase.Storageamountgb, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+        if (user is not null)
+        {
+            await _emailJobScheduler.QueueSubscriptionSuccessEmailAsync(
+                user.Email,
+                $"Additional {purchase.Storageamountgb} GB",
+                purchase.Price,
+                cancellationToken);
+        }
 
         return _mapper.Map<PurchaseAdditionalStorageResponseDto>(purchase);
     }

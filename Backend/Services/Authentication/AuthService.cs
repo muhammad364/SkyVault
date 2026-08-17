@@ -7,6 +7,7 @@ using SkyVault.Services.Authentication.Email;
 using SkyVault.Services.Authentication.Security;
 using SkyVault.Models;
 using SkyVault.DTOs.Common.Responses;
+using SkyVault.Services.BackgroundJobs;
 
 namespace SkyVault.Services.Authentication;
 
@@ -16,15 +17,15 @@ public class AuthService : IAuthService
     private readonly IMapper _mapper;
     private readonly IPasswordHashService _passwordHashService;
     private readonly IJwtTokenService _jwtTokenService;
-    private readonly IEmailService _emailService;
+    private readonly IEmailJobScheduler _emailJobScheduler;
     private readonly IUnitOfWork _unitOfWork;
 
     public AuthService(
-        IUserRepository userRepo, IMapper mapper, IPasswordHashService passhashServ, IJwtTokenService token, IEmailService emailService, IUnitOfWork unitOfWork
+        IUserRepository userRepo, IMapper mapper, IPasswordHashService passhashServ, IJwtTokenService token, IEmailJobScheduler emailJobScheduler, IUnitOfWork unitOfWork
     )
     {
         _userRepository = userRepo;
-        _emailService = emailService;
+        _emailJobScheduler = emailJobScheduler;
         _mapper = mapper;
         _passwordHashService = passhashServ;
         _jwtTokenService = token;
@@ -53,7 +54,7 @@ public class AuthService : IAuthService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var verificationToken = _jwtTokenService.GenerateEmailVerificationToken(user);
-        await _emailService.SendVerificationEmailAsync(user.Email, verificationToken);
+        await _emailJobScheduler.QueueVerificationEmailAsync(user.Email, verificationToken, cancellationToken);
         return new RegisterUserResponseDto
         {
             UserId = user.Userid,
@@ -139,7 +140,7 @@ public class AuthService : IAuthService
 
         var resetToken = _jwtTokenService.GeneratePasswordResetToken(user);
 
-        await _emailService.SendPasswordResetEmailAsync(user.Email, resetToken);
+        await _emailJobScheduler.QueuePasswordResetEmailAsync(user.Email, resetToken, cancellationToken);
 
         return new MessageResponseDto
         {

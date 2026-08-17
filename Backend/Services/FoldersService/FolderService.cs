@@ -22,10 +22,7 @@ public class FolderService : IFolderService
         _unitOfWork = unitOfWork;
     }
 
-        public async Task<FolderResponseDto> CreateFolderAsync(
-        CreateFolderRequestDto request,
-        Guid userId,
-        CancellationToken cancellationToken = default)
+    public async Task<FolderResponseDto> CreateFolderAsync(CreateFolderRequestDto request,Guid userId,CancellationToken cancellationToken = default)
     {
         if (request.ParentFolderId.HasValue)
         {

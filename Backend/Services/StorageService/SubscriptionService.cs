@@ -2,6 +2,7 @@ using AutoMapper;
 using SkyVault.DTOs.Subscription;
 using SkyVault.Models;
 using SkyVault.Repository;
+using SkyVault.Services.BackgroundJobs;
 using SkyVault.Services.StorageService.PaymentService;
 using SkyVault.Services.StorageQuotaService;
 
@@ -27,6 +28,10 @@ public class SubscriptionService : ISubscriptionService
 
     private readonly IMapper _mapper;
 
+    private readonly IEmailJobScheduler _emailJobScheduler;
+
+    private readonly IUserRepository _userRepository;
+
     private readonly IUnitOfWork _unitOfWork;
 
     public SubscriptionService(
@@ -36,6 +41,8 @@ public class SubscriptionService : ISubscriptionService
         IStorageQuotaService storageQuotaService,
         IPaymentService paymentService,
         IMapper mapper,
+        IEmailJobScheduler emailJobScheduler,
+        IUserRepository userRepository,
         IUnitOfWork unitOfWork)
     {
         _subscriptionRepository = subscriptionRepository;
@@ -44,6 +51,8 @@ public class SubscriptionService : ISubscriptionService
         _paymentService = paymentService;
         _storageQuotaService = storageQuotaService;
         _mapper = mapper;
+        _emailJobScheduler = emailJobScheduler;
+        _userRepository = userRepository;
         _unitOfWork = unitOfWork;
 
     }
@@ -127,6 +136,12 @@ public class SubscriptionService : ISubscriptionService
         await _storageQuotaService.SetAllocatedStorageForActiveSubscriptionAsync(userId, storagePlan.Storagesizegb, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+        if (user is not null)
+        {
+            await _emailJobScheduler.QueueSubscriptionSuccessEmailAsync(user.Email, storagePlan.Name, storagePlan.Price, cancellationToken);
+        }
 
         return _mapper.Map<SubscriptionResponseDto>(subscription);
     }
@@ -250,6 +265,12 @@ public class SubscriptionService : ISubscriptionService
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+        if (user is not null)
+        {
+            await _emailJobScheduler.QueueSubscriptionSuccessEmailAsync(user.Email, storagePlan.Name, storagePlan.Price, cancellationToken);
+        }
+
         subscription.Storageplan = storagePlan;
 
         return _mapper.Map<SubscriptionResponseDto>(subscription);
@@ -289,6 +310,12 @@ public class SubscriptionService : ISubscriptionService
             throw new InvalidOperationException("Storage plan associated with the subscription was not found.");
         }
 
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+        if (user is not null)
+        {
+            await _emailJobScheduler.QueueSubscriptionCancellationEmailAsync(user.Email, storagePlan.Name, cancellationToken);
+        }
+
         activeSubscription.Storageplan = storagePlan;
 
         return _mapper.Map<SubscriptionResponseDto>(activeSubscription);
@@ -313,6 +340,16 @@ public class SubscriptionService : ISubscriptionService
             await _additionalStoragePurchaseService.DeactivatePurchasesAsync(subscription.Userid, cancellationToken);
 
             await _storageQuotaService.DeactivateStorageAllocationAsync(subscription.Userid, cancellationToken);
+
+            var user = await _userRepository.GetByIdAsync(subscription.Userid, cancellationToken);
+            if (user is not null)
+            {
+                var storagePlan = await _storagePlanRepository.GetByIdAsync(subscription.Storageplanid, cancellationToken);
+                await _emailJobScheduler.QueueSubscriptionExpiryEmailAsync(
+                    user.Email,
+                    storagePlan?.Name ?? "SkyVault plan",
+                    cancellationToken);
+            }
         }
 
         if (dueSubscriptions.Count > 0)

@@ -10,6 +10,9 @@ using SkyVault.DTOs.StorageAccount;
 using SkyVault.DTOs.StorageProvider;
 using SkyVault.DTOs.UserFile.Responses;
 using SkyVault.DTOs.UserFile.Requests;
+using SkyVault.DTOs.Admin;
+using SkyVault.DTOs.Admin.EmailConfiguration;
+using SkyVault.DTOs.Search.Responses;
 using SkyVault.Models;
 
 namespace SkyVault.Mappings;
@@ -172,6 +175,85 @@ public class AutoMapperProfile : Profile
                 opt => opt.MapFrom(src => src.Uploadedat))
             .ForMember(
                 dest => dest.UpdatedAt,
+                opt => opt.MapFrom(src => src.Updatedat));
+
+        CreateMap<Userfile, SearchResultDto>()
+            .ForMember(
+                dest => dest.FileId,
+                opt => opt.MapFrom(src => src.Fileid))
+            .ForMember(
+                dest => dest.FileName,
+                opt => opt.MapFrom(src => src.Filename))
+            .ForMember(
+                dest => dest.FileExtension,
+                opt => opt.MapFrom(src => src.Extension))
+            .ForMember(
+                dest => dest.MimeType,
+                opt => opt.MapFrom(src => src.Mimetype))
+            .ForMember(
+                dest => dest.FileSizeBytes,
+                opt => opt.MapFrom(src => src.Filesizebytes))
+            .ForMember(
+                dest => dest.FolderId,
+                opt => opt.MapFrom(src => src.Folderid))
+            .ForMember(
+                dest => dest.FolderName,
+                opt => opt.MapFrom(src => src.Folder != null ? src.Folder.Name : null))
+            .ForMember(
+                dest => dest.UploadedAt,
+                opt => opt.MapFrom(src => src.Uploadedat))
+            .ForMember(
+                dest => dest.LastModifiedAt,
+                opt => opt.MapFrom(src => src.Updatedat));
+
+        CreateMap<User, AdminUserDto>()
+            .ForMember(dest => dest.UserId,
+                opt => opt.MapFrom(src => src.Userid))
+            .ForMember(dest => dest.Email,
+                opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.FirstName,
+                opt => opt.MapFrom(src => src.Firstname))
+            .ForMember(dest => dest.LastName,
+                opt => opt.MapFrom(src => src.Lastname))
+            .ForMember(dest => dest.IsActive,
+                opt => opt.MapFrom(src => src.Isactive))
+            .ForMember(dest => dest.IsVerified,
+                opt => opt.MapFrom(src => src.Isemailverified));
+
+        CreateMap<User, UserStorageAllocationDto>()
+            .ForMember(dest => dest.UserId,
+                opt => opt.MapFrom(src => src.Userid))
+            .ForMember(dest => dest.UserEmail,
+                opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.AllocatedBytes,
+                opt => opt.MapFrom(src => src.Allocatedstoragebytes))
+            .ForMember(dest => dest.UsedBytes,
+                opt => opt.MapFrom(src => src.Usedstoragebytes))
+            .ForMember(dest => dest.AvailableBytes,
+                opt => opt.MapFrom(src => src.Allocatedstoragebytes - src.Usedstoragebytes));
+
+        CreateMap<Emailconfiguration, EmailConfigurationResponseDto>()
+            .ForMember(dest => dest.EmailConfigurationId,
+                opt => opt.MapFrom(src => src.Emailconfigurationid))
+            .ForMember(dest => dest.SmtpHost,
+                opt => opt.MapFrom(src => src.Smtphost))
+            .ForMember(dest => dest.SmtpPort,
+                opt => opt.MapFrom(src => src.Smtpport))
+            .ForMember(dest => dest.UseSsl,
+                opt => opt.MapFrom(src => src.Usessl))
+            .ForMember(dest => dest.RequiresAuthentication,
+                opt => opt.MapFrom(src => src.Requiresauthentication))
+            .ForMember(dest => dest.SenderEmail,
+                opt => opt.MapFrom(src => src.Senderemail))
+            .ForMember(dest => dest.SenderDisplayName,
+                opt => opt.MapFrom(src => src.Senderdisplayname))
+            .ForMember(dest => dest.Username,
+                opt => opt.MapFrom(src => src.Username))
+            .ForMember(dest => dest.IsActive,
+                opt => opt.MapFrom(src => src.Isactive))
+            .ForMember(dest => dest.CreatedAt,
+                opt => opt.MapFrom(src => src.Createdat))
+            .ForMember(dest => dest.UpdatedAt,
                 opt => opt.MapFrom(src => src.Updatedat));
     }
 }

@@ -10,6 +10,8 @@ public interface IUserFileRepository
 
     Task<IEnumerable<Userfile>> GetByUserIdAsync(Guid ownerId, CancellationToken cancellationToken = default);
 
+    Task<IEnumerable<Userfile>> GetOwnedActiveFilesAsync(Guid ownerId, CancellationToken cancellationToken = default);
+
     Task<IEnumerable<Userfile>> GetByFolderIdAsync(Guid ownerId, Guid? folderId, CancellationToken cancellationToken = default);
 
     Task<bool> ExistsAsync(Guid? folderId, string fileName, CancellationToken cancellationToken = default);

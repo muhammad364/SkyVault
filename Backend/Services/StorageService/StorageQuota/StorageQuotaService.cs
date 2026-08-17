@@ -1,6 +1,7 @@
 using SkyVault.DTOs.StorageQuota;
 using SkyVault.Models;
 using SkyVault.Repository;
+using SkyVault.Services.BackgroundJobs;
 
 namespace SkyVault.Services.StorageQuotaService;
 
@@ -16,19 +17,22 @@ public class StorageQuotaService : IStorageQuotaService
     private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly IStoragePlanRepository _storagePlanRepository;
     private readonly IAdditionalStoragePurchaseRepository _additionalStoragePurchaseRepository;
+    private readonly IEmailJobScheduler _emailJobScheduler;
 
     public StorageQuotaService(
         IUserRepository userRepository,
         IUserFileRepository userFileRepository,
         ISubscriptionRepository subscriptionRepository,
         IStoragePlanRepository storagePlanRepository,
-        IAdditionalStoragePurchaseRepository additionalStoragePurchaseRepository)
+        IAdditionalStoragePurchaseRepository additionalStoragePurchaseRepository,
+        IEmailJobScheduler emailJobScheduler)
     {
         _userRepository = userRepository;
         _userFileRepository = userFileRepository;
         _subscriptionRepository = subscriptionRepository;
         _storagePlanRepository = storagePlanRepository;
         _additionalStoragePurchaseRepository = additionalStoragePurchaseRepository;
+        _emailJobScheduler = emailJobScheduler;
     }
 
     public async Task<StorageQuotaResponseDto> GetStorageQuotaAsync(
@@ -137,6 +141,12 @@ public class StorageQuotaService : IStorageQuotaService
                 $"Requested: {requestedBytes} bytes. " +
                 $"Available: {availableStorageBytes} bytes. " +
                 "Please purchase additional storage or select a storage plan with sufficient capacity.");
+        }
+
+        var quota = await GetStorageQuotaAsync(userId, cancellationToken);
+        if (quota.AllocatedStorageBytes > 0 && quota.UsagePercentage >= 90m)
+        {
+            await _emailJobScheduler.QueueQuotaWarningEmailAsync(user.Email, quota.UsagePercentage, cancellationToken);
         }
     }
 
