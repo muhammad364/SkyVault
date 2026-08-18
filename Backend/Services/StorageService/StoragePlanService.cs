@@ -5,6 +5,7 @@ using SkyVault.DTOs.StoragePlan.Responses;
 using SkyVault.Repository;
 using SkyVault.Data;
 using System.IO.Pipelines;
+using SkyVault.Services.AuditLogService;
 
 namespace SkyVault.Services.StorageService;
 
@@ -13,12 +14,14 @@ public class StoragePlanService : IStoragePlanService
     private readonly IMapper _mapper;
     private readonly IStoragePlanRepository _storagePlanRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuditLogService _auditLogService;
 
-    public StoragePlanService (IMapper mapper, IStoragePlanRepository repository, IUnitOfWork unitOfWork)
+    public StoragePlanService (IMapper mapper, IStoragePlanRepository repository, IUnitOfWork unitOfWork, IAuditLogService auditLogService)
     {
         _mapper = mapper;
         _storagePlanRepository = repository;
         _unitOfWork = unitOfWork;
+        _auditLogService = auditLogService;
     }
 
     public async Task<IEnumerable<StoragePlanResponseDto>> GetAllAsync (bool? isActive, CancellationToken cancellationToken = default)
@@ -53,6 +56,7 @@ public class StoragePlanService : IStoragePlanService
         await _storagePlanRepository.AddAsync(storagePlan, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StoragePlanCreated", "StoragePlan", storagePlan.Storageplanid, "Administrator created a storage plan.", cancellationToken);
 
         return _mapper.Map<StoragePlanResponseDto>(storagePlan);
 
@@ -79,6 +83,7 @@ public class StoragePlanService : IStoragePlanService
         _storagePlanRepository.Update(existingPlan);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StoragePlanUpdated", "StoragePlan", existingPlan.Storageplanid, "Administrator updated a storage plan.", cancellationToken);
 
         return _mapper.Map<StoragePlanResponseDto>(existingPlan);
     }
@@ -102,6 +107,7 @@ public class StoragePlanService : IStoragePlanService
         _storagePlanRepository.Update(plan);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StoragePlanActivated", "StoragePlan", plan.Storageplanid, "Administrator activated a storage plan.", cancellationToken);
 
         return _mapper.Map<StoragePlanResponseDto>(plan);
     }
@@ -125,6 +131,7 @@ public class StoragePlanService : IStoragePlanService
         _storagePlanRepository.Update(plan);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StoragePlanDeactivated", "StoragePlan", plan.Storageplanid, "Administrator deactivated a storage plan.", cancellationToken);
 
         return _mapper.Map<StoragePlanResponseDto>(plan);
     }

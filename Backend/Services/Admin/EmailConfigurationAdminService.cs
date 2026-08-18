@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using SkyVault.DTOs.Admin.EmailConfiguration;
 using SkyVault.Models;
 using SkyVault.Repository;
+using SkyVault.Services.AuditLogService;
 
 namespace SkyVault.Services.Admin;
 
@@ -29,17 +30,20 @@ public class EmailConfigurationAdminService : IEmailConfigurationAdminService
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDataProtector _dataProtector;
+    private readonly IAuditLogService _auditLogService;
 
     public EmailConfigurationAdminService(
         IEmailConfigurationRepository repository,
         IMapper mapper,
         IUnitOfWork unitOfWork,
-        IDataProtectionProvider dataProtectionProvider)
+        IDataProtectionProvider dataProtectionProvider,
+        IAuditLogService auditLogService)
     {
         _repository = repository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _dataProtector = dataProtectionProvider.CreateProtector("SkyVault.EmailConfiguration");
+        _auditLogService = auditLogService;
     }
 
     public async Task<IEnumerable<EmailConfigurationResponseDto>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -81,6 +85,7 @@ public class EmailConfigurationAdminService : IEmailConfigurationAdminService
 
         await _repository.AddAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("EmailConfigurationCreated", "EmailConfiguration", entity.Emailconfigurationid, "Administrator created an email configuration.", cancellationToken);
 
         return _mapper.Map<EmailConfigurationResponseDto>(entity);
     }
@@ -108,6 +113,7 @@ public class EmailConfigurationAdminService : IEmailConfigurationAdminService
         entity.Updatedat = DateTime.UtcNow;
         _repository.Update(entity);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("EmailConfigurationUpdated", "EmailConfiguration", entity.Emailconfigurationid, "Administrator updated an email configuration.", cancellationToken);
 
         return _mapper.Map<EmailConfigurationResponseDto>(entity);
     }
@@ -124,6 +130,7 @@ public class EmailConfigurationAdminService : IEmailConfigurationAdminService
 
         _repository.Update(entity);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("EmailConfigurationActivated", "EmailConfiguration", entity.Emailconfigurationid, "Administrator activated an email configuration.", cancellationToken);
 
         return _mapper.Map<EmailConfigurationResponseDto>(entity);
     }
@@ -138,6 +145,7 @@ public class EmailConfigurationAdminService : IEmailConfigurationAdminService
 
         _repository.Update(entity);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("EmailConfigurationDeactivated", "EmailConfiguration", entity.Emailconfigurationid, "Administrator deactivated an email configuration.", cancellationToken);
 
         return _mapper.Map<EmailConfigurationResponseDto>(entity);
     }
@@ -149,6 +157,7 @@ public class EmailConfigurationAdminService : IEmailConfigurationAdminService
 
         _repository.Remove(entity);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("EmailConfigurationDeleted", "EmailConfiguration", entity.Emailconfigurationid, "Administrator deleted an email configuration.", cancellationToken);
     }
 
     private async Task ActivateActiveConfigurationAsync(Emailconfiguration? entityToActivate, CancellationToken cancellationToken)

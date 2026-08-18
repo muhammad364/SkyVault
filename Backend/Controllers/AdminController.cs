@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkyVault.Services.Admin;
+using SkyVault.Services.AuditLogService;
 
 namespace SkyVault.Controllers;
 
@@ -10,10 +11,12 @@ namespace SkyVault.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;
+    private readonly IAuditLogService _auditLogService;
 
-    public AdminController(IAdminService adminService)
+    public AdminController(IAdminService adminService, IAuditLogService auditLogService)
     {
         _adminService = adminService;
+        _auditLogService = auditLogService;
     }
 
     [HttpGet("users")]
@@ -72,5 +75,36 @@ public class AdminController : ControllerBase
         var statistics = await _adminService.GetSystemStatisticsAsync(cancellationToken);
 
         return Ok(statistics);
+    }
+
+    [HttpGet("audit-logs")]
+    public async Task<IActionResult> GetAuditLogs(
+        [FromQuery] Guid? administratorId,
+        [FromQuery] string? action,
+        [FromQuery] DateTime? performedFrom,
+        [FromQuery] DateTime? performedTo,
+        [FromQuery] int skip = 0,
+        [FromQuery] int take = 100,
+        CancellationToken cancellationToken = default)
+    {
+        var auditLogs = await _auditLogService.GetAllAsync(
+            administratorId,
+            action,
+            performedFrom,
+            performedTo,
+            skip,
+            take,
+            cancellationToken);
+
+        return Ok(auditLogs);
+    }
+
+    [HttpGet("audit-logs/{auditLogId:guid}")]
+    public async Task<IActionResult> GetAuditLog(
+        Guid auditLogId,
+        CancellationToken cancellationToken)
+    {
+        var auditLog = await _auditLogService.GetByIdAsync(auditLogId, cancellationToken);
+        return auditLog is null ? NotFound("Audit log was not found.") : Ok(auditLog);
     }
 }

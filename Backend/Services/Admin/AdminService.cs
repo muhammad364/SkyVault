@@ -2,6 +2,7 @@ using AutoMapper;
 using SkyVault.DTOs.Admin;
 using SkyVault.Models;
 using SkyVault.Repository;
+using SkyVault.Services.AuditLogService;
 
 namespace SkyVault.Services.Admin;
 
@@ -14,6 +15,7 @@ public class AdminService : IAdminService
     private readonly IMapper _mapper;
 
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuditLogService _auditLogService;
 
     public AdminService(
         IUserRepository userRepository,
@@ -21,7 +23,8 @@ public class AdminService : IAdminService
         ISubscriptionRepository subscriptionRepository,
         IStorageAccountRepository storageAccountRepository,
         IUnitOfWork unitOfWork,
-        IMapper mapper)
+        IMapper mapper,
+        IAuditLogService auditLogService)
     {
         _userRepository = userRepository;
         _storagePlanRepository = storagePlanRepository;
@@ -29,6 +32,7 @@ public class AdminService : IAdminService
         _storageAccountRepository = storageAccountRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _auditLogService = auditLogService;
     }
 
 
@@ -63,6 +67,12 @@ public class AdminService : IAdminService
             _userRepository.Update(user);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _auditLogService.RecordAsync(
+                "UserActivated",
+                "User",
+                user.Userid,
+                "Administrator activated a user account.",
+                cancellationToken);
         }
 
         return _mapper.Map<AdminUserDto>(user);
@@ -82,6 +92,12 @@ public class AdminService : IAdminService
             _userRepository.Update(user);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _auditLogService.RecordAsync(
+                "UserDeactivated",
+                "User",
+                user.Userid,
+                "Administrator deactivated a user account.",
+                cancellationToken);
         }
 
         return _mapper.Map<AdminUserDto>(user);

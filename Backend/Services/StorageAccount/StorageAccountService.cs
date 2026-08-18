@@ -2,6 +2,7 @@ using AutoMapper;
 using SkyVault.DTOs.StorageAccount;
 using SkyVault.Models;
 using SkyVault.Repository;
+using SkyVault.Services.AuditLogService;
 
 namespace SkyVault.Services.StorageAccount;
 
@@ -14,16 +15,18 @@ public class StorageAccountService : IStorageAccountService
     private readonly IMapper _mapper;
 
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuditLogService _auditLogService;
 
     public StorageAccountService(
         IStorageAccountRepository storageAccountRepository,
         IStorageProviderRepository storageProviderRepository,
-        IMapper mapper, IUnitOfWork unitOfWork)
+        IMapper mapper, IUnitOfWork unitOfWork, IAuditLogService auditLogService)
     {
         _storageAccountRepository = storageAccountRepository;
         _storageProviderRepository = storageProviderRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _auditLogService = auditLogService;
     }
 
     public async Task<StorageAccountResponseDto> CreateAsync(CreateStorageAccountRequestDto request, CancellationToken cancellationToken = default)
@@ -70,6 +73,7 @@ public class StorageAccountService : IStorageAccountService
         await _storageAccountRepository.AddAsync(storageAccount,cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StorageAccountCreated", "StorageAccount", storageAccount.Storageaccountid, "Administrator created a storage account.", cancellationToken);
 
         storageAccount.Provider = provider;
 
@@ -133,6 +137,7 @@ public class StorageAccountService : IStorageAccountService
         _storageAccountRepository.Update(storageAccount);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StorageAccountUpdated", "StorageAccount", storageAccount.Storageaccountid, "Administrator updated a storage account.", cancellationToken);
 
         return _mapper.Map<StorageAccountResponseDto>(storageAccount);
     }
@@ -163,6 +168,7 @@ public class StorageAccountService : IStorageAccountService
         _storageAccountRepository.Update(storageAccount);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StorageAccountActivated", "StorageAccount", storageAccount.Storageaccountid, "Administrator activated a storage account.", cancellationToken);
 
         return _mapper.Map<StorageAccountResponseDto>(storageAccount);
     }
@@ -181,6 +187,7 @@ public class StorageAccountService : IStorageAccountService
         _storageAccountRepository.Update( storageAccount);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StorageAccountDeactivated", "StorageAccount", storageAccount.Storageaccountid, "Administrator deactivated a storage account.", cancellationToken);
 
         return _mapper.Map<StorageAccountResponseDto>(storageAccount);
     }

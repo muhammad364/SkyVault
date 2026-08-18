@@ -19,20 +19,32 @@ public class RecycleBinCleanupScheduler : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var initialDelaySeconds = _options.InitialDelaySeconds > 0 ? _options.InitialDelaySeconds : 15;
-        await Task.Delay(TimeSpan.FromSeconds(initialDelaySeconds), stoppingToken);
+        _logger.LogInformation("Recycle Bin cleanup scheduler started.");
 
-        var intervalHours = _options.RecycleBinCleanupIntervalHours > 0 ? _options.RecycleBinCleanupIntervalHours : 24;
-        using var timer = new PeriodicTimer(TimeSpan.FromHours(intervalHours));
-
-        while (!stoppingToken.IsCancellationRequested)
+        try
         {
-            await RunCleanupJobAsync(stoppingToken);
+            var initialDelaySeconds = _options.InitialDelaySeconds > 0 ? _options.InitialDelaySeconds : 15;
+            await Task.Delay(TimeSpan.FromSeconds(initialDelaySeconds), stoppingToken);
 
-            if (!await timer.WaitForNextTickAsync(stoppingToken))
+            var intervalHours = _options.RecycleBinCleanupIntervalHours > 0 ? _options.RecycleBinCleanupIntervalHours : 24;
+            using var timer = new PeriodicTimer(TimeSpan.FromHours(intervalHours));
+
+            while (!stoppingToken.IsCancellationRequested)
             {
-                break;
+                await RunCleanupJobAsync(stoppingToken);
+
+                if (!await timer.WaitForNextTickAsync(stoppingToken))
+                {
+                    break;
+                }
             }
+        }
+        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+        {
+        }
+        finally
+        {
+            _logger.LogInformation("Recycle Bin cleanup scheduler stopped.");
         }
     }
 
@@ -44,10 +56,7 @@ public class RecycleBinCleanupScheduler : BackgroundService
             var recycleBinService = scope.ServiceProvider.GetRequiredService<IRecycleBinService>();
             var deletedCount = await recycleBinService.DeleteExpiredItemsAsync(cancellationToken);
 
-            if (deletedCount > 0)
-            {
-                _logger.LogInformation("Recycle Bin cleanup scheduler permanently deleted {DeletedCount} expired items.", deletedCount);
-            }
+            _logger.LogInformation("Recycle Bin cleanup scheduler completed. Permanently deleted {DeletedCount} expired items.", deletedCount);
         }
         catch (OperationCanceledException)
         {

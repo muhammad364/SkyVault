@@ -7,7 +7,7 @@ public class AuditLogDto
     public string AdministratorEmail { get; set; } = null!;
     public string Action { get; set; } = null!;
     public string EntityType { get; set; } = null!;
-    public Guid? EntityId { get; set; }
-    public string Description { get; set; } = null!;
+    public Guid EntityId { get; set; }
+    public string Description { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
 }

@@ -27,6 +27,7 @@ using SkyVault.Services.Identity;
 using SkyVault.Services.SearchService;
 using SkyVault.Services.ShareLinkService;
 using SkyVault.Services.RecycleBinService;
+using SkyVault.Services.AuditLogService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -83,6 +84,7 @@ builder.Services.AddScoped<IUserFileRepository, UserFileRepository>();
 builder.Services.AddScoped<IShareLinkRepository, ShareLinkRepository>();
 builder.Services.AddScoped<IEmailConfigurationRepository, EmailConfigurationRepository>();
 builder.Services.AddScoped<IRecycleBinRepository, RecycleBinRepository>();
+builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 builder.Services.AddSingleton<IEmailJobScheduler, EmailJobScheduler>();
 
@@ -104,12 +106,14 @@ builder.Services.AddScoped<IUserFileService, UserFileService>();
 builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IShareLinkService, ShareLinkService>();
 builder.Services.AddScoped<IRecycleBinService, RecycleBinService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IEmailConfigurationAdminService, EmailConfigurationAdminService>();
 builder.Services.AddScoped<IEmailConfigurationProvider, EmailConfigurationProvider>();
 builder.Services.AddDataProtection();
 builder.Services.Configure<GoogleDriveOptions>(builder.Configuration.GetSection("GoogleDrive"));
 builder.Services.AddScoped<IPhysicalStorageProvider,GoogleDriveStorageProvider>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<BackgroundTaskSchedulerOptions>(
     builder.Configuration.GetSection(BackgroundTaskSchedulerOptions.SectionName));
 builder.Services.AddHostedService<QueuedBackgroundWorker>();

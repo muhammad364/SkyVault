@@ -2,6 +2,7 @@ using AutoMapper;
 using SkyVault.DTOs.StorageProvider;
 using SkyVault.Models;
 using SkyVault.Repository;
+using SkyVault.Services.AuditLogService;
 
 namespace SkyVault.Services.StorageProvider;
 
@@ -12,15 +13,18 @@ public class StorageProviderService : IStorageProviderService
     private readonly IMapper _mapper;
 
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuditLogService _auditLogService;
 
     public StorageProviderService(
         IStorageProviderRepository storageProviderRepository,
         IMapper mapper,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IAuditLogService auditLogService)
     {
         _storageProviderRepository = storageProviderRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _auditLogService = auditLogService;
     }
 
     public async Task<StorageProviderResponseDto> CreateAsync(CreateStorageProviderRequestDto request, CancellationToken cancellationToken = default)
@@ -59,6 +63,7 @@ public class StorageProviderService : IStorageProviderService
         await _storageProviderRepository.AddAsync(storageProvider, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StorageProviderCreated", "StorageProvider", storageProvider.Providerid, "Administrator created a storage provider.", cancellationToken);
 
         return _mapper.Map<StorageProviderResponseDto>(storageProvider);
     }
@@ -112,6 +117,7 @@ public class StorageProviderService : IStorageProviderService
         _storageProviderRepository.Update(storageProvider);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StorageProviderUpdated", "StorageProvider", storageProvider.Providerid, "Administrator updated a storage provider.", cancellationToken);
 
         return _mapper.Map<StorageProviderResponseDto>(storageProvider);
     }
@@ -130,6 +136,7 @@ public class StorageProviderService : IStorageProviderService
         _storageProviderRepository.Update(storageProvider);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StorageProviderActivated", "StorageProvider", storageProvider.Providerid, "Administrator activated a storage provider.", cancellationToken);
 
         return _mapper.Map<StorageProviderResponseDto>(storageProvider);
     }
@@ -148,6 +155,7 @@ public class StorageProviderService : IStorageProviderService
         _storageProviderRepository.Update(storageProvider);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _auditLogService.RecordAsync("StorageProviderDeactivated", "StorageProvider", storageProvider.Providerid, "Administrator deactivated a storage provider.", cancellationToken);
 
         return _mapper.Map<StorageProviderResponseDto>(storageProvider);
     }
