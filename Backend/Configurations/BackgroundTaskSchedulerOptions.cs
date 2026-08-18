@@ -8,5 +8,7 @@ public class BackgroundTaskSchedulerOptions
 
     public int SubscriptionExpiryCheckIntervalMinutes { get; set; } = 60;
 
+    public int RecycleBinCleanupIntervalHours { get; set; } = 24;
+
     public int InitialDelaySeconds { get; set; } = 15;
 }

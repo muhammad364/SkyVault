@@ -200,12 +200,12 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
             throw new ArgumentException("Provider object ID is required.",nameof(providerObjectId));
         }
 
-        var context = await GetDriveContextAsync(storageAccountId,cancellationToken);
+        var context = await GetDriveContextAsync(storageAccountId,cancellationToken, requireActiveAccount: false);
 
         await context.DriveService.Files.Delete(providerObjectId).ExecuteAsync(cancellationToken);
     }
 
-    private async Task<GoogleDriveContext> GetDriveContextAsync(Guid storageAccountId,CancellationToken cancellationToken)
+    private async Task<GoogleDriveContext> GetDriveContextAsync(Guid storageAccountId,CancellationToken cancellationToken, bool requireActiveAccount = true)
     {
         var storageAccount = await _storageAccountRepository.GetByIdAsync(storageAccountId, cancellationToken);
 
@@ -214,7 +214,7 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
             throw new InvalidOperationException("Storage account was not found.");
         }
 
-        if (!storageAccount.Isactive)
+        if (requireActiveAccount && !storageAccount.Isactive)
         {
             throw new InvalidOperationException("The selected storage account is inactive.");
         }
@@ -226,7 +226,7 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
             throw new InvalidOperationException("The storage provider associated with the storage account was not found.");
         }
 
-        if (!storageProvider.Isactive)
+        if (requireActiveAccount && !storageProvider.Isactive)
         {
             throw new InvalidOperationException("The storage provider associated with the storage account is inactive.");
         }

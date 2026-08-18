@@ -26,6 +26,7 @@ using SkyVault.Services.BackgroundJobs;
 using SkyVault.Services.Identity;
 using SkyVault.Services.SearchService;
 using SkyVault.Services.ShareLinkService;
+using SkyVault.Services.RecycleBinService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,6 +82,7 @@ builder.Services.AddScoped<IFolderRepository, FolderRepository>();
 builder.Services.AddScoped<IUserFileRepository, UserFileRepository>();
 builder.Services.AddScoped<IShareLinkRepository, ShareLinkRepository>();
 builder.Services.AddScoped<IEmailConfigurationRepository, EmailConfigurationRepository>();
+builder.Services.AddScoped<IRecycleBinRepository, RecycleBinRepository>();
 builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 builder.Services.AddSingleton<IEmailJobScheduler, EmailJobScheduler>();
 
@@ -101,6 +103,7 @@ builder.Services.AddScoped<IStorageQuotaService, StorageQuotaService>();
 builder.Services.AddScoped<IUserFileService, UserFileService>();
 builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IShareLinkService, ShareLinkService>();
+builder.Services.AddScoped<IRecycleBinService, RecycleBinService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IEmailConfigurationAdminService, EmailConfigurationAdminService>();
 builder.Services.AddScoped<IEmailConfigurationProvider, EmailConfigurationProvider>();
@@ -111,6 +114,7 @@ builder.Services.Configure<BackgroundTaskSchedulerOptions>(
     builder.Configuration.GetSection(BackgroundTaskSchedulerOptions.SectionName));
 builder.Services.AddHostedService<QueuedBackgroundWorker>();
 builder.Services.AddHostedService<SubscriptionExpiryScheduler>();
+builder.Services.AddHostedService<RecycleBinCleanupScheduler>();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

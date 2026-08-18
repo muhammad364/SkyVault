@@ -80,9 +80,7 @@ public class ShareLinkService : IShareLinkService
 
     public async Task<IEnumerable<ShareLinkDto>> GetOwnerLinksAsync(Guid ownerId,CancellationToken cancellationToken = default)
     {
-        var shareLinks = await _shareLinkRepository.GetByOwnerIdAsync(
-            ownerId,
-            cancellationToken);
+        var shareLinks = await _shareLinkRepository.GetByOwnerIdAsync(ownerId,cancellationToken);
 
         var orderedLinks = shareLinks.OrderByDescending(link => link.Createdat);
 

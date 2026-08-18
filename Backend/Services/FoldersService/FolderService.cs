@@ -138,13 +138,56 @@ public class FolderService : IFolderService
             throw new KeyNotFoundException("Folder not found.");
         }
 
-        folder.Isdeleted = true;
-        folder.Deletedat = DateTime.UtcNow;
-        folder.Originalparentfolderid = folder.Parentfolderid;
-        folder.Parentfolderid = null;
-        folder.Updatedat = DateTime.UtcNow;
+        var deletedAt = DateTime.UtcNow;
 
-        _folderRepository.Update(folder);
+        var allFolders = await _folderRepository.GetByUserIdAsync(
+            userId,
+            cancellationToken);
+
+        var foldersByParentId = allFolders
+            .Where(f => f.Parentfolderid.HasValue)
+            .GroupBy(f => f.Parentfolderid)
+            .ToDictionary(group => group.Key!.Value, group => group.ToList());
+
+        var foldersToDelete = GetFolderTree(folder, foldersByParentId);
+        var folderIds = foldersToDelete
+            .Select(f => f.Folderid)
+            .ToHashSet();
+
+        var userFiles = await _userFileRepository.GetByUserIdAsync(
+            userId,
+            cancellationToken);
+
+        foreach (var folderToDelete in foldersToDelete)
+        {
+            folderToDelete.Isdeleted = true;
+            folderToDelete.Deletedat = deletedAt;
+            folderToDelete.Originalparentfolderid = folderToDelete.Parentfolderid;
+            folderToDelete.Updatedat = deletedAt;
+
+            /*
+             * Only detach the selected root folder. Descendants retain
+             * their parent relationships so that restoration can rebuild
+             * the hierarchy without additional location tracking.
+             */
+            if (folderToDelete.Folderid == folder.Folderid)
+            {
+                folderToDelete.Parentfolderid = null;
+            }
+
+            _folderRepository.Update(folderToDelete);
+        }
+
+        foreach (var userFile in userFiles.Where(
+                     f => f.Folderid.HasValue &&
+                          folderIds.Contains(f.Folderid.Value)))
+        {
+            userFile.Isdeleted = true;
+            userFile.Deletedat = deletedAt;
+            userFile.Updatedat = deletedAt;
+
+            _userFileRepository.Update(userFile);
+        }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -152,6 +195,36 @@ public class FolderService : IFolderService
         {
             Message = "Folder moved to recycle bin successfully."
         };
+    }
+
+    private static List<Folder> GetFolderTree(
+        Folder rootFolder,
+        IReadOnlyDictionary<Guid, List<Folder>> foldersByParentId)
+    {
+        var folders = new List<Folder>();
+        var foldersToVisit = new Stack<Folder>();
+
+        foldersToVisit.Push(rootFolder);
+
+        while (foldersToVisit.Count > 0)
+        {
+            var currentFolder = foldersToVisit.Pop();
+            folders.Add(currentFolder);
+
+            if (!foldersByParentId.TryGetValue(
+                    currentFolder.Folderid,
+                    out var childFolders))
+            {
+                continue;
+            }
+
+            foreach (var childFolder in childFolders)
+            {
+                foldersToVisit.Push(childFolder);
+            }
+        }
+
+        return folders;
     }
 
     public async Task<MessageResponseDto> MoveFolderAsync(Guid folderId, MoveFolderRequestDto request, Guid userId, CancellationToken cancellationToken = default)
