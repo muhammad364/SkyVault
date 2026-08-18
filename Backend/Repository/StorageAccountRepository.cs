@@ -20,12 +20,15 @@ public class StorageAccountRepository : IStorageAccountRepository
 
     public async Task<Storageaccount?> GetByIdAsync(Guid storageAccountId, CancellationToken cancellationToken = default)
     {
-        return await _dbcontext.Storageaccounts.FirstOrDefaultAsync(s => s.Storageaccountid == storageAccountId, cancellationToken);
+        return await _dbcontext.Storageaccounts
+            .Include(s => s.Provider)
+            .FirstOrDefaultAsync(s => s.Storageaccountid == storageAccountId, cancellationToken);
     }
 
     public async Task<IEnumerable<Storageaccount>> GetAllAsync(bool? isActive = null, CancellationToken cancellationToken = default)
     {
-        IQueryable<Storageaccount> query = _dbcontext.Storageaccounts;
+        IQueryable<Storageaccount> query = _dbcontext.Storageaccounts
+            .Include(s => s.Provider);
 
         if (isActive.HasValue)
         {
