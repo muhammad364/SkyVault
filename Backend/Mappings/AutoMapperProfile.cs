@@ -253,6 +253,24 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.AvailableBytes,
                 opt => opt.MapFrom(src => src.Allocatedstoragebytes - src.Usedstoragebytes));
 
+        CreateMap<Auditlog, AuditLogDto>()
+            .ForMember(dest => dest.AuditLogId,
+                opt => opt.MapFrom(src => src.Auditlogid))
+            .ForMember(dest => dest.AdministratorId,
+                opt => opt.MapFrom(src => src.Administratorid))
+            .ForMember(dest => dest.AdministratorEmail,
+                opt => opt.MapFrom(src => src.Administrator.Email))
+            .ForMember(dest => dest.Action,
+                opt => opt.MapFrom(src => src.Action))
+            .ForMember(dest => dest.EntityType,
+                opt => opt.MapFrom(src => src.Entityname))
+            .ForMember(dest => dest.EntityId,
+                opt => opt.MapFrom(src => src.Entityid))
+            .ForMember(dest => dest.Description,
+                opt => opt.MapFrom(src => src.Details ?? string.Empty))
+            .ForMember(dest => dest.CreatedAt,
+                opt => opt.MapFrom(src => src.Performedat));
+
         CreateMap<Emailconfiguration, EmailConfigurationResponseDto>()
             .ForMember(dest => dest.EmailConfigurationId,
                 opt => opt.MapFrom(src => src.Emailconfigurationid))

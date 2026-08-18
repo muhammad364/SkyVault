@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using AutoMapper;
 using SkyVault.DTOs.Admin;
 using SkyVault.Models;
 using SkyVault.Repository;
@@ -10,15 +11,18 @@ public class AuditLogService : IAuditLogService
     private readonly IAuditLogRepository _auditLogRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IMapper _mapper;
 
     public AuditLogService(
         IAuditLogRepository auditLogRepository,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IMapper mapper)
     {
         _auditLogRepository = auditLogRepository;
         _unitOfWork = unitOfWork;
         _httpContextAccessor = httpContextAccessor;
+        _mapper = mapper;
     }
 
     public async Task RecordAsync(
@@ -67,7 +71,7 @@ public class AuditLogService : IAuditLogService
         CancellationToken cancellationToken = default)
     {
         var auditLog = await _auditLogRepository.GetByIdAsync(auditLogId, cancellationToken);
-        return auditLog is null ? null : ToDto(auditLog);
+        return auditLog is null ? null : _mapper.Map<AuditLogDto>(auditLog);
     }
 
     public async Task<IEnumerable<AuditLogDto>> GetAllAsync(
@@ -88,21 +92,6 @@ public class AuditLogService : IAuditLogService
             take,
             cancellationToken);
 
-        return auditLogs.Select(ToDto).ToList();
-    }
-
-    private static AuditLogDto ToDto(Auditlog auditLog)
-    {
-        return new AuditLogDto
-        {
-            AuditLogId = auditLog.Auditlogid,
-            AdministratorId = auditLog.Administratorid,
-            AdministratorEmail = auditLog.Administrator?.Email ?? string.Empty,
-            Action = auditLog.Action,
-            EntityType = auditLog.Entityname,
-            EntityId = auditLog.Entityid,
-            Description = auditLog.Details ?? string.Empty,
-            CreatedAt = auditLog.Performedat
-        };
+        return _mapper.Map<IEnumerable<AuditLogDto>>(auditLogs);
     }
 }
