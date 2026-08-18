@@ -41,4 +41,23 @@ public class GoogleDriveTestController : ControllerBase
                     providerObjectId
             });
     }
+
+    [HttpDelete("{storageAccountId:guid}/{providerObjectId}")]
+    public async Task<IActionResult> TestDelete(
+        Guid storageAccountId,
+        string providerObjectId,
+        CancellationToken cancellationToken)
+    {
+        await _physicalStorageProvider.DeleteAsync(
+            storageAccountId,
+            providerObjectId,
+            cancellationToken);
+
+        return Ok(
+            new
+            {
+                Message =
+                    "Delete request completed successfully."
+            });
+    }
 }
