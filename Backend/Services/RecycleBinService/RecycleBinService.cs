@@ -185,6 +185,10 @@ public class RecycleBinService : IRecycleBinService
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation(
+            "Permanently deleted folder {FolderId} and its contents for owner {OwnerId} from the Recycle Bin.",
+            folder.Folderid,
+            folder.Ownerid);
 
         return new MessageResponseDto { Message = "Folder permanently deleted successfully." };
     }
@@ -256,6 +260,10 @@ public class RecycleBinService : IRecycleBinService
 
         _userFileRepository.Remove(file);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation(
+            "Permanently deleted file {FileId} for owner {OwnerId} from the Recycle Bin.",
+            file.Fileid,
+            file.Ownerid);
     }
 
     private async Task<Userfile> GetOwnedDeletedFileAsync(

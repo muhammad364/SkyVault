@@ -19,9 +19,10 @@ public class AuthService : IAuthService
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IEmailJobScheduler _emailJobScheduler;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<AuthService> _logger;
 
     public AuthService(
-        IUserRepository userRepo, IMapper mapper, IPasswordHashService passhashServ, IJwtTokenService token, IEmailJobScheduler emailJobScheduler, IUnitOfWork unitOfWork
+        IUserRepository userRepo, IMapper mapper, IPasswordHashService passhashServ, IJwtTokenService token, IEmailJobScheduler emailJobScheduler, IUnitOfWork unitOfWork, ILogger<AuthService> logger
     )
     {
         _userRepository = userRepo;
@@ -30,6 +31,7 @@ public class AuthService : IAuthService
         _passwordHashService = passhashServ;
         _jwtTokenService = token;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task<RegisterUserResponseDto> RegisterUserAsync (RegisterUserRequestDto userRequestDto, CancellationToken cancellationToken = default)
@@ -68,6 +70,7 @@ public class AuthService : IAuthService
 
         if (user == null)
         {
+            _logger.LogWarning("Authentication failed for an unknown email address.");
             throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
@@ -75,20 +78,24 @@ public class AuthService : IAuthService
 
         if (!isPasswordValid)
         {
+            _logger.LogWarning("Authentication failed for user {UserId}: invalid credentials.", user.Userid);
             throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
         if (!user.Isactive)
         {
+            _logger.LogWarning("Authentication failed for user {UserId}: account is inactive.", user.Userid);
             throw new UnauthorizedAccessException("User account is inactive.");
         }
 
         if (!user.Isemailverified)
         {
+            _logger.LogWarning("Authentication failed for user {UserId}: email is not verified.", user.Userid);
             throw new UnauthorizedAccessException("Please verify your email before logging in.");
         }
 
         var accessToken = _jwtTokenService.GenerateAccessToken(user);
+        _logger.LogInformation("Authentication succeeded for user {UserId}.", user.Userid);
 
         return new LoginResponseDto{
         Token = accessToken,

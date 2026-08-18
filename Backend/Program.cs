@@ -28,6 +28,8 @@ using SkyVault.Services.SearchService;
 using SkyVault.Services.ShareLinkService;
 using SkyVault.Services.RecycleBinService;
 using SkyVault.Services.AuditLogService;
+using SkyVault.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -89,6 +91,36 @@ builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 builder.Services.AddSingleton<IEmailJobScheduler, EmailJobScheduler>();
 
 builder.Services.AddControllers();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var requestId = context.HttpContext.TraceIdentifier;
+        var errors = context.ModelState
+            .Where(item => item.Value is not null)
+            .ToDictionary(
+                item => item.Key,
+                item => item.Value!.Errors
+                    .Select(error => string.IsNullOrWhiteSpace(error.ErrorMessage)
+                        ? "The supplied value is invalid."
+                        : error.ErrorMessage)
+                    .ToArray());
+
+        return new BadRequestObjectResult(new ApiErrorResponse
+        {
+            StatusCode = StatusCodes.Status400BadRequest,
+            ExceptionType = "ValidationException",
+            Message = "One or more validation errors occurred.",
+            RequestId = requestId,
+            TraceId = requestId,
+            Path = context.HttpContext.Request.Path,
+            TimestampUtc = DateTime.UtcNow,
+            Errors = errors
+        });
+    };
+});
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddScoped<IPasswordHashService, PasswordHashService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
@@ -147,6 +179,8 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 await DatabaseSeeder.SeedAsync(app.Services);
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
