@@ -1,0 +1,15 @@
+{
+  "name": "SkyVault",
+  "short_name": "SkyVault",
+  "description": "Your files. Your space. Always secure.",
+  "start_url": "/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/brand/skyvault-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
