@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="SkyVault">
+  <defs>
+    <linearGradient id="sv-cloud" x1="8" y1="10" x2="56" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4FD1B9"/>
+      <stop offset="1" stop-color="#0A524D"/>
+    </linearGradient>
+  </defs>
+  <!-- cloud -->
+  <path fill="url(#sv-cloud)" d="M18.5 47C11.6 47 6 41.6 6 35c0-6 4.6-11 10.6-11.8C18.7 16.4 25 11.5 32.4 11.5c8.4 0 15.4 6.2 16.4 14.2C53.6 26.9 57 31 57 36c0 6.1-5.1 11-11.4 11z"/>
+  <!-- vault door -->
+  <rect x="21" y="26" width="22" height="24" rx="6" fill="#07332F"/>
+  <!-- hinges -->
+  <rect x="17.5" y="31" width="4" height="4.5" rx="1.4" fill="#0A524D"/>
+  <rect x="17.5" y="40" width="4" height="4.5" rx="1.4" fill="#0A524D"/>
+  <!-- dial spokes -->
+  <g stroke="#4FD1B9" stroke-width="2" stroke-linecap="round">
+    <path d="M32 30.5v5M32 40.5v5M25.5 38h5M33.5 38h5M27.6 33.6l3.2 3.2M33.2 39.2l3.2 3.2M36.4 33.6l-3.2 3.2M30.8 39.2l-3.2 3.2"/>
+  </g>
+  <circle cx="32" cy="38" r="3.6" fill="#07332F" stroke="#4FD1B9" stroke-width="2"/>
+  <circle cx="32" cy="38" r="1.4" fill="#FFB800"/>
+</svg>
