@@ -53,7 +53,7 @@ export function PublicPlansPreview() {
               </p>
             </div>
             <Button asChild>
-              <Link to="/auth?mode=register">Create your vault</Link>
+              <Link to="/auth/register">Create your vault</Link>
             </Button>
           </div>
         </section>
@@ -103,7 +103,7 @@ export function PublicPlansPreview() {
                   Private storage, intelligent search, and a calm workspace are included.
                 </p>
                 <Button asChild className="w-full">
-                  <Link to="/auth?mode=login">
+                  <Link to="/auth/login">
                     Sign in to choose <ArrowRight aria-hidden="true" size={20} />
                   </Link>
                 </Button>

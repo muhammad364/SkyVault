@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
 import { describe, expect, it } from 'vitest'
 import { ApiError, normalizeApiError, RequestCancelledError } from '@/api/errors'
 
@@ -12,5 +12,28 @@ describe('normalizeApiError', () => {
     const normalized = normalizeApiError(error)
     expect(normalized).toBeInstanceOf(ApiError)
     expect((normalized as ApiError).status).toBe(408)
+  })
+
+  it('recognizes the PascalCase global-exception contract and maps known auth failures', () => {
+    const config = { headers: new axios.AxiosHeaders() } as InternalAxiosRequestConfig
+    const response: AxiosResponse = {
+      config,
+      data: {
+        StatusCode: 401,
+        ExceptionType: 'UnauthorizedAccessException',
+        Message: 'Please verify your email before logging in.',
+        RequestId: 'request-1',
+        TraceId: 'trace-1',
+        Path: '/api/auth/login',
+        TimestampUtc: new Date().toISOString(),
+        Errors: null,
+      },
+      headers: {},
+      status: 401,
+      statusText: 'Unauthorized',
+    }
+    const normalized = normalizeApiError(new axios.AxiosError('Unauthorized', 'ERR_BAD_REQUEST', config, undefined, response))
+
+    expect(normalized).toMatchObject({ status: 401, code: 'email_not_verified', traceId: 'trace-1' })
   })
 })

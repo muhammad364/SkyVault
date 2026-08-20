@@ -3,4 +3,7 @@ export const queryKeys = {
   storagePlans: {
     public: () => [...queryKeys.root, 'storage-plans', 'public'] as const,
   },
+  auth: {
+    profile: () => [...queryKeys.root, 'auth', 'profile'] as const,
+  },
 }

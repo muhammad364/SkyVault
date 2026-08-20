@@ -7,7 +7,7 @@ export function AdminRoute({ children }: PropsWithChildren) {
   const isAdmin = useAuthStore(selectIsAdmin)
   const location = useLocation()
 
-  if (!isAuthenticated) return <Navigate to="/errors/401" replace state={{ from: location }} />
+  if (!isAuthenticated) return <Navigate to="/auth/login" replace state={{ from: location }} />
   if (!isAdmin) return <Navigate to="/errors/403" replace />
 
   return children

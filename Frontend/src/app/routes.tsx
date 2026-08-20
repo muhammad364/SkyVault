@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Navigate, createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
 import { RouteErrorFallback } from '@/components/feedback/RouteErrorFallback'
 import { PageSkeleton } from '@/components/feedback/PageSkeleton'
 import { LandingPageSkeleton } from '@/features/marketing/components/LandingPageSkeleton'
@@ -17,6 +17,14 @@ const StatusErrorPage = lazy(() => import('@/pages/errors/StatusErrorPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 const PhasePendingPage = lazy(() => import('@/pages/PhasePendingPage'))
 const AdminPendingPage = lazy(() => import('@/pages/AdminPendingPage'))
+const AuthEntryRedirect = lazy(() => import('@/features/auth/pages/AuthEntryRedirect'))
+const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'))
+const RegisterPage = lazy(() => import('@/features/auth/pages/RegisterPage'))
+const CheckEmailPage = lazy(() => import('@/features/auth/pages/CheckEmailPage'))
+const VerifyEmailPage = lazy(() => import('@/features/auth/pages/VerifyEmailPage'))
+const ForgotPasswordPage = lazy(() => import('@/features/auth/pages/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('@/features/auth/pages/ResetPasswordPage'))
+const AccountPage = lazy(() => import('@/features/account/pages/AccountPage'))
 
 function withSuspense(element: JSX.Element, fallback: JSX.Element = <PageSkeleton />) {
   return <Suspense fallback={fallback}>{element}</Suspense>
@@ -39,7 +47,15 @@ export const router = createBrowserRouter([
       </PublicRoute>
     ),
     errorElement: <RouteErrorFallback />,
-    children: [{ index: true, element: <Navigate to="/errors/401" replace /> }],
+    children: [
+      { index: true, element: withSuspense(<AuthEntryRedirect />) },
+      { path: 'login', element: withSuspense(<LoginPage />) },
+      { path: 'register', element: withSuspense(<RegisterPage />) },
+      { path: 'check-email', element: withSuspense(<CheckEmailPage />) },
+      { path: 'verify-email', element: withSuspense(<VerifyEmailPage />) },
+      { path: 'forgot-password', element: withSuspense(<ForgotPasswordPage />) },
+      { path: 'reset-password', element: withSuspense(<ResetPasswordPage />) },
+    ],
   },
   {
     path: '/vault',
@@ -51,6 +67,7 @@ export const router = createBrowserRouter([
     errorElement: <RouteErrorFallback />,
     children: [
       { index: true, element: withSuspense(<PhasePendingPage />) },
+      { path: 'settings', element: withSuspense(<AccountPage />) },
       { path: '*', element: withSuspense(<PhasePendingPage />) },
     ],
   },

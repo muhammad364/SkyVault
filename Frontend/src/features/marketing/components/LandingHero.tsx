@@ -77,12 +77,12 @@ export function LandingHero() {
           className="flex flex-col gap-3 sm:flex-row sm:items-center"
         >
           <Button asChild className="text-base">
-            <Link to="/auth?mode=register">
+            <Link to="/auth/register">
               Create your vault <ArrowRight aria-hidden="true" size={20} />
             </Link>
           </Button>
           <Button asChild variant="ghost" className="text-base">
-            <Link to="/auth?mode=login">Sign in to SkyVault</Link>
+            <Link to="/auth/login">Sign in to SkyVault</Link>
           </Button>
         </motion.div>
       </motion.div>

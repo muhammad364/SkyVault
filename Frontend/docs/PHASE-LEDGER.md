@@ -7,7 +7,7 @@ Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 | 0 | Foundation & Design System | DONE | 2026-08-20 | Foundation, design system, shared API client, and smoke tests verified. |
 | 1 | App Shell, Routing, Errors | DONE | 2026-08-20 | App shell, route guards, branded error pages, offline banner, and smoke tests verified. |
 | 2 | Public Landing & Marketing | DONE | 2026-08-20 | Quiet Vault refinement accepted for closure by the owner; automated verification passed. |
-| 3 | Authentication & Account | NOT_STARTED | - | |
+| 3 | Authentication & Account | DONE | 2026-08-20 | UC-01 through UC-06 implemented; automated verification passed and the owner completed and accepted the end-to-end frontend journey. |
 | 4 | Storage Subscription & Allocation | NOT_STARTED | - | |
 | 5 | Workspace Home | NOT_STARTED | - | |
 | 6 | Folder & File Management | NOT_STARTED | - | |
@@ -43,7 +43,7 @@ Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 
 ## Phase 2 - Public Landing & Marketing
 
-- Status: IN_PROGRESS
+- Status: DONE
 - Date: 2026-08-20
 - Controllers read: `Backend/Controllers/StoragePlanController.cs`
 - DTOs and implementation read: `Backend/DTOs/StoragePlan/Responses/StoragePlanResponseDto.cs`, `Backend/Services/StorageService/StoragePlanService.cs`, `Backend/Services/StorageService/SubscriptionService.cs`
@@ -62,3 +62,22 @@ Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 - Responsive record: the earlier owner viewport pass remains the Phase 2 manual baseline; the final delta uses responsive Tailwind defaults only and passed static no-overflow/guardrail review. A new automated browser screenshot run was not authorised, and is not claimed here.
 - Owner closure: the owner reviewed the refined landing surface, supplied the final visual corrections, and explicitly requested Phase 2 be marked `DONE` after their implementation and automated verification.
 - Open questions for the owner: none.
+
+## Phase 3 - Authentication & Account
+
+- Status: DONE
+- Date: 2026-08-20
+- Controllers read: `Backend/Controllers/AuthController.cs`
+- DTOs and implementation read: `Backend/DTOs/Authentication/**`, `Backend/Services/Authentication/AuthService.cs`, `Backend/Services/Authentication/Security/JwtTokenService.cs`, `Backend/Services/Authentication/Email/EmailService.cs`, and the UC-01 through UC-06 SRS contract
+- Approved backend exception: authentication-only additions for resend verification, change password, generic recovery responses, and frontend-facing verification/reset email links. No other backend scope is authorised.
+- Endpoints consumed: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/verify-email`, `POST /api/auth/resend-verification`, `POST /api/auth/forgot-password`, `POST /api/auth/reset-password`, `GET/PUT /api/auth/profile`, `POST /api/auth/change-password`, and `POST /api/auth/logout` through `src/api/endpoints/auth.api.ts`.
+- Frontend implementation: lazy canonical auth routes plus `/auth?mode=...` compatibility redirect; React Hook Form/Zod forms; typed hook/service/endpoint/Axios chains; safe known-error mapping and case-insensitive field mapping; one-time URL-token removal; access-token persistence, role decoding, expiry timer, Bearer attachment, central authenticated-401 cleanup, query cancellation/clear, redirect-after-login, and protected account settings.
+- Account states: profile loading skeleton, error/retry, verified-email success state, profile update, password change with forced sign-in, and logout with guaranteed local cleanup. Phase 4 storage/quota UI was not introduced.
+- Auth visual: lazy R3F key-and-dial scene built from native primitives and `useFrame`, two lights, restrained four-degree tilt, shared mobile/reduced-motion/low-core eligibility gates, Suspense and Canvas-error SVG fallback, and no additional Canvas host.
+- Backend implementation: generic resend/forgot responses; authorized change-password action; frontend-base-url configuration; frontend verification/reset links; and removal of raw-token email fallback text. Access-token-only behavior remains unchanged.
+- Automated verification: frontend tsc [x] lint [x] production build [x] Vitest [x] (24 files / 45 tests) backend build [x] Swagger route inventory [x] token/API/color/layout/Canvas guardrail scans [x] diff whitespace check [x].
+- Build advisories: Vite reports the existing large vendor chunks; .NET reports the existing MailKit 4.13.0 `NU1902` moderate-severity advisory. Neither was introduced or changed in this phase.
+- Post-implementation verification: frontend TypeScript build [x] isolated backend build [x] focused authentication error-normalization tests [x].
+- Final refinements: verification completion follows the request promise without stalling; one-time tokens are removed from the address bar; session cleanup cancels requests and removes cached queries without interrupting active mutations; known backend authentication errors map to safe, specific guidance; verification and recovery pages link back to sign-in; and authenticated SMTP delivery includes multipart content, message identifiers, and acceptance diagnostics without exposing tokens.
+- Owner closure: the owner completed end-to-end frontend testing, confirmed that the module and all its flows are satisfactory, and explicitly approved Phase 3 for completion on 2026-08-20.
+- Open questions for the owner: none. No unresolved API gap blocks Phase 3, and Phase 4 remains `NOT_STARTED`.

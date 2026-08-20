@@ -6,7 +6,7 @@ export function ProtectedRoute({ children }: PropsWithChildren) {
   const isAuthenticated = useAuthStore(selectIsAuthenticated)
   const location = useLocation()
 
-  if (!isAuthenticated) return <Navigate to="/errors/401" replace state={{ from: location }} />
+  if (!isAuthenticated) return <Navigate to="/auth/login" replace state={{ from: location }} />
 
   return children
 }

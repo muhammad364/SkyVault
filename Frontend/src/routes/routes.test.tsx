@@ -13,7 +13,7 @@ afterEach(() => {
 })
 
 describe('route guards', () => {
-  it('sends signed-out users to the unauthorised route', () => {
+  it('sends signed-out users to login and preserves the requested route', () => {
     render(
       <MemoryRouter
         initialEntries={['/vault']}
@@ -28,7 +28,7 @@ describe('route guards', () => {
               </ProtectedRoute>
             }
           />
-          <Route path="/errors/401" element={<p>Sign in needed</p>} />
+          <Route path="/auth/login" element={<p>Sign in needed</p>} />
         </Routes>
       </MemoryRouter>,
     )
@@ -41,7 +41,7 @@ describe('route guards', () => {
       useAuthStore.setState({
         session: {
           accessToken: 'phase-1-session',
-          expiresAt: '2026-08-20T00:00:00Z',
+          expiresAt: new Date(Date.now() + 60_000).toISOString(),
           role: 'admin',
         },
       }),

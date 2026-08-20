@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { isSessionActive } from '@/features/auth/lib/session'
 
 export type UserRole = 'user' | 'admin'
 
@@ -27,7 +28,7 @@ export const useAuthStore = create<AuthState>()(
 )
 
 export function selectIsAuthenticated(state: AuthState) {
-  return Boolean(state.session?.accessToken)
+  return isSessionActive(state.session)
 }
 
 export function selectIsAdmin(state: AuthState) {

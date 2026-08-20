@@ -33,10 +33,10 @@ export function PublicLayout() {
                   How it works
                 </a>
                 <Button asChild variant="ghost" className="hidden lg:inline-flex">
-                  <Link to="/auth?mode=login">Sign in</Link>
+                  <Link to="/auth/login">Sign in</Link>
                 </Button>
                 <Button asChild className="min-w-0 flex-1 px-4 sm:flex-none">
-                  <Link to="/auth?mode=register">Create your vault</Link>
+                  <Link to="/auth/register">Create your vault</Link>
                 </Button>
                 <ThemeToggle className="hidden sm:inline-flex" />
               </nav>

@@ -48,7 +48,7 @@ export default function LandingPage() {
           <a className="text-primary underline-offset-4 hover:underline" href="#plans">
             Storage plans
           </a>
-          <Link className="text-primary underline-offset-4 hover:underline" to="/auth?mode=login">
+          <Link className="text-primary underline-offset-4 hover:underline" to="/auth/login">
             Sign in
           </Link>
         </nav>
