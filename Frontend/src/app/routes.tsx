@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 import { RouteErrorFallback } from '@/components/feedback/RouteErrorFallback'
 import { PageSkeleton } from '@/components/feedback/PageSkeleton'
+import { LandingPageSkeleton } from '@/features/marketing/components/LandingPageSkeleton'
 import { AdminLayout } from '@/layouts/AdminLayout'
 import { AuthLayout } from '@/layouts/AuthLayout'
 import { WorkspaceLayout } from '@/layouts/WorkspaceLayout'
@@ -17,8 +18,8 @@ const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 const PhasePendingPage = lazy(() => import('@/pages/PhasePendingPage'))
 const AdminPendingPage = lazy(() => import('@/pages/AdminPendingPage'))
 
-function withSuspense(element: JSX.Element) {
-  return <Suspense fallback={<PageSkeleton />}>{element}</Suspense>
+function withSuspense(element: JSX.Element, fallback: JSX.Element = <PageSkeleton />) {
+  return <Suspense fallback={fallback}>{element}</Suspense>
 }
 
 export const router = createBrowserRouter([
@@ -26,7 +27,7 @@ export const router = createBrowserRouter([
     path: '/',
     element: <PublicLayout />,
     errorElement: <RouteErrorFallback />,
-    children: [{ index: true, element: withSuspense(<LandingPage />) }],
+    children: [{ index: true, element: withSuspense(<LandingPage />, <LandingPageSkeleton />) }],
   },
   { path: '/design-system', element: withSuspense(<DesignSystemPage />), errorElement: <RouteErrorFallback /> },
   { path: '/errors/:status', element: withSuspense(<StatusErrorPage />), errorElement: <RouteErrorFallback /> },

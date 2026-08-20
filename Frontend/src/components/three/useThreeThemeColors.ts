@@ -5,6 +5,9 @@ interface ThreeThemeColors {
   primaryForeground: string
   accentAmber: string
   card: string
+  cardMuted: string
+  border: string
+  foreground: string
 }
 
 function readThemeColors(): ThreeThemeColors {
@@ -14,6 +17,9 @@ function readThemeColors(): ThreeThemeColors {
     primaryForeground: styles.getPropertyValue('--primary-foreground').trim(),
     accentAmber: styles.getPropertyValue('--accent-amber').trim(),
     card: styles.getPropertyValue('--card').trim(),
+    cardMuted: styles.getPropertyValue('--card-muted').trim(),
+    border: styles.getPropertyValue('--border').trim(),
+    foreground: styles.getPropertyValue('--foreground').trim(),
   }
 }
 

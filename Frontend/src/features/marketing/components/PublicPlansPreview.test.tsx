@@ -29,6 +29,8 @@ describe('PublicPlansPreview', () => {
     expect(screen.getByText('100 GB')).toBeInTheDocument()
     expect(screen.getByText('PKR 20')).toBeInTheDocument()
     expect(screen.getByText('Billed every 12 months')).toBeInTheDocument()
+    expect(screen.getByText('Private storage, intelligent search, and a calm workspace are included.')).toBeInTheDocument()
+    expect(screen.getByLabelText('100 GB secure storage')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Sign in to choose' })).toHaveAttribute('href', '/auth?mode=login')
   })
 

@@ -35,6 +35,26 @@
   .pressable:active {
     transform: scale(0.97);
   }
+
+  .marketing-marquee-track {
+    animation: marketing-marquee 32s linear infinite;
+    width: max-content;
+    will-change: transform;
+  }
+
+  .marketing-marquee-track[data-paused='true'] {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marketing-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

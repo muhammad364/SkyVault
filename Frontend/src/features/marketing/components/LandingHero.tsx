@@ -1,7 +1,8 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
+import { BrandSignature } from '@/components/brand/BrandSignature'
 import { LazyThreeScene } from '@/components/three/LazyThreeScene'
 import { SceneErrorBoundary } from '@/components/three/SceneErrorBoundary'
 import { SceneFallback } from '@/components/three/SceneFallback'
@@ -10,28 +11,75 @@ import { useBreakpoint } from '@/hooks/useBreakpoint'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const LandingVaultScene = lazy(() => import('@/features/marketing/components/LandingVaultScene'))
+const fallbackSrc = '/brand/landing-vault-fallback-v2.png'
+
+const easing = [0.22, 1, 0.36, 1] as const
 
 export function LandingHero() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const sequenceTimer = useRef<number>()
+  const [engaged, setEngaged] = useState(false)
+  const isVisible = useInView(sectionRef, { amount: 0.25 })
   const { isMd } = useBreakpoint()
   const reducedMotion = useReducedMotion()
   const hasLimitedHardware = typeof navigator !== 'undefined' && navigator.hardwareConcurrency <= 4
-  const initial = reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }
-  const animate = reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
   const canRenderThree = isMd && !reducedMotion && !hasLimitedHardware
 
+  useEffect(() => () => window.clearTimeout(sequenceTimer.current), [])
+
+  const triggerLockSequence = () => {
+    if (!canRenderThree) return
+    window.clearTimeout(sequenceTimer.current)
+    setEngaged(true)
+    sequenceTimer.current = window.setTimeout(() => setEngaged(false), 320)
+  }
+
+  const itemMotion = reducedMotion
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 } }
+    : { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 } }
+
   return (
-    <section className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12" aria-labelledby="landing-heading">
-      <motion.div initial={initial} animate={animate} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }} className="flex min-w-0 flex-col gap-6">
-        <p className="text-sm font-semibold text-primary">Your files. Your space. Always secure.</p>
-        <div className="flex flex-col gap-4">
-          <h1 id="landing-heading" className="max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-foreground md:text-5xl">
+    <section
+      ref={sectionRef}
+      className="grid scroll-mt-32 items-center gap-8 lg:grid-cols-2 lg:gap-12"
+      aria-labelledby="landing-heading"
+    >
+      <motion.div
+        initial="initial"
+        animate="animate"
+        variants={{ animate: { transition: { staggerChildren: 0.04 } } }}
+        className="flex min-w-0 flex-col gap-6"
+      >
+        <motion.div variants={itemMotion} transition={{ duration: 0.32, ease: easing }}>
+          <BrandSignature variant="hero" />
+        </motion.div>
+        <motion.p
+          variants={itemMotion}
+          transition={{ duration: 0.32, ease: easing }}
+          className="text-sm font-semibold text-primary"
+        >
+          Your files. Your space. Always secure.
+        </motion.p>
+        <motion.div
+          variants={itemMotion}
+          transition={{ duration: 0.32, ease: easing }}
+          className="flex flex-col gap-4"
+        >
+          <h1
+            id="landing-heading"
+            className="max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-foreground md:text-5xl"
+          >
             A quieter home for every file.
           </h1>
           <p className="max-w-xl text-pretty text-base text-muted-foreground md:text-lg">
-            SkyVault brings secure storage, simple plans, and intelligent search into one calm personal workspace.
+            Secure storage, simple plans, and intelligent search come together in one calm personal workspace.
           </p>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        </motion.div>
+        <motion.div
+          variants={itemMotion}
+          transition={{ duration: 0.32, ease: easing }}
+          className="flex flex-col gap-3 sm:flex-row sm:items-center"
+        >
           <Button asChild>
             <Link to="/auth?mode=register">
               Create your vault <ArrowRight aria-hidden="true" size={20} />
@@ -40,19 +88,36 @@ export function LandingHero() {
           <Button asChild variant="ghost">
             <Link to="/auth?mode=login">Sign in to SkyVault</Link>
           </Button>
-        </div>
+        </motion.div>
       </motion.div>
-      <div className="min-w-0 rounded-2xl bg-canvas-strong p-6 shadow-float md:p-8">
+      <motion.div
+        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+        animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.32, delay: reducedMotion ? 0 : 0.16, ease: easing }}
+        className="min-w-0 rounded-2xl bg-canvas-strong p-6 shadow-float md:p-8"
+        tabIndex={canRenderThree ? 0 : undefined}
+        onPointerEnter={triggerLockSequence}
+        onFocus={triggerLockSequence}
+        aria-label="Interactive SkyVault safe"
+      >
         {canRenderThree ? (
-          <SceneErrorBoundary label="A SkyVault vault door">
-            <Suspense fallback={<SceneFallback label="A SkyVault vault door" />}>
-              <LazyThreeScene label="A SkyVault vault door">
-                <LandingVaultScene />
+          <SceneErrorBoundary
+            label="A heavy SkyVault safe with a circular locking door"
+            imageSrc={fallbackSrc}
+          >
+            <Suspense fallback={<SceneFallback label="A heavy SkyVault safe" imageSrc={fallbackSrc} />}>
+              <LazyThreeScene
+                label="A heavy SkyVault safe with a circular locking door"
+                fallbackSrc={fallbackSrc}
+              >
+                <LandingVaultScene active={isVisible} engaged={engaged} />
               </LazyThreeScene>
             </Suspense>
           </SceneErrorBoundary>
-        ) : <SceneFallback label="A SkyVault vault door" />}
-      </div>
+        ) : (
+          <SceneFallback label="A heavy SkyVault safe with a circular locking door" imageSrc={fallbackSrc} />
+        )}
+      </motion.div>
     </section>
   )
 }

@@ -1,5 +1,8 @@
-import { LockKeyhole, Search, WalletCards } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { LockKeyhole, Pause, Play, Search, WalletCards } from 'lucide-react'
+import { useInView } from 'framer-motion'
+import { Button } from '@/components/ui/button'
+import { MarketingHighlightCard } from '@/features/marketing/components/MarketingHighlightCard'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const highlights = [
@@ -21,36 +24,72 @@ const highlights = [
 ] as const
 
 export function MarketingHighlights() {
+  const marqueeRef = useRef<HTMLDivElement>(null)
+  const isVisible = useInView(marqueeRef, { amount: 0.15 })
   const reducedMotion = useReducedMotion()
+  const [hoverPaused, setHoverPaused] = useState(false)
+  const [focusPaused, setFocusPaused] = useState(false)
+  const [userPaused, setUserPaused] = useState(false)
+  const [pageVisible, setPageVisible] = useState(() => document.visibilityState !== 'hidden')
+  const isPaused = hoverPaused || focusPaused || userPaused || !isVisible || !pageVisible
+
+  useEffect(() => {
+    const handleVisibility = () => setPageVisible(document.visibilityState !== 'hidden')
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => document.removeEventListener('visibilitychange', handleVisibility)
+  }, [])
 
   return (
-    <section id="why-skyvault" className="flex flex-col gap-8" aria-labelledby="highlights-heading">
-      <div className="flex max-w-2xl flex-col gap-3">
-        <p className="text-sm font-semibold text-primary">Made for your everyday files</p>
-        <h2 id="highlights-heading" className="text-balance font-display text-3xl font-bold text-foreground">
-          A personal workspace, not an admin console.
-        </h2>
-      </div>
-      <div className="grid gap-6 md:grid-cols-3">
-        {highlights.map(({ title, description, icon: Icon }, index) => (
-          <motion.article
-            key={title}
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-            whileInView={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{ duration: 0.24, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
-            className="flex min-w-0 flex-col gap-5 rounded-lg bg-card p-6 shadow-rest transition duration-default ease-vault hover:-translate-y-0.5 hover:shadow-hover motion-reduce:transform-none"
+    <section id="why-skyvault" className="flex scroll-mt-32 flex-col gap-8" aria-labelledby="highlights-heading">
+      <div className="flex items-end justify-between gap-4">
+        <div className="flex max-w-2xl flex-col gap-3">
+          <p className="text-sm font-semibold text-primary">Made for your everyday files</p>
+          <h2 id="highlights-heading" className="text-balance font-display text-3xl font-bold text-foreground">
+            A personal workspace, not an admin console.
+          </h2>
+        </div>
+        {!reducedMotion ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="shrink-0"
+            aria-pressed={userPaused}
+            aria-label={userPaused ? 'Resume moving benefit cards' : 'Pause moving benefit cards'}
+            onClick={() => setUserPaused((paused) => !paused)}
+            onFocus={() => setFocusPaused(true)}
+            onBlur={() => setFocusPaused(false)}
           >
-            <span className="flex min-h-11 min-w-11 items-center justify-center rounded-md bg-card-muted text-primary">
-              <Icon aria-hidden="true" size={20} />
-            </span>
-            <div className="flex flex-col gap-2">
-              <h3 className="font-display text-xl font-bold text-foreground">{title}</h3>
-              <p className="text-pretty text-sm text-muted-foreground">{description}</p>
-            </div>
-          </motion.article>
-        ))}
+            {userPaused ? <Play aria-hidden="true" size={20} /> : <Pause aria-hidden="true" size={20} />}
+          </Button>
+        ) : null}
       </div>
+      {reducedMotion ? (
+        <div className="grid gap-6 md:grid-cols-3" data-testid="static-highlights">
+          {highlights.map((highlight) => <MarketingHighlightCard key={highlight.title} {...highlight} />)}
+        </div>
+      ) : (
+        <div
+          ref={marqueeRef}
+          className="overflow-hidden rounded-xl py-2"
+          aria-label="SkyVault benefits"
+          onPointerEnter={() => setHoverPaused(true)}
+          onPointerLeave={() => setHoverPaused(false)}
+        >
+          <div className="marketing-marquee-track flex" data-paused={isPaused} data-testid="highlights-marquee">
+            <div className="flex gap-6 pr-6">
+              {highlights.map((highlight) => (
+                <MarketingHighlightCard key={highlight.title} {...highlight} marquee />
+              ))}
+            </div>
+            <div className="flex gap-6 pr-6" aria-hidden="true">
+              {highlights.map((highlight) => (
+                <MarketingHighlightCard key={`duplicate-${highlight.title}`} {...highlight} marquee />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

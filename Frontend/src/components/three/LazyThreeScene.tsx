@@ -5,7 +5,7 @@ const ThreeScene = lazy(() => import('@/components/three/ThreeScene').then((modu
 
 export function LazyThreeScene(props: ComponentProps<typeof ThreeScene>) {
   return (
-    <Suspense fallback={<SceneFallback label={props.label} />}>
+    <Suspense fallback={<SceneFallback label={props.label} imageSrc={props.fallbackSrc} />}>
       <ThreeScene {...props} />
     </Suspense>
   )

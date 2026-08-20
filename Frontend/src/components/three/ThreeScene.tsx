@@ -7,14 +7,17 @@ import { SceneFallback } from '@/components/three/SceneFallback'
 interface ThreeSceneProps {
   label: string
   children: ReactNode
+  fallbackSrc?: string
 }
 
-export function ThreeScene({ label, children }: ThreeSceneProps) {
+export function ThreeScene({ label, children, fallbackSrc }: ThreeSceneProps) {
   const { isMd } = useBreakpoint()
   const reducedMotion = useReducedMotion()
   const hasLimitedHardware = typeof navigator !== 'undefined' && navigator.hardwareConcurrency <= 4
 
-  if (!isMd || reducedMotion || hasLimitedHardware) return <SceneFallback label={label} />
+  if (!isMd || reducedMotion || hasLimitedHardware) {
+    return <SceneFallback label={label} imageSrc={fallbackSrc} />
+  }
 
   return (
     <div className="aspect-square w-full" role="img" aria-label={label}>
