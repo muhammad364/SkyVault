@@ -8,11 +8,14 @@ using SkyVault.Services.Authentication.Security;
 using SkyVault.Models;
 using SkyVault.DTOs.Common.Responses;
 using SkyVault.Services.BackgroundJobs;
+using System.ComponentModel.DataAnnotations;
 
 namespace SkyVault.Services.Authentication;
 
 public class AuthService : IAuthService
 {
+    private const string RecoveryMessage = "If an account can receive this email, a message is on its way.";
+
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IPasswordHashService _passwordHashService;
@@ -133,25 +136,35 @@ public class AuthService : IAuthService
         };
     }
 
+    public async Task<MessageResponseDto> ResendVerificationEmailAsync(ResendVerificationRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
+
+        if (user is not null && !user.Isemailverified && user.Isactive)
+        {
+            var verificationToken = _jwtTokenService.GenerateEmailVerificationToken(user);
+            await _emailJobScheduler.QueueVerificationEmailAsync(user.Email, verificationToken, cancellationToken);
+        }
+
+        return new MessageResponseDto
+        {
+            Message = RecoveryMessage
+        };
+    }
+
     public async Task<MessageResponseDto> ForgotPasswordAsync(ForgotPasswordRequestDto request, CancellationToken cancellationToken = default)
     {
         var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
 
-        if (user == null)
+        if (user is not null && user.Isactive)
         {
-            return new MessageResponseDto
-            {
-                Message = "No user with this email exists."
-            };
+            var resetToken = _jwtTokenService.GeneratePasswordResetToken(user);
+            await _emailJobScheduler.QueuePasswordResetEmailAsync(user.Email, resetToken, cancellationToken);
         }
-
-        var resetToken = _jwtTokenService.GeneratePasswordResetToken(user);
-
-        await _emailJobScheduler.QueuePasswordResetEmailAsync(user.Email, resetToken, cancellationToken);
 
         return new MessageResponseDto
         {
-            Message = "An email has been sent to your inbox to reset your password."
+            Message = RecoveryMessage
         };
     }
     
@@ -212,6 +225,32 @@ public class AuthService : IAuthService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<UserProfileResponseDto>(user);
+    }
+
+    public async Task<MessageResponseDto> ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+
+        if (user == null)
+        {
+            throw new KeyNotFoundException("User not found.");
+        }
+
+        if (!_passwordHashService.VerifyPassword(user.Passwordhash, request.CurrentPassword))
+        {
+            throw new ValidationException("The current password is incorrect.");
+        }
+
+        user.Passwordhash = _passwordHashService.HashPassword(request.NewPassword);
+        user.Updatedat = DateTime.UtcNow;
+
+        _userRepository.Update(user);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return new MessageResponseDto
+        {
+            Message = "Password changed successfully."
+        };
     }
 
     public Task<MessageResponseDto> LogoutAsync (CancellationToken cancellationToken = default)

@@ -1,6 +1,7 @@
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
+using MimeKit.Utils;
 using SkyVault.Services.Identity;
 
 namespace SkyVault.Services.Authentication.Email;
@@ -9,7 +10,7 @@ public class EmailService : IEmailService
 {
     private readonly IEmailConfigurationProvider _configurationProvider;
     private readonly ILogger<EmailService> _logger;
-    private readonly string _baseUrl;
+    private readonly string _frontendBaseUrl;
 
     public EmailService(
         IEmailConfigurationProvider configurationProvider,
@@ -18,31 +19,31 @@ public class EmailService : IEmailService
     {
         _configurationProvider = configurationProvider;
         _logger = logger;
-        _baseUrl = configuration["AppSettings:BaseUrl"] ?? "http://localhost:5122";
+        _frontendBaseUrl = configuration["AppSettings:FrontendBaseUrl"] ?? "http://localhost:5173";
     }
 
     public async Task SendVerificationEmailAsync(string email, string verificationToken, CancellationToken cancellationToken = default)
     {
-        var link = $"{GetBaseUrl()}/api/auth/verify-email?token={Uri.EscapeDataString(verificationToken)}";
+        var link = $"{GetFrontendBaseUrl()}/auth/verify-email?token={Uri.EscapeDataString(verificationToken)}";
         await SendAsync(
             email,
             "Verify your SkyVault account",
             $"<p>Welcome to SkyVault!</p><p>Please verify your email by clicking the button below.</p>" +
-            $"<p><a href=\"{link}\">Verify email</a></p>" +
-            $"<p>If the link does not work, use this token: {verificationToken}</p>",
-            cancellationToken);
+            $"<p><a href=\"{link}\">Verify email</a></p>",
+            cancellationToken,
+            $"Welcome to SkyVault. Verify your email by opening this link: {link}");
     }
 
     public async Task SendPasswordResetEmailAsync(string email, string resetToken, CancellationToken cancellationToken = default)
     {
-        var link = $"{GetBaseUrl()}/api/auth/reset-password?token={Uri.EscapeDataString(resetToken)}";
+        var link = $"{GetFrontendBaseUrl()}/auth/reset-password?token={Uri.EscapeDataString(resetToken)}";
         await SendAsync(
             email,
             "Reset your SkyVault password",
             $"<p>You requested a password reset.</p><p>Click the link below to create a new password.</p>" +
-            $"<p><a href=\"{link}\">Reset password</a></p>" +
-            $"<p>If the link does not work, use this token: {resetToken}</p>",
-            cancellationToken);
+            $"<p><a href=\"{link}\">Reset password</a></p>",
+            cancellationToken,
+            $"Reset your SkyVault password by opening this link: {link}");
     }
 
     public async Task SendSubscriptionSuccessEmailAsync(
@@ -94,12 +95,17 @@ public class EmailService : IEmailService
             cancellationToken);
     }
 
-    private string GetBaseUrl()
+    private string GetFrontendBaseUrl()
     {
-        return _baseUrl.TrimEnd('/');
+        return _frontendBaseUrl.TrimEnd('/');
     }
 
-    private async Task SendAsync(string email, string subject, string htmlBody, CancellationToken cancellationToken)
+    private async Task SendAsync(
+        string email,
+        string subject,
+        string htmlBody,
+        CancellationToken cancellationToken,
+        string? textBody = null)
     {
         var config = await _configurationProvider.GetActiveSettingsAsync(cancellationToken);
 
@@ -110,13 +116,38 @@ public class EmailService : IEmailService
         }
 
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(config.SenderDisplayName ?? "SkyVault", config.SenderEmail));
+        var configuredSender = new MailboxAddress(config.SenderDisplayName ?? "SkyVault", config.SenderEmail);
+        message.From.Add(configuredSender);
         message.To.Add(MailboxAddress.Parse(email));
         message.Subject = subject;
-        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+        message.MessageId = MimeUtils.GenerateMessageId();
+
+        if (config.RequiresAuthentication &&
+            MailboxAddress.TryParse(config.Username, out var authenticatedMailbox))
         {
-            Text = htmlBody
-        };
+            message.Sender = authenticatedMailbox;
+            if (!string.Equals(authenticatedMailbox.Address, configuredSender.Address, StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogWarning(
+                    "SMTP sender {SenderEmail} differs from authenticated mailbox {AuthenticatedEmail}; the authenticated mailbox will be used as the envelope sender.",
+                    configuredSender.Address,
+                    authenticatedMailbox.Address);
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(textBody))
+        {
+            message.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = htmlBody };
+        }
+        else
+        {
+            var bodyBuilder = new BodyBuilder
+            {
+                TextBody = textBody,
+                HtmlBody = htmlBody
+            };
+            message.Body = bodyBuilder.ToMessageBody();
+        }
 
         try
         {
@@ -137,13 +168,19 @@ public class EmailService : IEmailService
                 await client.AuthenticateAsync(config.Username, config.Password, cancellationToken);
             }
 
-            await client.SendAsync(message, cancellationToken);
+            var smtpResponse = await client.SendAsync(message, cancellationToken);
             await client.DisconnectAsync(true, cancellationToken);
-            _logger.LogInformation("Email sent successfully to {Email} with subject {Subject}.", email, subject);
+            _logger.LogInformation(
+                "SMTP accepted email to {Email} with subject {Subject}. MessageId: {MessageId}. Response: {SmtpResponse}",
+                email,
+                subject,
+                message.MessageId,
+                smtpResponse);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send email to {Email} with subject {Subject}.", email, subject);
+            throw;
         }
     }
 }

@@ -42,6 +42,14 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPost("resend-verification")]
+    public async Task<ActionResult<MessageResponseDto>> ResendVerification(ResendVerificationRequestDto requestDto, CancellationToken cancellationToken)
+    {
+        var response = await _authService.ResendVerificationEmailAsync(requestDto, cancellationToken);
+
+        return Ok(response);
+    }
+
     [HttpPost("forgot-password")]
     public async Task<ActionResult<MessageResponseDto>> ForgotPassword(ForgotPasswordRequestDto requestDto, CancellationToken cancellationToken)
     {
@@ -76,6 +84,17 @@ public class AuthController : ControllerBase
         var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
         var response = await _authService.UpdateUserProfileAsync(userId, requestDto, cancellationToken);
+
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<ActionResult<MessageResponseDto>> ChangePassword(ChangePasswordRequestDto requestDto, CancellationToken cancellationToken)
+    {
+        var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        var response = await _authService.ChangePasswordAsync(userId, requestDto, cancellationToken);
 
         return Ok(response);
     }
