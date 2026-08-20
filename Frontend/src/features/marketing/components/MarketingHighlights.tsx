@@ -33,6 +33,16 @@ export function MarketingHighlights() {
   const [pageVisible, setPageVisible] = useState(() => document.visibilityState !== 'hidden')
   const isPaused = hoverPaused || focusPaused || userPaused || !isVisible || !pageVisible
 
+  const toggleUserPause = () => {
+    if (userPaused) {
+      setUserPaused(false)
+      setFocusPaused(false)
+      return
+    }
+
+    setUserPaused(true)
+  }
+
   useEffect(() => {
     const handleVisibility = () => setPageVisible(document.visibilityState !== 'hidden')
     document.addEventListener('visibilitychange', handleVisibility)
@@ -56,7 +66,7 @@ export function MarketingHighlights() {
             className="shrink-0"
             aria-pressed={userPaused}
             aria-label={userPaused ? 'Resume moving benefit cards' : 'Pause moving benefit cards'}
-            onClick={() => setUserPaused((paused) => !paused)}
+            onClick={toggleUserPause}
             onFocus={() => setFocusPaused(true)}
             onBlur={() => setFocusPaused(false)}
           >

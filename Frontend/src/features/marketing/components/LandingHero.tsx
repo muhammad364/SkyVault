@@ -2,7 +2,6 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
-import { BrandSignature } from '@/components/brand/BrandSignature'
 import { LazyThreeScene } from '@/components/three/LazyThreeScene'
 import { SceneErrorBoundary } from '@/components/three/SceneErrorBoundary'
 import { SceneFallback } from '@/components/three/SceneFallback'
@@ -48,15 +47,12 @@ export function LandingHero() {
         initial="initial"
         animate="animate"
         variants={{ animate: { transition: { staggerChildren: 0.04 } } }}
-        className="flex min-w-0 flex-col gap-6"
+        className="flex min-w-0 flex-col gap-6 md:gap-8"
       >
-        <motion.div variants={itemMotion} transition={{ duration: 0.32, ease: easing }}>
-          <BrandSignature variant="hero" />
-        </motion.div>
         <motion.p
           variants={itemMotion}
           transition={{ duration: 0.32, ease: easing }}
-          className="text-sm font-semibold text-primary"
+          className="text-base font-semibold text-primary md:text-lg"
         >
           Your files. Your space. Always secure.
         </motion.p>
@@ -67,11 +63,11 @@ export function LandingHero() {
         >
           <h1
             id="landing-heading"
-            className="max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-foreground md:text-5xl"
+            className="max-w-2xl text-balance font-display text-5xl font-bold leading-tight text-foreground md:text-6xl lg:text-7xl"
           >
             A quieter home for every file.
           </h1>
-          <p className="max-w-xl text-pretty text-base text-muted-foreground md:text-lg">
+          <p className="max-w-xl text-pretty text-lg text-muted-foreground md:text-xl">
             Secure storage, simple plans, and intelligent search come together in one calm personal workspace.
           </p>
         </motion.div>
@@ -80,12 +76,12 @@ export function LandingHero() {
           transition={{ duration: 0.32, ease: easing }}
           className="flex flex-col gap-3 sm:flex-row sm:items-center"
         >
-          <Button asChild>
+          <Button asChild className="text-base">
             <Link to="/auth?mode=register">
               Create your vault <ArrowRight aria-hidden="true" size={20} />
             </Link>
           </Button>
-          <Button asChild variant="ghost">
+          <Button asChild variant="ghost" className="text-base">
             <Link to="/auth?mode=login">Sign in to SkyVault</Link>
           </Button>
         </motion.div>

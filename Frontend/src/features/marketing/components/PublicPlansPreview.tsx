@@ -12,6 +12,10 @@ function billingSummary(billingCycle: number) {
   return billingCycle === 1 ? 'Billed every month' : `Billed every ${billingCycle} months`
 }
 
+function billingValue(billingCycle: number) {
+  return billingCycle === 1 ? 'Monthly' : `${billingCycle} months`
+}
+
 function formatPlanPrice(price: number) {
   return new Intl.NumberFormat('en-PK', { maximumFractionDigits: 2 }).format(price)
 }
@@ -67,13 +71,33 @@ export function PublicPlansPreview() {
             >
               <div className="flex min-h-full flex-col gap-5">
                 <StoragePlanGraphic storageSizeGb={plan.storageSizeGb} />
-                <div className="flex min-w-0 flex-col gap-2">
-                  <h3 className="truncate font-display text-xl font-bold text-foreground">{plan.name}</h3>
-                  <p className="font-mono text-3xl font-bold tabular-nums text-primary">{plan.storageSizeGb} GB</p>
-                  <p className="font-mono text-lg font-semibold tabular-nums text-foreground">
-                    PKR {formatPlanPrice(plan.price)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">{billingSummary(plan.billingCycle)}</p>
+                <div className="flex min-w-0 flex-col gap-3">
+                  <p className="text-sm font-semibold text-primary">Storage plan</p>
+                  <h3 className="truncate font-display text-2xl font-bold text-foreground">{plan.name}</h3>
+                </div>
+                <dl className="grid grid-cols-2 gap-4">
+                  <div className="min-w-0 rounded-md bg-card-muted p-4">
+                    <div className="flex flex-col gap-1">
+                      <dt className="text-sm font-medium text-muted-foreground">Storage</dt>
+                      <dd className="font-mono text-xl font-bold tabular-nums text-primary">{plan.storageSizeGb} GB</dd>
+                    </div>
+                  </div>
+                  <div className="min-w-0 rounded-md bg-card-muted p-4">
+                    <div className="flex flex-col gap-1">
+                      <dt className="text-sm font-medium text-muted-foreground">Billing</dt>
+                      <dd className="font-mono text-sm font-semibold tabular-nums text-foreground">
+                        {billingValue(plan.billingCycle)}
+                      </dd>
+                    </div>
+                  </div>
+                </dl>
+                <div className="border-t border-border pt-4">
+                  <div className="flex flex-col gap-1">
+                    <p className="font-mono text-2xl font-bold tabular-nums text-foreground">
+                      PKR {formatPlanPrice(plan.price)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{billingSummary(plan.billingCycle)}</p>
+                  </div>
                 </div>
                 <p className="text-pretty text-sm text-muted-foreground">
                   Private storage, intelligent search, and a calm workspace are included.

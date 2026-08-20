@@ -29,6 +29,13 @@ export function HowItWorks() {
         </div>
         <div className="relative">
           <motion.div
+            className="absolute bottom-0 left-6 top-0 w-px origin-top bg-primary md:hidden"
+            initial={{ opacity: 0, scaleY: reducedMotion ? 1 : 0 }}
+            animate={isVisible ? { opacity: 1, scaleY: 1 } : { opacity: 0, scaleY: reducedMotion ? 1 : 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
+            aria-hidden="true"
+          />
+          <motion.div
             className="absolute left-0 right-0 top-6 hidden h-px origin-left bg-primary md:block"
             initial={{ opacity: 0, scaleX: reducedMotion ? 1 : 0 }}
             animate={isVisible ? { opacity: 1, scaleX: 1 } : { opacity: 0, scaleX: reducedMotion ? 1 : 0 }}
@@ -42,12 +49,17 @@ export function HowItWorks() {
                 initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 8 }}
                 animate={isVisible ? { opacity: 1, y: 0 } : reducedMotion ? { opacity: 1 } : { opacity: 0, y: 8 }}
                 transition={{ duration: reducedMotion ? 0 : 0.24, delay: reducedMotion ? 0 : index * 0.04 }}
-                className="border-l border-border pl-4 md:border-0 md:pl-0"
+                className="relative pl-16 md:pl-0"
               >
                 <div className="flex min-w-0 flex-col gap-3">
-                  <span className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-card font-mono text-sm font-semibold tabular-nums text-primary shadow-rest">
+                  <motion.span
+                    initial={reducedMotion ? { opacity: 1 } : { opacity: 0, rotate: -12 }}
+                    animate={isVisible ? { opacity: 1, rotate: 0 } : reducedMotion ? { opacity: 1 } : { opacity: 0, rotate: -12 }}
+                    transition={{ duration: reducedMotion ? 0 : 0.32, delay: reducedMotion ? 0 : index * 0.04 }}
+                    className="absolute left-0 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-card font-mono text-sm font-semibold tabular-nums text-primary shadow-rest md:relative"
+                  >
                     {number}
-                  </span>
+                  </motion.span>
                   <h3 className="font-display text-xl font-bold text-foreground">{title}</h3>
                   <p className="text-pretty text-sm text-muted-foreground">{description}</p>
                 </div>

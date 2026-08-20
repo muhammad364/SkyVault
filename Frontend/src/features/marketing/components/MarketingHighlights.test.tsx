@@ -28,7 +28,10 @@ describe('MarketingHighlights', () => {
     await user.click(screen.getByRole('button', { name: 'Pause moving benefit cards' }))
 
     expect(screen.getByTestId('highlights-marquee')).toHaveAttribute('data-paused', 'true')
-    expect(screen.getByRole('button', { name: 'Resume moving benefit cards' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Resume moving benefit cards' }))
+
+    expect(screen.getByTestId('highlights-marquee')).toHaveAttribute('data-paused', 'false')
+    expect(screen.getByRole('button', { name: 'Pause moving benefit cards' })).toBeInTheDocument()
   })
 
   it('renders a static grid under reduced motion', () => {

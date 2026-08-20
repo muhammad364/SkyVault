@@ -1,7 +1,9 @@
 import { lazy } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { DeferredLandingSection } from '@/features/marketing/components/DeferredLandingSection'
 import { LandingHero } from '@/features/marketing/components/LandingHero'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const MarketingHighlights = lazy(() =>
   import('@/features/marketing/components/MarketingHighlights').then((module) => ({
@@ -18,8 +20,15 @@ const PublicPlansPreview = lazy(() =>
 )
 
 export default function LandingPage() {
+  const reducedMotion = useReducedMotion()
+
   return (
-    <div className="flex flex-col gap-12 md:gap-16">
+    <motion.div
+      initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+      animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+      transition={{ duration: reducedMotion ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
+      className="flex flex-col gap-12 md:gap-16"
+    >
       <LandingHero />
       <DeferredLandingSection label="Loading SkyVault benefits">
         <MarketingHighlights />
@@ -44,6 +53,6 @@ export default function LandingPage() {
           </Link>
         </nav>
       </footer>
-    </div>
+    </motion.div>
   )
 }
