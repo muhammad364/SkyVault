@@ -7,7 +7,7 @@ import DesignSystemPage from '@/pages/DesignSystemPage'
 describe('DesignSystemPage', () => {
   it('renders the design-system showcase and accessible theme controls', () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ThemeProvider>
           <DesignSystemPage />
         </ThemeProvider>
