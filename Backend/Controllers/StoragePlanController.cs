@@ -20,6 +20,7 @@ public class StoragePlanController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task <ActionResult<IEnumerable<StoragePlanResponseDto>>> GetAllPlans(CancellationToken cancellationToken = default)
     {
         var plans = await _storagePlanService.GetAllAsync(true, cancellationToken);

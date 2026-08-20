@@ -8,7 +8,9 @@ import { WorkspaceLayout } from '@/layouts/WorkspaceLayout'
 import { AdminRoute } from '@/routes/AdminRoute'
 import { ProtectedRoute } from '@/routes/ProtectedRoute'
 import { PublicRoute } from '@/routes/PublicRoute'
+import { PublicLayout } from '@/layouts/PublicLayout'
 
+const LandingPage = lazy(() => import('@/pages/LandingPage'))
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'))
 const StatusErrorPage = lazy(() => import('@/pages/errors/StatusErrorPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
@@ -22,8 +24,9 @@ function withSuspense(element: JSX.Element) {
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="/design-system" replace />,
+    element: <PublicLayout />,
     errorElement: <RouteErrorFallback />,
+    children: [{ index: true, element: withSuspense(<LandingPage />) }],
   },
   { path: '/design-system', element: withSuspense(<DesignSystemPage />), errorElement: <RouteErrorFallback /> },
   { path: '/errors/:status', element: withSuspense(<StatusErrorPage />), errorElement: <RouteErrorFallback /> },
