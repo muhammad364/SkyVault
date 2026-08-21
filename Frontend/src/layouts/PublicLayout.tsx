@@ -16,7 +16,7 @@ export function PublicLayout() {
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
             animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="sticky top-3 z-20 rounded-xl border border-border bg-surface p-3 shadow-rest"
+            className="sticky top-3 z-20 rounded-xl border border-border bg-card p-3 shadow-rest"
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex min-w-0 items-center justify-between gap-3">

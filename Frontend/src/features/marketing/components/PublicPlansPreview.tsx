@@ -25,13 +25,20 @@ export function PublicPlansPreview() {
   const reducedMotion = useReducedMotion()
 
   return (
-    <section id="plans" className="flex scroll-mt-32 flex-col gap-8" aria-labelledby="plans-heading">
+    <section
+      id="plans"
+      className="flex scroll-mt-32 flex-col gap-8"
+      aria-labelledby="plans-heading"
+    >
       <div className="flex max-w-2xl flex-col gap-3">
-        <p className="text-sm font-semibold text-primary">Storage plans</p>
-        <h2 id="plans-heading" className="text-balance font-display text-3xl font-bold text-foreground">
+        <p className="text-sm font-semibold text-brand">Storage plans</p>
+        <h2
+          id="plans-heading"
+          className="text-balance font-display text-3xl font-bold text-foreground"
+        >
           Choose the space that feels right for you.
         </h2>
-        <p className="text-pretty text-muted-foreground">
+        <p className="text-pretty text-secondary-foreground">
           Plan availability comes directly from SkyVault. Sign in to choose one for your vault.
         </p>
       </div>
@@ -47,7 +54,9 @@ export function PublicPlansPreview() {
           <div className="flex flex-col items-center gap-4">
             <Database aria-hidden="true" className="text-primary" size={24} />
             <div className="flex max-w-md flex-col gap-2">
-              <h3 className="font-display text-xl font-bold text-foreground">Plans are on their way.</h3>
+              <h3 className="font-display text-xl font-bold text-foreground">
+                Plans are on their way.
+              </h3>
               <p className="text-sm text-muted-foreground">
                 Create your vault and we'll help you find the right amount of space.
               </p>
@@ -66,20 +75,27 @@ export function PublicPlansPreview() {
               initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: reducedMotion ? 0 : 0.24, delay: reducedMotion ? 0 : index * 0.04 }}
+              transition={{
+                duration: reducedMotion ? 0 : 0.24,
+                delay: reducedMotion ? 0 : index * 0.04,
+              }}
               className="min-w-0 rounded-lg bg-card p-6 shadow-rest transition duration-default ease-vault hover:-translate-y-0.5 hover:shadow-hover focus-within:-translate-y-0.5 focus-within:shadow-hover motion-reduce:transform-none"
             >
               <div className="flex min-h-full flex-col gap-5">
                 <StoragePlanGraphic storageSizeGb={plan.storageSizeGb} />
                 <div className="flex min-w-0 flex-col gap-3">
-                  <p className="text-sm font-semibold text-primary">Storage plan</p>
-                  <h3 className="truncate font-display text-2xl font-bold text-foreground">{plan.name}</h3>
+                  <p className="text-sm font-semibold text-brand">Storage plan</p>
+                  <h3 className="truncate font-display text-2xl font-bold text-foreground">
+                    {plan.name}
+                  </h3>
                 </div>
                 <dl className="grid grid-cols-2 gap-4">
                   <div className="min-w-0 rounded-md bg-card-muted p-4">
                     <div className="flex flex-col gap-1">
                       <dt className="text-sm font-medium text-muted-foreground">Storage</dt>
-                      <dd className="font-mono text-xl font-bold tabular-nums text-primary">{plan.storageSizeGb} GB</dd>
+                      <dd className="font-mono text-xl font-bold tabular-nums text-primary">
+                        {plan.storageSizeGb} GB
+                      </dd>
                     </div>
                   </div>
                   <div className="min-w-0 rounded-md bg-card-muted p-4">
@@ -96,7 +112,9 @@ export function PublicPlansPreview() {
                     <p className="font-mono text-2xl font-bold tabular-nums text-foreground">
                       PKR {formatPlanPrice(plan.price)}
                     </p>
-                    <p className="text-sm text-muted-foreground">{billingSummary(plan.billingCycle)}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {billingSummary(plan.billingCycle)}
+                    </p>
                   </div>
                 </div>
                 <p className="text-pretty text-sm text-muted-foreground">

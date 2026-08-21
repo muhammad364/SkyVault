@@ -2,7 +2,9 @@ import { WifiOff } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 export function OfflineBanner() {
-  const [isOffline, setIsOffline] = useState(() => typeof navigator !== 'undefined' && !navigator.onLine)
+  const [isOffline, setIsOffline] = useState(
+    () => typeof navigator !== 'undefined' && !navigator.onLine,
+  )
 
   useEffect(() => {
     const updateOnline = () => setIsOffline(false)
@@ -25,7 +27,7 @@ export function OfflineBanner() {
       aria-live="polite"
     >
       <span className="inline-flex items-center gap-3">
-        <WifiOff aria-hidden="true" size={18} className="text-accent-amber" />
+        <WifiOff aria-hidden="true" size={18} className="text-warning" />
         You're offline. We'll reconnect to your vault automatically.
       </span>
     </aside>

@@ -20,10 +20,12 @@ export default function VerifyEmailPage() {
     if (!token || started.current) return
     started.current = true
     void verifyEmail({ token })
-      .then(() => navigate('/auth/login', {
-        replace: true,
-        state: { notice: 'Your email is verified. You can sign in now.' },
-      }))
+      .then(() =>
+        navigate('/auth/login', {
+          replace: true,
+          state: { notice: 'Your email is verified. You can sign in now.' },
+        }),
+      )
       .catch(() => undefined)
   }, [navigate, token, verifyEmail])
 
@@ -32,11 +34,17 @@ export default function VerifyEmailPage() {
       eyebrow="Email verification"
       title="Confirm your vault."
       description="We are checking the secure link from your email."
-      footer={<div className="flex justify-center text-sm"><AuthBackLink /></div>}
+      footer={
+        <div className="flex justify-center text-sm">
+          <AuthBackLink />
+        </div>
+      }
     >
       {!token ? (
         <div className="flex flex-col gap-6">
-          <FormNotice>This verification link does not contain a token. Request a new email below.</FormNotice>
+          <FormNotice>
+            This verification link does not contain a token. Request a new email below.
+          </FormNotice>
           <ResendVerificationForm />
         </div>
       ) : verify.isPending ? (
@@ -49,14 +57,20 @@ export default function VerifyEmailPage() {
       ) : verify.isSuccess ? (
         <div className="rounded-lg bg-card-muted p-6 text-center" role="status">
           <div className="flex flex-col items-center gap-3">
-            <CircleCheck aria-hidden="true" className="text-primary" size={24} />
-            <p className="font-semibold text-foreground">Your email is verified. Taking you to sign in…</p>
-            <Link className="text-sm font-semibold text-primary hover:underline" to="/auth/login">Continue now</Link>
+            <CircleCheck aria-hidden="true" className="text-success" size={24} />
+            <p className="font-semibold text-foreground">
+              Your email is verified. Taking you to sign in…
+            </p>
+            <Link className="text-sm font-semibold text-primary hover:underline" to="/auth/login">
+              Continue now
+            </Link>
           </div>
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          <FormNotice>{authErrorMessage(verify.error, 'This verification link could not be used.')}</FormNotice>
+          <FormNotice>
+            {authErrorMessage(verify.error, 'This verification link could not be used.')}
+          </FormNotice>
           <ResendVerificationForm />
         </div>
       )}

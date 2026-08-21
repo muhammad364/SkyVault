@@ -50,11 +50,18 @@ export function MarketingHighlights() {
   }, [])
 
   return (
-    <section id="why-skyvault" className="flex scroll-mt-32 flex-col gap-8" aria-labelledby="highlights-heading">
+    <section
+      id="why-skyvault"
+      className="flex scroll-mt-32 flex-col gap-8"
+      aria-labelledby="highlights-heading"
+    >
       <div className="flex items-end justify-between gap-4">
         <div className="flex max-w-2xl flex-col gap-3">
-          <p className="text-sm font-semibold text-primary">Made for your everyday files</p>
-          <h2 id="highlights-heading" className="text-balance font-display text-3xl font-bold text-foreground">
+          <p className="text-sm font-semibold text-brand">Made for your everyday files</p>
+          <h2
+            id="highlights-heading"
+            className="text-balance font-display text-3xl font-bold text-foreground"
+          >
             A personal workspace, not an admin console.
           </h2>
         </div>
@@ -70,13 +77,19 @@ export function MarketingHighlights() {
             onFocus={() => setFocusPaused(true)}
             onBlur={() => setFocusPaused(false)}
           >
-            {userPaused ? <Play aria-hidden="true" size={20} /> : <Pause aria-hidden="true" size={20} />}
+            {userPaused ? (
+              <Play aria-hidden="true" size={20} />
+            ) : (
+              <Pause aria-hidden="true" size={20} />
+            )}
           </Button>
         ) : null}
       </div>
       {reducedMotion ? (
         <div className="grid gap-6 md:grid-cols-3" data-testid="static-highlights">
-          {highlights.map((highlight) => <MarketingHighlightCard key={highlight.title} {...highlight} />)}
+          {highlights.map((highlight) => (
+            <MarketingHighlightCard key={highlight.title} {...highlight} />
+          ))}
         </div>
       ) : (
         <div
@@ -86,7 +99,11 @@ export function MarketingHighlights() {
           onPointerEnter={() => setHoverPaused(true)}
           onPointerLeave={() => setHoverPaused(false)}
         >
-          <div className="marketing-marquee-track flex" data-paused={isPaused} data-testid="highlights-marquee">
+          <div
+            className="marketing-marquee-track flex"
+            data-paused={isPaused}
+            data-testid="highlights-marquee"
+          >
             <div className="flex gap-6 pr-6">
               {highlights.map((highlight) => (
                 <MarketingHighlightCard key={highlight.title} {...highlight} marquee />
@@ -94,7 +111,11 @@ export function MarketingHighlights() {
             </div>
             <div className="flex gap-6 pr-6" aria-hidden="true">
               {highlights.map((highlight) => (
-                <MarketingHighlightCard key={`duplicate-${highlight.title}`} {...highlight} marquee />
+                <MarketingHighlightCard
+                  key={`duplicate-${highlight.title}`}
+                  {...highlight}
+                  marquee
+                />
               ))}
             </div>
           </div>

@@ -14,14 +14,21 @@ export default function CheckEmailPage() {
       eyebrow="One calm step left"
       title="Check your inbox."
       description="Use the verification link we sent before signing in."
-      footer={<div className="flex justify-center text-sm"><AuthBackLink label="Return to sign in" /></div>}
+      footer={
+        <div className="flex justify-center text-sm">
+          <AuthBackLink label="Return to sign in" />
+        </div>
+      }
     >
       <div className="flex flex-col gap-6">
         {state?.notice ? <FormNotice>{state.notice}</FormNotice> : null}
         <div className="rounded-lg bg-card-muted p-6 text-center">
           <div className="flex flex-col items-center gap-3">
-            <MailCheck aria-hidden="true" className="text-primary" size={24} />
-            <p className="text-sm text-muted-foreground">Email delivery may take a moment. Check Spam or Junk, then request another message below if needed.</p>
+            <MailCheck aria-hidden="true" className="text-success" size={24} />
+            <p className="text-sm text-muted-foreground">
+              Email delivery may take a moment. Check Spam or Junk, then request another message
+              below if needed.
+            </p>
           </div>
         </div>
         <ResendVerificationForm defaultEmail={state?.email} />

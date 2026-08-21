@@ -17,13 +17,16 @@ describe('LandingHero', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('heading', { name: 'A quieter home for every file.' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'A quieter home for every file.' }),
+    ).toBeInTheDocument()
     expect(screen.queryByText('SkyVault')).not.toBeInTheDocument()
     expect(document.querySelector('img[src*="skyvault-emblem"]')).not.toBeInTheDocument()
-    expect(screen.getByAltText('A heavy SkyVault safe with a circular locking door')).toHaveAttribute(
-      'src',
-      '/brand/landing-vault-fallback-v2.png',
-    )
+    expect(
+      screen
+        .getByRole('img', { name: 'A heavy SkyVault safe with a circular locking door' })
+        .querySelector('img'),
+    ).toHaveAttribute('src', '/brand/landing-vault-fallback-light-v3.png')
     expect(document.querySelector('canvas')).not.toBeInTheDocument()
   })
 })

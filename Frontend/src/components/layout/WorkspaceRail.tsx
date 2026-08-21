@@ -1,5 +1,6 @@
 import { Archive, Folder, HardDrive, Home, Search, Settings, ShieldCheck } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
+import { BrandMark } from '@/components/brand/BrandMark'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -18,8 +19,10 @@ export function WorkspaceRail() {
       className="fixed inset-x-3 bottom-3 z-40 rounded-full bg-card p-2 shadow-float md:sticky md:left-auto md:top-5 md:flex md:min-h-dvh md:w-20 md:flex-col md:rounded-2xl md:p-3 lg:w-56"
     >
       <div className="hidden items-center gap-3 px-2 py-3 lg:flex">
-        <img src="/brand/skyvault-mark.svg" className="h-8 w-8" alt="" />
-        <span className="font-display text-lg font-bold text-foreground">SkyVault</span>
+        <BrandMark className="h-8 w-8" />
+        <span className="font-display text-lg font-bold text-foreground">
+          Sky<span className="text-brand">Vault</span>
+        </span>
       </div>
       <div className="grid grid-cols-6 gap-1 md:flex md:flex-1 md:flex-col md:gap-2 md:pt-4">
         {navItems.map((item) => {
@@ -41,7 +44,7 @@ export function WorkspaceRail() {
                 <>
                   <span
                     className={cn(
-                      'hidden h-6 w-1 rounded-full bg-primary md:absolute md:left-0 md:block',
+                      'hidden h-6 w-1 rounded-full bg-brand md:absolute md:left-0 md:block',
                       !isActive && 'opacity-0',
                     )}
                     aria-hidden="true"

@@ -97,7 +97,7 @@ export default function SubscribeCheckoutPage() {
         submitDisabled={replacesActivePlan && !replacementConfirmed}
         acknowledgement={
           replacesActivePlan ? (
-            <label className="flex min-h-11 cursor-pointer items-start gap-3 rounded-lg bg-accent-amber-soft p-4 text-sm text-foreground">
+            <label className="flex min-h-11 cursor-pointer items-start gap-3 rounded-lg bg-warning-soft p-4 text-sm text-warning">
               <input
                 type="checkbox"
                 className="mt-1 h-5 w-5 shrink-0 accent-primary"

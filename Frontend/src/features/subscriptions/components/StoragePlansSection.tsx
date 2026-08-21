@@ -16,14 +16,14 @@ export function StoragePlansSection() {
       aria-labelledby="storage-plans-heading"
     >
       <div className="flex max-w-2xl flex-col gap-3">
-        <p className="text-sm font-semibold text-primary">Storage plans</p>
+        <p className="text-sm font-semibold text-brand">Storage plans</p>
         <h2
           id="storage-plans-heading"
           className="text-balance font-display text-3xl font-bold text-foreground"
         >
           Choose room for the life inside your vault.
         </h2>
-        <p className="text-pretty text-sm text-muted-foreground">
+        <p className="text-pretty text-sm text-secondary-foreground">
           Every plan and price below comes directly from SkyVault.
         </p>
       </div>
@@ -74,13 +74,13 @@ export function StoragePlansSection() {
                 <div className="flex flex-col gap-5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex min-w-0 flex-col gap-2">
-                      <p className="text-sm font-semibold text-primary">Storage plan</p>
+                      <p className="text-sm font-semibold text-brand">Storage plan</p>
                       <h3 className="truncate font-display text-2xl font-bold text-foreground">
                         {plan.name}
                       </h3>
                     </div>
                     {recommended ? (
-                      <span className="flex items-center gap-2 rounded-full bg-accent-amber-soft px-3 py-1 text-sm font-semibold text-foreground">
+                      <span className="flex items-center gap-2 rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand">
                         <Sparkles aria-hidden="true" size={16} /> Recommended
                       </span>
                     ) : null}

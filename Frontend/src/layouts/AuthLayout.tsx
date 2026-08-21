@@ -11,7 +11,9 @@ export function AuthLayout() {
           <aside className="hidden overflow-hidden rounded-2xl bg-canvas-strong p-8 md:flex md:flex-col md:justify-between">
             <BrandSignature />
             <AuthVisual />
-            <p className="max-w-sm text-pretty text-sm text-foreground">Your files. Your space. Always secure.</p>
+            <p className="max-w-sm text-pretty text-sm text-brand">
+              Your files. Your space. Always secure.
+            </p>
           </aside>
           <section className="flex min-w-0 flex-col gap-8">
             <div className="flex items-center justify-between gap-4 md:justify-end">

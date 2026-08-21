@@ -27,7 +27,7 @@ export function MarketingHighlightCard({
         </span>
         <div className="flex flex-col gap-2">
           <h3 className="font-display text-xl font-bold text-foreground">{title}</h3>
-          <p className="text-pretty text-sm text-muted-foreground">{description}</p>
+          <p className="text-pretty text-sm text-secondary-foreground">{description}</p>
         </div>
       </div>
     </article>

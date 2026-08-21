@@ -69,7 +69,7 @@ export function CheckoutFailure({ description, onRetry }: CheckoutFailureProps) 
       className="flex min-h-96 flex-col items-center justify-center gap-6 rounded-xl bg-card p-8 text-center shadow-float"
       role="alert"
     >
-      <span className="flex min-h-16 min-w-16 items-center justify-center rounded-full bg-accent-coral-soft text-accent-coral">
+      <span className="flex min-h-16 min-w-16 items-center justify-center rounded-full bg-danger-soft text-danger">
         <RotateCcw aria-hidden="true" size={32} />
       </span>
       <div className="flex max-w-md flex-col gap-2">

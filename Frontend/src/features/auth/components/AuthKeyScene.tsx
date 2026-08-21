@@ -14,14 +14,24 @@ export default function AuthKeyScene({ active }: AuthKeySceneProps) {
   const objectRef = useRef<Group>(null)
   const dialRef = useRef<Group>(null)
   const invalidate = useThree((state) => state.invalidate)
-  const { primary, primaryForeground, accentAmber, cardMuted } = useThreeThemeColors()
+  const { brand, zinc700, zinc600, zinc400, zinc300 } = useThreeThemeColors()
 
-  useEffect(() => invalidate(), [active, invalidate, primary])
+  useEffect(() => invalidate(), [active, brand, invalidate])
 
   useFrame((state, delta) => {
     if (!objectRef.current || !dialRef.current) return
-    objectRef.current.rotation.x = MathUtils.damp(objectRef.current.rotation.x, -state.pointer.y * maxTilt, 4, delta)
-    objectRef.current.rotation.y = MathUtils.damp(objectRef.current.rotation.y, state.pointer.x * maxTilt, 4, delta)
+    objectRef.current.rotation.x = MathUtils.damp(
+      objectRef.current.rotation.x,
+      -state.pointer.y * maxTilt,
+      4,
+      delta,
+    )
+    objectRef.current.rotation.y = MathUtils.damp(
+      objectRef.current.rotation.y,
+      state.pointer.x * maxTilt,
+      4,
+      delta,
+    )
     dialRef.current.rotation.z += delta * 0.16
     if (active) invalidate()
   })
@@ -33,36 +43,40 @@ export default function AuthKeyScene({ active }: AuthKeySceneProps) {
       <group ref={objectRef} rotation={[0.06, -0.08, 0]}>
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[-0.45, 0, 0]}>
           <cylinderGeometry args={[0.95, 0.95, 0.28, 48]} />
-          <meshStandardMaterial color={primary} metalness={0.16} roughness={0.48} />
+          <meshStandardMaterial color={zinc700} metalness={0.16} roughness={0.48} />
         </mesh>
         <group ref={dialRef} position={[-0.45, 0, 0.2]}>
           <mesh>
             <torusGeometry args={[0.64, 0.08, 16, 48]} />
-            <meshStandardMaterial color={primaryForeground} metalness={0.3} roughness={0.3} />
+            <meshStandardMaterial color={zinc300} metalness={0.3} roughness={0.3} />
           </mesh>
           {spokeAngles.map((angle) => (
-            <mesh key={angle} position={[Math.sin(angle) * 0.31, Math.cos(angle) * 0.31, 0]} rotation={[0, 0, -angle]}>
+            <mesh
+              key={angle}
+              position={[Math.sin(angle) * 0.31, Math.cos(angle) * 0.31, 0]}
+              rotation={[0, 0, -angle]}
+            >
               <boxGeometry args={[0.07, 0.62, 0.07]} />
-              <meshStandardMaterial color={primaryForeground} metalness={0.28} roughness={0.32} />
+              <meshStandardMaterial color={zinc300} metalness={0.28} roughness={0.32} />
             </mesh>
           ))}
           <mesh position={[0, 0, 0.08]}>
             <sphereGeometry args={[0.16, 24, 24]} />
-            <meshStandardMaterial color={accentAmber} metalness={0.2} roughness={0.3} />
+            <meshStandardMaterial color={brand} metalness={0.2} roughness={0.3} />
           </mesh>
         </group>
         <group position={[0.62, 0, 0.08]}>
           <mesh rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.16, 0.16, 1.25, 24]} />
-            <meshStandardMaterial color={cardMuted} metalness={0.24} roughness={0.34} />
+            <meshStandardMaterial color={zinc400} metalness={0.24} roughness={0.34} />
           </mesh>
           <mesh position={[0.66, -0.18, 0]}>
             <boxGeometry args={[0.34, 0.36, 0.24]} />
-            <meshStandardMaterial color={cardMuted} metalness={0.24} roughness={0.34} />
+            <meshStandardMaterial color={zinc400} metalness={0.24} roughness={0.34} />
           </mesh>
           <mesh position={[0.94, 0.15, 0]}>
             <boxGeometry args={[0.28, 0.3, 0.24]} />
-            <meshStandardMaterial color={primary} metalness={0.18} roughness={0.42} />
+            <meshStandardMaterial color={zinc600} metalness={0.18} roughness={0.42} />
           </mesh>
         </group>
       </group>

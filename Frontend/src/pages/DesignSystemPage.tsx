@@ -1,5 +1,6 @@
 import { Moon, Sun } from 'lucide-react'
 import { type ReactNode } from 'react'
+import { BrandSignature } from '@/components/brand/BrandSignature'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Badge } from '@/components/ui/badge'
@@ -17,7 +18,10 @@ interface ShowcaseSectionProps {
 function ShowcaseSection({ title, children }: ShowcaseSectionProps) {
   return (
     <section className="flex flex-col gap-6" aria-labelledby={`${title.toLowerCase()}-heading`}>
-      <h2 id={`${title.toLowerCase()}-heading`} className="font-display text-2xl font-bold text-foreground">
+      <h2
+        id={`${title.toLowerCase()}-heading`}
+        className="font-display text-2xl font-bold text-foreground"
+      >
         {title}
       </h2>
       {children}
@@ -27,9 +31,13 @@ function ShowcaseSection({ title, children }: ShowcaseSectionProps) {
 
 function ThemePreview({ theme, children }: { theme: 'light' | 'dark'; children: ReactNode }) {
   return (
-    <div className={theme === 'dark' ? 'dark rounded-xl bg-canvas p-4' : 'rounded-xl bg-canvas p-4'}>
+    <div
+      className={theme === 'dark' ? 'dark rounded-xl bg-canvas p-4' : 'rounded-xl bg-canvas p-4'}
+    >
       <Card className="flex flex-col gap-4">
-        <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">{theme} theme</p>
+        <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+          {theme} theme
+        </p>
         {children}
       </Card>
     </div>
@@ -45,20 +53,15 @@ function DesignSystemPage() {
       <div className="mx-auto flex min-h-dvh max-w-screen-xl flex-col gap-8 rounded-2xl bg-surface p-6 shadow-float md:p-8">
         <header className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 flex-col gap-3">
-            <img
-              className="h-auto w-36 dark:hidden"
-              src="/brand/skyvault-logo-horizontal.png"
-              alt="SkyVault"
-            />
-            <img
-              className="hidden h-auto w-36 dark:block"
-              src="/brand/skyvault-logo-horizontal-dark.png"
-              alt="SkyVault"
-            />
+            <BrandSignature variant="compact" />
             <div className="flex flex-col gap-2">
-              <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">Phase 0</p>
-              <h1 className="font-display text-3xl font-bold text-foreground md:text-4xl">Design system</h1>
-              <p className="max-w-xl text-pretty text-muted-foreground">
+              <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+                Phase 0
+              </p>
+              <h1 className="font-display text-3xl font-bold text-foreground md:text-4xl">
+                Design system
+              </h1>
+              <p className="max-w-xl text-pretty text-secondary-foreground">
                 The calm, accessible foundation for your personal workspace.
               </p>
             </div>
@@ -121,14 +124,25 @@ function DesignSystemPage() {
               <Button variant="destructive">Remove item</Button>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              <label htmlFor="design-system-email" className="flex flex-col gap-2 text-sm font-medium text-foreground">
+              <label
+                htmlFor="design-system-email"
+                className="flex flex-col gap-2 text-sm font-medium text-foreground"
+              >
                 Your email
                 <Input id="design-system-email" type="email" placeholder="you@example.com" />
               </label>
-              <label htmlFor="design-system-error" className="flex flex-col gap-2 text-sm font-medium text-foreground">
+              <label
+                htmlFor="design-system-error"
+                className="flex flex-col gap-2 text-sm font-medium text-foreground"
+              >
                 With supporting error
-                <Input id="design-system-error" aria-invalid="true" placeholder="A field with feedback" className="border-accent-coral" />
-                <span className="text-sm text-accent-coral">Check this detail and try again.</span>
+                <Input
+                  id="design-system-error"
+                  aria-invalid="true"
+                  placeholder="A field with feedback"
+                  className="border-danger"
+                />
+                <span className="text-sm text-danger">Check this detail and try again.</span>
               </label>
             </div>
           </Card>
@@ -148,7 +162,10 @@ function DesignSystemPage() {
               actionLabel="Learn more"
               onAction={() => undefined}
             />
-            <ErrorState description="Your friendly retry state appears here without exposing service details." onRetry={() => undefined} />
+            <ErrorState
+              description="Your friendly retry state appears here without exposing service details."
+              onRetry={() => undefined}
+            />
           </div>
         </ShowcaseSection>
       </div>

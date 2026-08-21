@@ -30,7 +30,7 @@ describe('QuotaCard', () => {
     )
     const meter = screen.getByRole('meter', { name: 'Storage used' })
     expect(meter).toHaveAttribute('aria-valuenow', '80')
-    expect(meter.firstElementChild).toHaveClass('bg-accent-amber')
+    expect(meter.firstElementChild).toHaveClass('bg-warning-strong')
     expect(screen.getByText('20 GB ready for what comes next.')).toBeInTheDocument()
   })
 
@@ -42,7 +42,7 @@ describe('QuotaCard', () => {
         />
       </MemoryRouter>,
     )
-    expect(screen.getByRole('meter').firstElementChild).toHaveClass('bg-accent-coral')
+    expect(screen.getByRole('meter').firstElementChild).toHaveClass('bg-danger')
     expect(screen.getByText(/over its current allocation/i)).toBeInTheDocument()
   })
 

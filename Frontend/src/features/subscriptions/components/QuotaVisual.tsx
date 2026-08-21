@@ -12,6 +12,7 @@ export function QuotaVisual({ usagePercentage }: QuotaVisualProps) {
     <LazyThreeScene
       label={`A vault volume filled to ${usagePercentage}% of your storage allocation`}
       fallbackSrc="/brand/quota-vault-fallback.svg"
+      fallbackDarkSrc="/brand/quota-vault-fallback-dark-v3.svg"
     >
       <Suspense fallback={null}>
         <QuotaVolumeScene usagePercentage={usagePercentage} />

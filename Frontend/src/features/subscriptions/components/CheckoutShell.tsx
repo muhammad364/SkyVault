@@ -26,9 +26,9 @@ export function CheckoutShell({
         </Link>
       </Button>
       <header className="flex max-w-2xl flex-col gap-3">
-        <p className="text-sm font-semibold text-primary">{eyebrow}</p>
+        <p className="text-sm font-semibold text-brand">{eyebrow}</p>
         <h2 className="text-balance font-display text-4xl font-bold text-foreground">{title}</h2>
-        <p className="text-pretty text-muted-foreground">{description}</p>
+        <p className="text-pretty text-secondary-foreground">{description}</p>
       </header>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
         <aside className="rounded-xl bg-card-muted p-6">{summary}</aside>

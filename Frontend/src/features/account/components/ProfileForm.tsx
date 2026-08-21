@@ -17,20 +17,29 @@ interface ProfileFormProps {
 
 export function ProfileForm({ profile }: ProfileFormProps) {
   const updateProfile = useUpdateProfile()
-  const { register, handleSubmit, setError, formState: { errors, isDirty }, reset } = useForm<ProfileValues>({
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isDirty },
+    reset,
+  } = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: { firstName: profile.firstName, lastName: profile.lastName },
   })
 
   const submit = (values: ProfileValues) => {
     updateProfile.mutate(values, {
-      onSuccess: (updatedProfile) => reset({
-        firstName: updatedProfile.firstName,
-        lastName: updatedProfile.lastName,
-      }),
+      onSuccess: (updatedProfile) =>
+        reset({
+          firstName: updatedProfile.firstName,
+          lastName: updatedProfile.lastName,
+        }),
       onError: (error) => {
         if (applyApiFieldErrors(error, setError, ['firstName', 'lastName'])) return
-        setError('root', { message: authErrorMessage(error, "We couldn't update your profile right now.") })
+        setError('root', {
+          message: authErrorMessage(error, "We couldn't update your profile right now."),
+        })
       },
     })
   }
@@ -40,31 +49,67 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       <div className="flex flex-col gap-6">
         <header className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm font-semibold text-primary">Your identity</p>
+            <p className="text-sm font-semibold text-brand">Your identity</p>
             {profile.isEmailVerified ? (
               <span className="inline-flex items-center gap-2 rounded-full bg-card-muted px-3 py-1 text-xs font-semibold text-foreground">
-                <CircleCheck aria-hidden="true" className="text-primary" size={16} /> Verified email
+                <CircleCheck aria-hidden="true" className="text-success" size={16} /> Verified email
               </span>
             ) : null}
           </div>
           <div className="flex flex-col gap-2">
-            <h2 id="profile-heading" className="font-display text-2xl font-bold text-foreground">Profile details</h2>
-            <p className="text-sm text-muted-foreground">Keep the name attached to your private workspace current.</p>
+            <h2 id="profile-heading" className="font-display text-2xl font-bold text-foreground">
+              Profile details
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Keep the name attached to your private workspace current.
+            </p>
           </div>
         </header>
 
         <form className="flex flex-col gap-5" onSubmit={handleSubmit(submit)} noValidate>
           <div className="grid gap-4 sm:grid-cols-2">
-            <AuthFormField id="profile-first-name" label="First name" autoComplete="given-name" error={errors.firstName?.message} {...register('firstName')} />
-            <AuthFormField id="profile-last-name" label="Last name" autoComplete="family-name" error={errors.lastName?.message} {...register('lastName')} />
+            <AuthFormField
+              id="profile-first-name"
+              label="First name"
+              autoComplete="given-name"
+              error={errors.firstName?.message}
+              {...register('firstName')}
+            />
+            <AuthFormField
+              id="profile-last-name"
+              label="Last name"
+              autoComplete="family-name"
+              error={errors.lastName?.message}
+              {...register('lastName')}
+            />
           </div>
-          <AuthFormField id="profile-email" type="email" label="Email address" value={profile.email} readOnly aria-readonly="true" />
+          <AuthFormField
+            id="profile-email"
+            type="email"
+            label="Email address"
+            value={profile.email}
+            readOnly
+            aria-readonly="true"
+          />
           {errors.root?.message ? <FormNotice>{errors.root.message}</FormNotice> : null}
-          {updateProfile.isSuccess && !isDirty ? <FormNotice tone="success">Your profile has been updated.</FormNotice> : null}
+          {updateProfile.isSuccess && !isDirty ? (
+            <FormNotice tone="success">Your profile has been updated.</FormNotice>
+          ) : null}
           <div className="flex flex-wrap gap-3">
-            <AuthSubmitButton pending={updateProfile.isPending} idleLabel="Save changes" pendingLabel="Saving changes" />
+            <AuthSubmitButton
+              pending={updateProfile.isPending}
+              idleLabel="Save changes"
+              pendingLabel="Saving changes"
+            />
             {isDirty ? (
-              <Button type="button" variant="ghost" onClick={() => reset()} disabled={updateProfile.isPending}>Discard</Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => reset()}
+                disabled={updateProfile.isPending}
+              >
+                Discard
+              </Button>
             ) : null}
           </div>
         </form>

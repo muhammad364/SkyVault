@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title description">
+  <title id="title">SkyVault key and vault dial</title>
+  <desc id="description">A graphite vault dial connected to a zinc key</desc>
+  <rect width="640" height="640" rx="96" fill="#24272A"/>
+  <circle cx="260" cy="292" r="148" fill="#2E343C"/>
+  <circle cx="260" cy="292" r="112" fill="none" stroke="#D5D8DC" stroke-width="24"/>
+  <g stroke="#D5D8DC" stroke-width="18" stroke-linecap="round">
+    <path d="M260 180v224"/>
+    <path d="M148 292h224"/>
+    <path d="m181 213 158 158"/>
+    <path d="m339 213-158 158"/>
+  </g>
+  <circle cx="260" cy="292" r="38" fill="#E37B91" stroke="#D5D8DC" stroke-width="14"/>
+  <path d="M370 292h154v62h-44v48h-58v-48h-52z" fill="#B9BDC2" stroke="#515862" stroke-width="16" stroke-linejoin="round"/>
+</svg>

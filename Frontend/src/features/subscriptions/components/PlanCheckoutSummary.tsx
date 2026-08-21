@@ -20,7 +20,7 @@ export function PlanCheckoutSummary({
         <Database aria-hidden="true" size={24} />
       </span>
       <div className="flex min-w-0 flex-col gap-2">
-        <p className="text-sm font-semibold text-primary">Your selection</p>
+        <p className="text-sm font-semibold text-brand">Your selection</p>
         <h3 className="truncate font-display text-2xl font-bold text-foreground">{name}</h3>
       </div>
       <dl className="flex flex-col gap-4">

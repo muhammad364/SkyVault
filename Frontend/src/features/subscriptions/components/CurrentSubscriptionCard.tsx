@@ -46,7 +46,7 @@ export function CurrentSubscriptionCard() {
         aria-labelledby="current-plan-heading"
       >
         <div className="flex flex-col gap-3">
-          <p className="text-sm font-semibold text-primary">Current plan</p>
+          <p className="text-sm font-semibold text-brand">Current plan</p>
           <h2 id="current-plan-heading" className="font-display text-2xl font-bold text-foreground">
             No plan yet
           </h2>
@@ -84,7 +84,7 @@ export function CurrentSubscriptionCard() {
       <div className="flex flex-col gap-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 flex-col gap-2">
-            <p className="text-sm font-semibold text-primary">Current plan</p>
+            <p className="text-sm font-semibold text-brand">Current plan</p>
             <h2
               id="current-plan-heading"
               className="truncate font-display text-2xl font-bold text-foreground"
@@ -96,7 +96,7 @@ export function CurrentSubscriptionCard() {
             className={
               active
                 ? 'rounded-full bg-card-muted px-3 py-1 text-sm font-semibold text-primary'
-                : 'rounded-full bg-accent-amber-soft px-3 py-1 text-sm font-semibold text-foreground'
+                : 'rounded-full bg-warning-soft px-3 py-1 text-sm font-semibold text-warning'
             }
           >
             {subscriptionStatusLabel(current.status)}
@@ -129,8 +129,8 @@ export function CurrentSubscriptionCard() {
           </div>
         </dl>
         {!active && current.gracePeriodEndDate ? (
-          <div className="flex items-start gap-3 rounded-md bg-accent-amber-soft p-4 text-sm text-foreground">
-            <CalendarClock aria-hidden="true" className="shrink-0 text-accent-amber" size={20} />
+          <div className="flex items-start gap-3 rounded-md bg-warning-soft p-4 text-sm text-warning">
+            <CalendarClock aria-hidden="true" className="shrink-0 text-warning" size={20} />
             <span>
               Renew by {formatDate(current.gracePeriodEndDate)} to reactivate this plan and your
               additional storage.
@@ -171,7 +171,7 @@ export function CurrentSubscriptionCard() {
                 </DialogDescription>
               </DialogHeader>
               {cancelSubscription.isError ? (
-                <p className="pt-4 text-sm text-accent-coral" role="alert">
+                <p className="pt-4 text-sm text-danger" role="alert">
                   {storageErrorMessage(
                     cancelSubscription.error,
                     "We couldn't cancel your plan. Nothing was changed.",

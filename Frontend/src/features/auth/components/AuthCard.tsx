@@ -22,10 +22,12 @@ export function AuthCard({ eyebrow, title, description, children, footer }: Auth
     >
       <div className="flex flex-col gap-6">
         <header className="flex flex-col gap-3">
-          <p className="text-sm font-semibold text-primary">{eyebrow}</p>
+          <p className="text-sm font-semibold text-brand">{eyebrow}</p>
           <div className="flex flex-col gap-2">
-            <h1 className="text-balance font-display text-3xl font-bold leading-tight text-foreground">{title}</h1>
-            <p className="text-pretty text-sm text-muted-foreground">{description}</p>
+            <h1 className="text-balance font-display text-3xl font-bold leading-tight text-foreground">
+              {title}
+            </h1>
+            <p className="text-pretty text-sm text-secondary-foreground">{description}</p>
           </div>
         </header>
         {children}

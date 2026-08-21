@@ -10,7 +10,8 @@ import { useBreakpoint } from '@/hooks/useBreakpoint'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const LandingVaultScene = lazy(() => import('@/features/marketing/components/LandingVaultScene'))
-const fallbackSrc = '/brand/landing-vault-fallback-v2.png'
+const fallbackSrc = '/brand/landing-vault-fallback-light-v3.png'
+const fallbackDarkSrc = '/brand/landing-vault-fallback-dark-v3.png'
 
 const easing = [0.22, 1, 0.36, 1] as const
 
@@ -52,7 +53,7 @@ export function LandingHero() {
         <motion.p
           variants={itemMotion}
           transition={{ duration: 0.32, ease: easing }}
-          className="text-base font-semibold text-primary md:text-lg"
+          className="text-base font-semibold text-brand md:text-lg"
         >
           Your files. Your space. Always secure.
         </motion.p>
@@ -67,8 +68,9 @@ export function LandingHero() {
           >
             A quieter home for every file.
           </h1>
-          <p className="max-w-xl text-pretty text-lg text-muted-foreground md:text-xl">
-            Secure storage, simple plans, and intelligent search come together in one calm personal workspace.
+          <p className="max-w-xl text-pretty text-lg text-secondary-foreground md:text-xl">
+            Secure storage, simple plans, and intelligent search come together in one calm personal
+            workspace.
           </p>
         </motion.div>
         <motion.div
@@ -100,18 +102,32 @@ export function LandingHero() {
           <SceneErrorBoundary
             label="A heavy SkyVault safe with a circular locking door"
             imageSrc={fallbackSrc}
+            darkImageSrc={fallbackDarkSrc}
           >
-            <Suspense fallback={<SceneFallback label="A heavy SkyVault safe" imageSrc={fallbackSrc} />}>
+            <Suspense
+              fallback={
+                <SceneFallback
+                  label="A heavy SkyVault safe"
+                  imageSrc={fallbackSrc}
+                  darkImageSrc={fallbackDarkSrc}
+                />
+              }
+            >
               <LazyThreeScene
                 label="A heavy SkyVault safe with a circular locking door"
                 fallbackSrc={fallbackSrc}
+                fallbackDarkSrc={fallbackDarkSrc}
               >
                 <LandingVaultScene active={isVisible} engaged={engaged} />
               </LazyThreeScene>
             </Suspense>
           </SceneErrorBoundary>
         ) : (
-          <SceneFallback label="A heavy SkyVault safe with a circular locking door" imageSrc={fallbackSrc} />
+          <SceneFallback
+            label="A heavy SkyVault safe with a circular locking door"
+            imageSrc={fallbackSrc}
+            darkImageSrc={fallbackDarkSrc}
+          />
         )}
       </motion.div>
     </section>

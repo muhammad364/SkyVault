@@ -17,17 +17,27 @@ export default function LandingVaultScene({ active, engaged }: LandingVaultScene
   const vaultRef = useRef<Group>(null)
   const dialRef = useRef<Group>(null)
   const invalidate = useThree((state) => state.invalidate)
-  const { primary, primaryForeground, accentAmber, cardMuted, border } = useThreeThemeColors()
+  const { brand, zinc900, zinc700, zinc600, zinc400, zinc300, zincDoor } = useThreeThemeColors()
 
   useEffect(() => {
     invalidate()
-  }, [active, engaged, invalidate, primary])
+  }, [active, brand, engaged, invalidate])
 
   useFrame((state, delta) => {
     if (!vaultRef.current || !dialRef.current) return
 
-    vaultRef.current.rotation.x = MathUtils.damp(vaultRef.current.rotation.x, -state.pointer.y * maxTilt, 4, delta)
-    vaultRef.current.rotation.y = MathUtils.damp(vaultRef.current.rotation.y, state.pointer.x * maxTilt, 4, delta)
+    vaultRef.current.rotation.x = MathUtils.damp(
+      vaultRef.current.rotation.x,
+      -state.pointer.y * maxTilt,
+      4,
+      delta,
+    )
+    vaultRef.current.rotation.y = MathUtils.damp(
+      vaultRef.current.rotation.y,
+      state.pointer.x * maxTilt,
+      4,
+      delta,
+    )
     dialRef.current.rotation.z += delta * (engaged ? 1.35 : 0.18)
 
     if (active) invalidate()
@@ -38,13 +48,13 @@ export default function LandingVaultScene({ active, engaged }: LandingVaultScene
       <ambientLight intensity={1.15} />
       <directionalLight position={[3, 4, 5]} intensity={1.9} />
       <group ref={vaultRef} rotation={[0.04, -0.08, 0]} scale={0.92}>
-        <VaultBody bodyColor={primary} panelColor={cardMuted} rimColor={primaryForeground} />
-        <VaultHardware fastenerColor={primary} hingeColor={border} />
+        <VaultBody bodyColor={zinc600} panelColor={zincDoor} rimColor={zinc300} />
+        <VaultHardware fastenerColor={zinc900} hingeColor={zinc400} />
         <VaultDial
           dialRef={dialRef}
-          backplateColor={primary}
-          wheelColor={primaryForeground}
-          hubColor={accentAmber}
+          backplateColor={zinc700}
+          wheelColor={zinc300}
+          hubColor={brand}
         />
       </group>
     </>

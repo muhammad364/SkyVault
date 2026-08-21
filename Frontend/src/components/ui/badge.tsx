@@ -6,14 +6,15 @@ const badgeVariants = cva('inline-flex items-center rounded-full px-3 py-1 text-
   variants: {
     variant: {
       default: 'bg-card-muted text-foreground',
-      warning: 'bg-accent-amber-soft text-foreground',
-      destructive: 'bg-accent-coral-soft text-foreground',
+      warning: 'bg-warning-soft text-warning',
+      destructive: 'bg-danger-soft text-danger',
     },
   },
   defaultVariants: { variant: 'default' },
 })
 
-export interface BadgeProps extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {}
+export interface BadgeProps
+  extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {}
 
 export function Badge({ className, variant, ...props }: BadgeProps) {
   return <span className={cn(badgeVariants({ variant }), className)} {...props} />

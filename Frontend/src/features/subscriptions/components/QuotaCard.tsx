@@ -13,9 +13,9 @@ export function QuotaCard({ quota }: QuotaCardProps) {
   const boundedPercentage = Math.max(0, Math.min(100, quota.usagePercentage))
   const signalClass =
     quota.usagePercentage >= 95
-      ? 'bg-accent-coral'
+      ? 'bg-danger'
       : quota.usagePercentage >= 80
-        ? 'bg-accent-amber'
+        ? 'bg-warning-strong'
         : 'bg-primary'
   const SignalIcon =
     quota.isOverQuota || !quota.canPerformStorageWriteOperations ? AlertTriangle : ShieldCheck
@@ -27,7 +27,7 @@ export function QuotaCard({ quota }: QuotaCardProps) {
     >
       <div className="flex min-w-0 flex-col justify-between gap-8">
         <div className="flex flex-col gap-3">
-          <p className="text-sm font-semibold text-primary">Your storage allocation</p>
+          <p className="text-sm font-semibold text-brand">Your storage allocation</p>
           <h2
             id="quota-heading"
             className="text-balance font-display text-3xl font-bold text-foreground"
@@ -36,7 +36,7 @@ export function QuotaCard({ quota }: QuotaCardProps) {
               ? `${formatBytes(quota.availableStorageBytes)} ready for what comes next.`
               : 'Your vault is waiting for a plan.'}
           </h2>
-          <p className="text-pretty text-sm text-muted-foreground">
+          <p className="text-pretty text-sm text-secondary-foreground">
             {quota.isOverQuota
               ? 'Your vault is over its current allocation. Add space or choose a larger plan before storing anything new.'
               : quota.canPerformStorageWriteOperations
@@ -88,7 +88,7 @@ export function QuotaCard({ quota }: QuotaCardProps) {
           <div className="flex items-start gap-3 rounded-md border border-border p-4 text-sm text-muted-foreground">
             <SignalIcon
               aria-hidden="true"
-              className={quota.isOverQuota ? 'shrink-0 text-accent-coral' : 'shrink-0 text-primary'}
+              className={quota.isOverQuota ? 'shrink-0 text-danger' : 'shrink-0 text-primary'}
               size={20}
             />
             <span>

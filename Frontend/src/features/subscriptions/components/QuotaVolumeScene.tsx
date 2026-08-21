@@ -14,9 +14,9 @@ export default function QuotaVolumeScene({ usagePercentage }: QuotaVolumeScenePr
   const fillRef = useRef<Mesh>(null)
   const progressRef = useRef(0)
   const invalidate = useThree((state) => state.invalidate)
-  const { primary, accentAmber, accentCoral, card, border } = useThreeThemeColors()
+  const { primary, warningStrong, danger, zincDoor, zinc600 } = useThreeThemeColors()
   const target = Math.max(0, Math.min(100, usagePercentage)) / 100
-  const signal = usagePercentage >= 95 ? accentCoral : usagePercentage >= 80 ? accentAmber : primary
+  const signal = usagePercentage >= 95 ? danger : usagePercentage >= 80 ? warningStrong : primary
 
   useEffect(() => {
     progressRef.current = 0
@@ -52,7 +52,7 @@ export default function QuotaVolumeScene({ usagePercentage }: QuotaVolumeScenePr
         <mesh>
           <boxGeometry args={[1.9, 1.9, 1.35, 4, 4, 4]} />
           <meshPhysicalMaterial
-            color={card}
+            color={zincDoor}
             transparent
             opacity={0.28}
             roughness={0.2}
@@ -65,7 +65,7 @@ export default function QuotaVolumeScene({ usagePercentage }: QuotaVolumeScenePr
         </mesh>
         <mesh position={[0, 0, 0.71]}>
           <torusGeometry args={[0.42, 0.07, 16, 40]} />
-          <meshStandardMaterial color={border} metalness={0.25} roughness={0.32} />
+          <meshStandardMaterial color={zinc600} metalness={0.25} roughness={0.32} />
         </mesh>
         <mesh position={[0, 0, 0.78]}>
           <sphereGeometry args={[0.12, 20, 20]} />

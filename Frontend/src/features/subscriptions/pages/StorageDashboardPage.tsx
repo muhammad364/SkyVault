@@ -12,11 +12,11 @@ export default function StorageDashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       <header className="flex max-w-3xl flex-col gap-3">
-        <p className="text-sm font-semibold text-primary">Storage and subscription</p>
+        <p className="text-sm font-semibold text-brand">Storage and subscription</p>
         <h2 className="text-balance font-display text-4xl font-bold text-foreground">
           A living view of the room inside your vault.
         </h2>
-        <p className="text-pretty text-muted-foreground">
+        <p className="text-pretty text-secondary-foreground">
           See what you use, what remains, and how your plan supports your personal workspace.
         </p>
       </header>

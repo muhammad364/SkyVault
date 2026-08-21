@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="title description">
   <title id="title">SkyVault storage volume</title>
-  <desc id="description">A calm teal vault with a visible storage level.</desc>
-  <rect x="64" y="46" width="192" height="228" rx="42" fill="#0A524D" stroke="#4FD1B9" stroke-width="10"/>
-  <path d="M78 196h164v36c0 15-12 28-28 28H106c-15 0-28-13-28-28v-36Z" fill="#4FD1B9" opacity=".82"/>
-  <circle cx="160" cy="137" r="48" fill="none" stroke="#E6F4F1" stroke-width="12"/>
-  <circle cx="160" cy="137" r="12" fill="#FFB800"/>
-  <path d="M160 89v36M112 137h36M172 137h36M160 149v36" stroke="#E6F4F1" stroke-width="8" stroke-linecap="round"/>
+  <desc id="description">A zinc vault with a visible midnight-slate storage level.</desc>
+  <rect x="64" y="46" width="192" height="228" rx="42" fill="#4F5359" stroke="#B9BDC2" stroke-width="10"/>
+  <path d="M78 196h164v36c0 15-12 28-28 28H106c-15 0-28-13-28-28v-36Z" fill="#172237" opacity=".9"/>
+  <circle cx="160" cy="137" r="48" fill="none" stroke="#E7E7E8" stroke-width="12"/>
+  <circle cx="160" cy="137" r="12" fill="#172237"/>
+  <path d="M160 89v36M112 137h36M172 137h36M160 149v36" stroke="#E7E7E8" stroke-width="8" stroke-linecap="round"/>
 </svg>

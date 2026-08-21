@@ -8,15 +8,16 @@ interface ThreeSceneProps {
   label: string
   children: ReactNode
   fallbackSrc?: string
+  fallbackDarkSrc?: string
 }
 
-export function ThreeScene({ label, children, fallbackSrc }: ThreeSceneProps) {
+export function ThreeScene({ label, children, fallbackSrc, fallbackDarkSrc }: ThreeSceneProps) {
   const { isMd } = useBreakpoint()
   const reducedMotion = useReducedMotion()
   const hasLimitedHardware = typeof navigator !== 'undefined' && navigator.hardwareConcurrency <= 4
 
   if (!isMd || reducedMotion || hasLimitedHardware) {
-    return <SceneFallback label={label} imageSrc={fallbackSrc} />
+    return <SceneFallback label={label} imageSrc={fallbackSrc} darkImageSrc={fallbackDarkSrc} />
   }
 
   return (

@@ -1,5 +1,7 @@
 import { ArrowLeft, RotateCcw } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import { BrandSignature } from '@/components/brand/BrandSignature'
+import { BrandMark } from '@/components/brand/BrandMark'
 import { Button } from '@/components/ui/button'
 import { errorContent, type ErrorStatus } from '@/pages/errors/errorContent'
 
@@ -40,8 +42,7 @@ export function ErrorPage({ status, traceId, onRetry }: ErrorPageProps) {
     <main className="min-h-dvh bg-canvas p-3 md:p-5">
       <section className="mx-auto flex min-h-dvh max-w-screen-xl flex-col gap-8 rounded-2xl bg-surface p-6 shadow-rest md:p-8">
         <header className="flex items-center justify-between gap-4">
-          <img src="/brand/skyvault-logo-horizontal.png" className="h-10 w-auto dark:hidden" alt="SkyVault" />
-          <img src="/brand/skyvault-logo-horizontal-dark.png" className="hidden h-10 w-auto dark:block" alt="SkyVault" />
+          <BrandSignature variant="compact" />
           <p className="font-mono text-[13px] text-muted-foreground">
             {typeof resolvedStatus === 'number' ? resolvedStatus : resolvedStatus.toUpperCase()}
           </p>
@@ -50,13 +51,15 @@ export function ErrorPage({ status, traceId, onRetry }: ErrorPageProps) {
           <div className="grid w-full gap-8 md:grid-cols-2 md:items-center">
             <div className="flex max-w-2xl flex-col gap-6">
               <div className="flex flex-col gap-3">
-                <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-brand">
                   {content.eyebrow}
                 </p>
                 <h1 className="font-display text-3xl font-bold leading-tight text-foreground text-balance md:text-4xl">
                   {content.title}
                 </h1>
-                <p className="max-w-lg text-pretty text-muted-foreground">{content.description}</p>
+                <p className="max-w-lg text-pretty text-secondary-foreground">
+                  {content.description}
+                </p>
               </div>
               {traceId ? (
                 <p className="w-fit rounded-full bg-card-muted px-4 py-2 font-mono text-[13px] text-muted-foreground">
@@ -89,7 +92,7 @@ export function ErrorPage({ status, traceId, onRetry }: ErrorPageProps) {
               </div>
             </div>
             <div className="hidden rounded-2xl bg-card-muted p-8 md:block">
-              <img src="/brand/skyvault-mark.svg" className="mx-auto h-32 w-32" alt="" />
+              <BrandMark className="mx-auto h-32 w-32" />
             </div>
           </div>
         </div>

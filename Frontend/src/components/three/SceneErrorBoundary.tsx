@@ -4,6 +4,7 @@ import { SceneFallback } from '@/components/three/SceneFallback'
 interface SceneErrorBoundaryProps {
   label: string
   imageSrc?: string
+  darkImageSrc?: string
   children: ReactNode
 }
 
@@ -11,7 +12,10 @@ interface SceneErrorBoundaryState {
   hasError: boolean
 }
 
-export class SceneErrorBoundary extends Component<SceneErrorBoundaryProps, SceneErrorBoundaryState> {
+export class SceneErrorBoundary extends Component<
+  SceneErrorBoundaryProps,
+  SceneErrorBoundaryState
+> {
   state: SceneErrorBoundaryState = { hasError: false }
 
   static getDerivedStateFromError(): SceneErrorBoundaryState {
@@ -20,7 +24,13 @@ export class SceneErrorBoundary extends Component<SceneErrorBoundaryProps, Scene
 
   render() {
     if (this.state.hasError) {
-      return <SceneFallback label={this.props.label} imageSrc={this.props.imageSrc} />
+      return (
+        <SceneFallback
+          label={this.props.label}
+          imageSrc={this.props.imageSrc}
+          darkImageSrc={this.props.darkImageSrc}
+        />
+      )
     }
     return this.props.children
   }

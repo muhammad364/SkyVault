@@ -6,6 +6,12 @@
   "display": "standalone",
   "icons": [
     {
+      "src": "/brand/skyvault-favicon-v3.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "/brand/skyvault-mark.svg",
       "sizes": "any",
       "type": "image/svg+xml",

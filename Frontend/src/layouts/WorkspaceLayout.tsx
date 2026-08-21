@@ -11,7 +11,7 @@ export function WorkspaceLayout() {
         <div className="min-w-0 flex-1 rounded-2xl bg-surface p-5 shadow-rest md:p-8">
           <header className="flex flex-col gap-6 pb-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex flex-col gap-2">
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-brand">
                 Your vault
               </p>
               <h1 className="font-display text-3xl font-bold leading-tight text-foreground text-balance">

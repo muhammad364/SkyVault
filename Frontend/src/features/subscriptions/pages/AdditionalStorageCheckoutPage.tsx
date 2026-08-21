@@ -80,7 +80,7 @@ export default function AdditionalStorageCheckoutPage() {
 
   const summary = quote.data ? (
     <div className="flex flex-col gap-6">
-      <p className="text-sm font-semibold text-primary">Your server quote</p>
+      <p className="text-sm font-semibold text-brand">Your server quote</p>
       <p className="font-mono text-4xl font-bold tabular-nums text-foreground">
         +{quote.data.storageAmountGb} GB
       </p>
@@ -134,7 +134,7 @@ export default function AdditionalStorageCheckoutPage() {
           ) : null}
           {quote.isError ? (
             <div className="flex flex-col items-start gap-3" role="alert">
-              <p className="text-sm text-accent-coral">
+              <p className="text-sm text-danger">
                 {storageErrorMessage(quote.error, "We couldn't prepare that quote.")}
               </p>
               <Button variant="ghost" onClick={() => void quote.refetch()}>

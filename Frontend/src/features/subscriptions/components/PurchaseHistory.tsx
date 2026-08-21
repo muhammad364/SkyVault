@@ -31,7 +31,7 @@ export function PurchaseHistory({ canPurchaseAdditionalStorage }: PurchaseHistor
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 flex-col gap-2">
-          <p className="text-sm font-semibold text-primary">Additional storage</p>
+          <p className="text-sm font-semibold text-brand">Additional storage</p>
           <h2
             id="purchase-history-heading"
             className="font-display text-2xl font-bold text-foreground"
@@ -79,7 +79,7 @@ export function PurchaseHistory({ canPurchaseAdditionalStorage }: PurchaseHistor
                   className={
                     active
                       ? 'rounded-full bg-card px-3 py-1 text-sm font-semibold text-primary'
-                      : 'rounded-full bg-accent-amber-soft px-3 py-1 text-sm font-semibold text-foreground'
+                      : 'rounded-full bg-warning-soft px-3 py-1 text-sm font-semibold text-warning'
                   }
                 >
                   {active ? 'Active' : 'Inactive'}
