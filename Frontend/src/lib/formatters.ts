@@ -11,7 +11,30 @@ export function formatBytes(bytes: number | null | undefined): string {
 
 export function formatPercentage(value: number | null | undefined): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return '—'
-  return new Intl.NumberFormat(undefined, { style: 'percent', maximumFractionDigits: 0 }).format(value)
+  return new Intl.NumberFormat(undefined, { style: 'percent', maximumFractionDigits: 0 }).format(
+    value,
+  )
+}
+
+export function formatQuotaPercentage(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return '—'
+  return `${new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(value)}%`
+}
+
+export function formatPkr(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return '—'
+  return `PKR ${new Intl.NumberFormat('en-PK', { maximumFractionDigits: 2 }).format(value)}`
+}
+
+export function formatBillingCycle(months: number): string {
+  return months === 1 ? 'Monthly' : `Every ${months} months`
+}
+
+export function formatDate(value: string | Date | null | undefined): string {
+  if (!value) return '—'
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return '—'
+  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date)
 }
 
 export function formatRelativeDate(value: string | Date | null | undefined): string {

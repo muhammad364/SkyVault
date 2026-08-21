@@ -32,8 +32,45 @@ describe('normalizeApiError', () => {
       status: 401,
       statusText: 'Unauthorized',
     }
-    const normalized = normalizeApiError(new axios.AxiosError('Unauthorized', 'ERR_BAD_REQUEST', config, undefined, response))
+    const normalized = normalizeApiError(
+      new axios.AxiosError('Unauthorized', 'ERR_BAD_REQUEST', config, undefined, response),
+    )
 
-    expect(normalized).toMatchObject({ status: 401, code: 'email_not_verified', traceId: 'trace-1' })
+    expect(normalized).toMatchObject({
+      status: 401,
+      code: 'email_not_verified',
+      traceId: 'trace-1',
+    })
+  })
+
+  it('maps known storage failures without exposing raw exception copy', () => {
+    const config = { headers: new axios.AxiosHeaders() } as InternalAxiosRequestConfig
+    const response: AxiosResponse = {
+      config,
+      data: {
+        statusCode: 400,
+        exceptionType: 'InvalidOperationException',
+        message:
+          'The selected storage plan and your existing additional storage do not provide enough capacity for your current storage usage.',
+        requestId: 'request-2',
+        traceId: 'trace-2',
+        path: '/api/subscriptions',
+        timestampUtc: new Date().toISOString(),
+        errors: null,
+      },
+      headers: {},
+      status: 400,
+      statusText: 'Bad Request',
+    }
+
+    const normalized = normalizeApiError(
+      new axios.AxiosError('Bad Request', 'ERR_BAD_REQUEST', config, undefined, response),
+    )
+
+    expect(normalized).toMatchObject({
+      status: 400,
+      code: 'plan_allocation_too_small',
+      message: 'Some details need your attention.',
+    })
   })
 })

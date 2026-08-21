@@ -2,20 +2,20 @@
 
 Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 
-| # | Phase | Status | Verified on | Notes |
-|---|-------|--------|-------------|-------|
-| 0 | Foundation & Design System | DONE | 2026-08-20 | Foundation, design system, shared API client, and smoke tests verified. |
-| 1 | App Shell, Routing, Errors | DONE | 2026-08-20 | App shell, route guards, branded error pages, offline banner, and smoke tests verified. |
-| 2 | Public Landing & Marketing | DONE | 2026-08-20 | Quiet Vault refinement accepted for closure by the owner; automated verification passed. |
-| 3 | Authentication & Account | DONE | 2026-08-20 | UC-01 through UC-06 implemented; automated verification passed and the owner completed and accepted the end-to-end frontend journey. |
-| 4 | Storage Subscription & Allocation | NOT_STARTED | - | |
-| 5 | Workspace Home | NOT_STARTED | - | |
-| 6 | Folder & File Management | NOT_STARTED | - | |
-| 7 | Recycle Bin | NOT_STARTED | - | |
-| 8 | File Sharing | NOT_STARTED | - | |
-| 9 | Intelligent Search & Discovery | NOT_STARTED | - | |
-| 10 | Administration | NOT_STARTED | - | Owner-gated. |
-| 11 | Hardening & Handover | NOT_STARTED | - | |
+| #   | Phase                             | Status      | Verified on | Notes                                                                                                                                |
+| --- | --------------------------------- | ----------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 0   | Foundation & Design System        | DONE        | 2026-08-20  | Foundation, design system, shared API client, and smoke tests verified.                                                              |
+| 1   | App Shell, Routing, Errors        | DONE        | 2026-08-20  | App shell, route guards, branded error pages, offline banner, and smoke tests verified.                                              |
+| 2   | Public Landing & Marketing        | DONE        | 2026-08-20  | Quiet Vault refinement accepted for closure by the owner; automated verification passed.                                             |
+| 3   | Authentication & Account          | DONE        | 2026-08-20  | UC-01 through UC-06 implemented; automated verification passed and the owner completed and accepted the end-to-end frontend journey. |
+| 4   | Storage Subscription & Allocation | DONE        | 2026-08-21  | UC-07 through UC-10 plus owner-approved renewal and cancellation implemented and verified.                                           |
+| 5   | Workspace Home                    | NOT_STARTED | -           |                                                                                                                                      |
+| 6   | Folder & File Management          | NOT_STARTED | -           |                                                                                                                                      |
+| 7   | Recycle Bin                       | NOT_STARTED | -           |                                                                                                                                      |
+| 8   | File Sharing                      | NOT_STARTED | -           |                                                                                                                                      |
+| 9   | Intelligent Search & Discovery    | NOT_STARTED | -           |                                                                                                                                      |
+| 10  | Administration                    | NOT_STARTED | -           | Owner-gated.                                                                                                                         |
+| 11  | Hardening & Handover              | NOT_STARTED | -           |                                                                                                                                      |
 
 ## Phase 0 - Foundation & Design System
 
@@ -80,4 +80,23 @@ Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 - Post-implementation verification: frontend TypeScript build [x] isolated backend build [x] focused authentication error-normalization tests [x].
 - Final refinements: verification completion follows the request promise without stalling; one-time tokens are removed from the address bar; session cleanup cancels requests and removes cached queries without interrupting active mutations; known backend authentication errors map to safe, specific guidance; verification and recovery pages link back to sign-in; and authenticated SMTP delivery includes multipart content, message identifiers, and acceptance diagnostics without exposing tokens.
 - Owner closure: the owner completed end-to-end frontend testing, confirmed that the module and all its flows are satisfactory, and explicitly approved Phase 3 for completion on 2026-08-20.
-- Open questions for the owner: none. No unresolved API gap blocks Phase 3, and Phase 4 remains `NOT_STARTED`.
+- Open questions for the owner: none. No unresolved API gap blocks Phase 3.
+
+## Phase 4 - Storage Subscription & Allocation
+
+- Status: DONE
+- Date: 2026-08-21
+- Controllers read: `Backend/Controllers/StoragePlanController.cs`, `Backend/Controllers/SubscriptionController.cs`, `Backend/Controllers/AdditionalStorageController.cs`, and `Backend/Controllers/StorageQuotaController.cs`.
+- DTOs and implementation read: the storage-plan, subscription, payment, additional-storage, and quota request/response DTOs; their entity status enums; `StoragePlanService`, `SubscriptionService`, `AdditionalStorageService`, and `StorageQuotaService`; and the UC-07 through UC-10 SRS contract.
+- Endpoints consumed: `GET /api/storage-plans`, `GET /api/storage-plans/{storagePlanId}`, `POST /api/subscriptions`, `GET /api/subscriptions/me`, `POST /api/subscriptions/renew`, `POST /api/subscriptions/cancel`, `POST /api/additional-storage/quote`, `POST /api/additional-storage`, `GET /api/additional-storage/me`, and `GET /api/storage/quota` through typed endpoint -> service -> React Query chains.
+- Frontend implementation: protected storage dashboard and checkout routes; API-owned quota, current-plan, plan-catalogue, and purchase-history surfaces; subscription, active-plan replacement, renewal, cancellation, quote, and additional-storage flows; transient validated payment form; safe storage/payment error normalization; exact status constants; coordinated query invalidation; and `404` current-subscription normalization to the valid no-plan state.
+- Payment contract: cardholder name, card number, expiry month/year, and CVV mirror `ProcessPaymentRequestDto`. Prices and quotes are read-only PKR values from the API. Neither subscription nor additional-storage requests send an amount, and no card data is persisted or logged. The internal `PaymentResponseDto` is not exposed as a frontend model because no controller returns it.
+- Owner decisions recorded: recommendation is controlled only by optional `VITE_RECOMMENDED_STORAGE_PLAN_ID`; unset, invalid, inactive, or unmatched values produce no badge. Payment processing is synchronous, so Pending is only the in-flight POST screen and no polling or return endpoint is invented. Renewal and cancellation are included by explicit owner choice. PKR remains the confirmed currency.
+- Lifecycle and safety states: active, cancelled/expired grace-period, and no-subscription actions; explicit replacement acknowledgement; full processing/success/failure checkout states; payment retry with transient sensitive values cleared; focus-trapped destructive cancellation with focus restoration; no-subscription, write-disabled, and over-quota quota explanations; loading, empty, error/retry, offline, and success states.
+- Storage visual: asymmetric personal-vault quota signature card driven only by `StorageQuotaResponse`; accessible meter and fully visible allocated/used/available values; teal, amber-at-80%, and coral-at-95% signals with non-color copy/icons; lazy demand-rendered R3F quota volume with mobile, reduced-motion, low-core, Suspense, and Canvas-error SVG fallback.
+- Navigation and responsiveness: Storage added to the floating rail and six-item mobile dock with 44px targets. A rendered browser pass verified light and dark at 360x640, 390x844, 768x1024, 1024x768, and 1440x900 with no horizontal overflow; representative mobile, tablet, and desktop surfaces were visually inspected.
+- Dependency: `@radix-ui/react-dialog` supplies the accessible focus-trapped confirmation primitive and is styled only through the existing semantic design tokens.
+- Backend changes: none. Backend files remained read-only.
+- Deviations from the master prompt: none.
+- Open questions for the owner: none. A real plan GUID can be supplied later through `VITE_RECOMMENDED_STORAGE_PLAN_ID` without blocking or changing catalogue behavior.
+- Verification: tsc [x] lint [x] production build [x] Vitest [x] (37 files / 77 tests) endpoint/request/signal contracts [x] validators [x] mutation invalidation [x] lifecycle/flow states [x] accessible meter/dialog/payment fields [x] light/dark [x] responsive 360 [x] 390 [x] 768 [x] 1024 [x] 1440 [x] no-h-scroll [x] token/API/color/Canvas guardrail scans [x] diff whitespace check [x] Phase 4 smoke suite [x].

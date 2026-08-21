@@ -17,6 +17,15 @@ export type ApiErrorCode =
   | 'invalid_credentials'
   | 'invalid_reset_token'
   | 'invalid_verification_token'
+  | 'invalid_payment_card'
+  | 'payment_card_expired'
+  | 'payment_details_invalid'
+  | 'plan_allocation_too_small'
+  | 'storage_plan_inactive'
+  | 'storage_plan_not_found'
+  | 'subscription_already_active'
+  | 'subscription_required'
+  | 'subscription_unavailable'
   | 'user_not_found'
 
 export class ApiError extends Error {
@@ -42,13 +51,36 @@ function authErrorCode(payload: ApiErrorPayload): ApiErrorCode | undefined {
   if (message === 'invalid or expired reset token.') return 'invalid_reset_token'
   if (message === 'the current password is incorrect.') return 'current_password_incorrect'
   if (message === 'user not found.' || message === 'user not found') return 'user_not_found'
+  if (message === 'storage plan not found.') return 'storage_plan_not_found'
+  if (message === 'selected storage plan is inactive.') return 'storage_plan_inactive'
+  if (message.includes('already have an active subscription')) return 'subscription_already_active'
+  if (
+    message.includes('do not provide enough capacity') ||
+    message.includes('resulting storage allocation is smaller')
+  ) {
+    return 'plan_allocation_too_small'
+  }
+  if (message.includes('must have an active storage plan')) return 'subscription_required'
+  if (message.includes('no active subscription or subscription within the grace period')) {
+    return 'subscription_unavailable'
+  }
+  if (
+    message === 'the provided card number is invalid.' ||
+    message.includes('card number must contain')
+  ) {
+    return 'invalid_payment_card'
+  }
+  if (message === 'the card has expired.') return 'payment_card_expired'
+  if (message.includes('cvv') || message.includes('card holder name'))
+    return 'payment_details_invalid'
   return undefined
 }
 
 function isFieldErrors(value: unknown): value is ApiFieldErrors {
   if (typeof value !== 'object' || value === null) return false
   return Object.values(value).every(
-    (messages) => Array.isArray(messages) && messages.every((message) => typeof message === 'string'),
+    (messages) =>
+      Array.isArray(messages) && messages.every((message) => typeof message === 'string'),
   )
 }
 

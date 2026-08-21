@@ -6,8 +6,10 @@ export class ApiConfigurationError extends Error {
 }
 
 const value = import.meta.env.VITE_API_BASE_URL?.trim()
+const recommendedStoragePlanId = import.meta.env.VITE_RECOMMENDED_STORAGE_PLAN_ID?.trim()
 
 export const appConfig = {
   apiBaseUrl: value || null,
   isApiConfigured: Boolean(value),
+  recommendedStoragePlanId: recommendedStoragePlanId || null,
 } as const

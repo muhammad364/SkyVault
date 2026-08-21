@@ -1,9 +1,10 @@
-import { Archive, Folder, Home, Search, Settings, ShieldCheck } from 'lucide-react'
+import { Archive, Folder, HardDrive, Home, Search, Settings, ShieldCheck } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { to: '/vault', label: 'Vault', icon: Home },
+  { to: '/vault', label: 'Vault', icon: Home, end: true },
+  { to: '/vault/storage', label: 'Storage', icon: HardDrive },
   { to: '/vault/files', label: 'Files', icon: Folder },
   { to: '/vault/search', label: 'Search', icon: Search },
   { to: '/vault/trash', label: 'Trash', icon: Archive },
@@ -20,7 +21,7 @@ export function WorkspaceRail() {
         <img src="/brand/skyvault-mark.svg" className="h-8 w-8" alt="" />
         <span className="font-display text-lg font-bold text-foreground">SkyVault</span>
       </div>
-      <div className="grid grid-cols-5 gap-1 md:flex md:flex-1 md:flex-col md:gap-2 md:pt-4">
+      <div className="grid grid-cols-6 gap-1 md:flex md:flex-1 md:flex-col md:gap-2 md:pt-4">
         {navItems.map((item) => {
           const Icon = item.icon
 
@@ -28,6 +29,7 @@ export function WorkspaceRail() {
             <NavLink
               key={item.to}
               to={item.to}
+              end={item.end}
               className={({ isActive }) =>
                 cn(
                   'relative flex min-h-11 items-center justify-center gap-3 rounded-full px-3 text-sm font-semibold text-muted-foreground transition duration-default ease-vault hover:bg-card-muted hover:text-foreground md:rounded-lg lg:justify-start',
