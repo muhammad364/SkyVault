@@ -17,6 +17,38 @@ Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 | 10  | Administration                    | NOT_STARTED | -           | Owner-gated.                                                                                                                         |
 | 11  | Hardening & Handover              | NOT_STARTED | -           |                                                                                                                                      |
 
+## Cross-phase visual system approval
+
+- Status: ACCEPTED
+- Date: 2026-08-22
+- Scope: every frontend surface delivered in Phases 0–4 and every successor phase.
+- Owner approval: after end-to-end visual testing, the owner accepted the zinc, midnight-slate, and
+  burgundy redesign and explicitly authorised its persistence in the frontend documentation.
+- Authoritative direction: gray outer framed canvas; white/zinc light surfaces; ink/zinc dark
+  surfaces; midnight-slate interaction; burgundy identity and focus accents; neutral slate/black
+  shadows; and a shared midnight-slate primary-action gradient. The active light/dark values are
+  recorded in the master prompt and `UI-GUIDE.md`.
+- Locked geometry: the redesign changes color and asset presentation only. Existing DOM structure,
+  four-sided frame padding, spacing, widths, heights, breakpoints, radii, typography, ordering,
+  motion, behavior, state handling, and API integration remain unchanged.
+- Functional signals: amber is restricted to genuine warnings such as offline, grace-period, and
+  quota-at-80% states. Danger red/burgundy is restricted to validation, errors, destructive actions,
+  and quota-at-95%/over-quota states. Success uses slate. No active teal, mint, aqua, or green remains.
+- Brand and assets: `BrandSignature` keeps a live wordmark (`Sky` foreground, `Vault` brand) and uses
+  theme-specific v3 emblems. Active marks, favicon, landing fallback, auth fallback, quota fallback,
+  and R3F materials use zinc/graphite, steel-slate, and restrained burgundy. Superseded assets remain
+  available only as unreferenced rollback material until a separate cleanup is requested.
+- 3D contract: landing uses a graphite frame, zinc door, silver dial, and burgundy hub; auth uses a
+  graphite dial, zinc key/wheel, and burgundy hub; quota uses a zinc shell with slate normal, amber
+  warning, and danger/burgundy critical fill. Geometry, performance gates, and fallback behavior are
+  unchanged.
+- Verification inherited from the approved implementation: TypeScript [x] lint [x] production build
+  [x] Vitest [x] (81 tests) semantic token/contrast/theme asset/threshold coverage [x] changed-file
+  formatting [x]. The owner completed and accepted the end-to-end visual review.
+- Backend/API impact: none. `API-GAPS.md` and backend files remain unchanged.
+- Readiness: Phases 0–4 remain `DONE`; Phase 5 is the next unstarted phase and may begin when the
+  owner requests it.
+
 ## Phase 0 - Foundation & Design System
 
 - Status: DONE
@@ -53,9 +85,9 @@ Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 - Design system compliance: semantic tokens only; light and dark theme support; reduced-motion, low-core, and sub-768px SVG fallback; keyboard-visible CTAs and retry action.
 - States covered: landing route skeleton, plan loading skeleton, zero-plan empty state, public-plan error/retry, global offline banner, existing unauthorised route, success state; read cancellation is forwarded through React Query, service, endpoint, and Axios.
 - Pricing decision: the owner confirmed `Price` values are PKR. The public preview shows PKR, the API-provided storage size in GB, and the API-provided billing cycle.
-- Quiet Vault visual refinement: added theme-specific transparent emblem assets with a live header `SkyVault` signature; sticky responsive public navigation; restrained hero entrance motion; an R3F safe-vault assembly with a teal-backed white dial, eight spokes, top grip, hinges and fasteners; interaction-driven dial motion and pointer tilt; a transparent static safe fallback; deferred below-fold sections; a scroll-revealed workflow; illustrated stationary plan cards; and a landing-proportion route skeleton. The duplicate hero signature and the right-side locking bars were removed in the final owner review.
+- Quiet Vault visual refinement: added theme-specific transparent emblem assets with a live header `SkyVault` signature; sticky responsive public navigation; restrained hero entrance motion; an R3F safe-vault assembly with a graphite frame, zinc door, silver dial, burgundy hub, eight spokes, top grip, hinges and fasteners; interaction-driven dial motion and pointer tilt; a transparent static safe fallback; deferred below-fold sections; a scroll-revealed workflow; illustrated stationary plan cards; and a landing-proportion route skeleton. The duplicate hero signature and the right-side locking bars were removed in the final owner review.
 - Approved Section 3.7 exception: the owner explicitly approved one 32-second transform-only information marquee. It pauses offscreen, while the page is hidden, on hover, on focus, and through its accessible pause control; reduced motion renders a static three-card grid. No other new looping 2D animation was added.
-- Refinement assets: `skyvault-emblem-light-v2.png`, `skyvault-emblem-dark-v2.png`, and `landing-vault-fallback-v2.png`. The supplied JPEG sources remain unchanged.
+- Active refinement assets after the approved cross-phase redesign: `skyvault-emblem-light-v3.png`, `skyvault-emblem-dark-v3.png`, `landing-vault-fallback-light-v3.png`, and `landing-vault-fallback-dark-v3.png`. The v2 and supplied JPEG sources remain unchanged as unreferenced rollback material.
 - Refinement contract check: no backend, API path, model, CORS, environment, authentication, or public-plan data-flow changes. React Query cancellation and loading, empty, error/retry, offline, and success behavior remain intact.
 - Final owner-review refinements: native smooth anchor navigation; route and deferred-section cross-fade with the permitted 8px rise; one-time mobile/desktop workflow-path growth and step rotation; API-driven two-column storage/billing facts on plan cards; and a tested Pause -> Resume control that clears the focus-held pause state.
 - Automated refinement verification: tsc [x] lint [x] build [x] Vitest [x] (12 files / 18 tests) token/API/layout/Canvas guardrail scans [x] diff whitespace check [x]
@@ -93,7 +125,7 @@ Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 - Payment contract: cardholder name, card number, expiry month/year, and CVV mirror `ProcessPaymentRequestDto`. Prices and quotes are read-only PKR values from the API. Neither subscription nor additional-storage requests send an amount, and no card data is persisted or logged. The internal `PaymentResponseDto` is not exposed as a frontend model because no controller returns it.
 - Owner decisions recorded: recommendation is controlled only by optional `VITE_RECOMMENDED_STORAGE_PLAN_ID`; unset, invalid, inactive, or unmatched values produce no badge. Payment processing is synchronous, so Pending is only the in-flight POST screen and no polling or return endpoint is invented. Renewal and cancellation are included by explicit owner choice. PKR remains the confirmed currency.
 - Lifecycle and safety states: active, cancelled/expired grace-period, and no-subscription actions; explicit replacement acknowledgement; full processing/success/failure checkout states; payment retry with transient sensitive values cleared; focus-trapped destructive cancellation with focus restoration; no-subscription, write-disabled, and over-quota quota explanations; loading, empty, error/retry, offline, and success states.
-- Storage visual: asymmetric personal-vault quota signature card driven only by `StorageQuotaResponse`; accessible meter and fully visible allocated/used/available values; teal, amber-at-80%, and coral-at-95% signals with non-color copy/icons; lazy demand-rendered R3F quota volume with mobile, reduced-motion, low-core, Suspense, and Canvas-error SVG fallback.
+- Storage visual: asymmetric personal-vault quota signature card driven only by `StorageQuotaResponse`; accessible meter and fully visible allocated/used/available values; midnight-slate normal, amber-at-80%, and danger/burgundy-at-95% signals with non-color copy/icons; lazy demand-rendered zinc-shell R3F quota volume with mobile, reduced-motion, low-core, Suspense, and Canvas-error SVG fallback.
 - Navigation and responsiveness: Storage added to the floating rail and six-item mobile dock with 44px targets. A rendered browser pass verified light and dark at 360x640, 390x844, 768x1024, 1024x768, and 1440x900 with no horizontal overflow; representative mobile, tablet, and desktop surfaces were visually inspected.
 - Dependency: `@radix-ui/react-dialog` supplies the accessible focus-trapped confirmation primitive and is styled only through the existing semantic design tokens.
 - Backend changes: none. Backend files remained read-only.

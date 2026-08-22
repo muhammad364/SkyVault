@@ -9,7 +9,9 @@
 > /frontend/docs/PHASE-LEDGER.md, then execute the next unstarted phase.
 > ```
 >
-> **Version:** 1.0 · **Owner:** Muhammad Haroon Khalid · **Status:** Frozen (change only via explicit owner instruction)
+> **Version:** 1.1 · **Owner:** Muhammad Haroon Khalid · **Status:** Frozen (change only via explicit owner instruction)
+> **Visual-system approval:** The cross-phase zinc, midnight-slate, and burgundy redesign was
+> accepted by the owner on 2026-08-22 and is authoritative for every subsequent phase.
 
 ---
 
@@ -144,14 +146,18 @@ justification. No UI kit other than shadcn/ui. No Redux. No Bootstrap/MUI/Ant.
 
 ### 3.1 Aesthetic direction (one direction, executed precisely)
 
-**"Quiet Vault" — soft mint editorial workspace.**
-Airy pale-mint environment; content floats on crisp white/ink panels with large radii and very
-diffused shadows; one deep-teal brand voice; amber and coral used *only* as signals; a single
-restrained 3D object per key surface as the signature element. Calm, premium, spacious, tactile.
+**"Quiet Vault" — a zinc editorial workspace with midnight-slate interaction and burgundy identity.**
+The outer gray canvas remains visible around a crisp white or ink application surface. Cards use
+closely spaced zinc layers, generous radii, and neutral diffused shadows. Midnight slate carries
+ordinary interaction; burgundy is the distinctive brand voice; amber and danger red/burgundy are
+reserved for functional signals. A single restrained 3D object per key surface remains the
+signature element. The result is calm, premium, spacious, tactile, and never visually flat.
 
-Derived from the owner-approved Dribbble reference (pale mint canvas + floating white panels +
-deep forest teal + amber/coral pills + generous radii), extended for dark mode and for a storage
-product.
+This direction is derived from the owner-approved light-theme mockup and its representative
+white + zinc gray + midnight slate + burgundy palette. The mockup governs **color and material
+treatment only**: the existing framed application padding, DOM structure, spacing, radii,
+typography, responsiveness, motion, behavior, and API integration must not be changed to imitate
+the mockup's edge-to-edge composition.
 
 ### 3.2 Color tokens — LIGHT (authoritative)
 
@@ -160,47 +166,99 @@ Define in `src/styles/theme.css` as CSS variables and expose through `tailwind.c
 
 | Token | Hex | Use |
 | --- | --- | --- |
-| `--canvas` | `#DCEEEA` | Page/outer background (the mint environment) |
-| `--canvas-strong` | `#B2DDD7` | Decorative mint fields, hero backdrop, auth aside |
-| `--surface` | `#F6F8F8` | Inner app shell / workspace panel |
-| `--card` | `#FFFFFF` | Cards, panels, sheets, popovers |
-| `--card-muted` | `#E6F4F1` | Nested/secondary card, hovered row |
-| `--primary` | `#0A524D` | Brand, primary buttons, active nav, links |
-| `--primary-hover` | `#0D6660` | Hover/pressed |
-| `--primary-foreground` | `#F2FAF8` | Text/icon on primary |
-| `--accent-amber` | `#FFB800` | Secondary CTA, storage-warning arc, highlight tile |
-| `--accent-amber-soft` | `#FFF7E3` | Amber pill background |
-| `--accent-coral` | `#FF725C` | Destructive/over-quota/error signal |
-| `--accent-coral-soft` | `#FEECE8` | Coral pill background |
-| `--foreground` | `#1E252B` | Primary text |
-| `--muted-foreground` | `#85919A` | Secondary text, metadata |
-| `--border` | `#E2EAE8` | Hairlines, input borders, dividers |
-| `--ring` | `#0A524D` | Focus ring (2px, offset 2px) |
+| `--canvas` | `#D9DADD` | Outer framed canvas |
+| `--canvas-strong` | `#E7E7E8` | Hero/auth backdrop and strong zinc field |
+| `--surface` | `#FDFDFD` | Inner application shell / workspace panel |
+| `--card` | `#FAFAFA` | Cards, navigation, sheets, popovers |
+| `--card-muted` | `#E9EAEC` | Nested/secondary card and hovered row |
+| `--foreground` | `#0F151C` | Primary heading and strongest text |
+| `--secondary-foreground` | `#121D2F` | Important body copy |
+| `--muted-foreground` | `#596474` | Metadata and muted copy |
+| `--primary` | `#172237` | Ordinary links, active navigation, and slate interaction |
+| `--primary-hover` | `#29354C` | Slate hover/pressed state |
+| `--primary-foreground` | `#FFFFFF` | Text/icon on primary actions |
+| `--brand` | `#6D0615` | `Vault` wordmark, tagline, eyebrows, focus accents |
+| `--brand-soft` | `#F6E8EB` | Restrained branded surface |
+| `--warning` | `#985E00` | Warning text/icon; 80% quota, grace period, offline |
+| `--warning-strong` | `#D89222` | Warning meter/illustration fill |
+| `--warning-soft` | `#FFF3DE` | Warning surface |
+| `--warning-foreground` | `#0F151C` | Text on strong warning fill |
+| `--danger` | `#9B2338` | Validation, critical quota, and destructive signal |
+| `--danger-hover` | `#7E172A` | Danger hover/pressed state |
+| `--danger-soft` | `#F8E7EA` | Error/critical surface |
+| `--danger-foreground` | `#FFFFFF` | Text on danger fill |
+| `--destructive-background` | `#9B2338` | Destructive action background |
+| `--destructive-hover` | `#7E172A` | Destructive action hover/pressed state |
+| `--destructive-foreground` | `#FFFFFF` | Text/icon on destructive actions |
+| `--success` | `#29354C` | Success signal; intentionally slate, never green |
+| `--success-soft` | `#E5E9EF` | Success surface |
+| `--border` | `#D9DCE1` | Hairlines, input borders, dividers |
+| `--border-strong` | `#B9BDC2` | Emphasized neutral boundary |
+| `--ring` | `#6D0615` | Focus ring (2px, offset 2px) |
+| `--zinc-900` | `#24272A` | Dark 3D metal |
+| `--zinc-700` | `#373C42` | Secondary 3D metal |
+| `--zinc-600` | `#4F5359` | Vault frame |
+| `--zinc-400` | `#A2A2A4` | Metallic highlight |
+| `--zinc-300` | `#B9BDC2` | Light metallic edge |
+| `--zinc-door` | `#FAFAFA` | Light vault door material |
+
+Primary actions use one approved gradient, exposed as `--primary-gradient` and Tailwind's
+`bg-primary-action` semantic background-image utility:
+`linear-gradient(135deg, #37445B 0%, #29354C 45%, #172237 100%)`. Text and icons remain
+`#FFFFFF` at every stop. Components must consume the semantic gradient utility; they must not repeat
+these hex values.
 
 ### 3.3 Color tokens — DARK (first-class, built in the same commit as light)
 
 | Token | Hex | Notes |
 | --- | --- | --- |
-| `--canvas` | `#071311` | Deep teal-ink, never pure black |
-| `--canvas-strong` | `#0A1A18` | Decorative field |
-| `--surface` | `#0C1B19` | App shell |
-| `--card` | `#10221F` | Cards/panels |
-| `--card-muted` | `#16302C` | Nested/hover |
-| `--primary` | `#4FD1B9` | Accent inverts to aqua-mint for contrast |
-| `--primary-hover` | `#6BE0C9` | |
-| `--primary-foreground` | `#04201C` | Dark text on aqua button |
-| `--accent-amber` | `#FFC53D` | |
-| `--accent-amber-soft` | `#3A2E0E` | |
-| `--accent-coral` | `#FF8A73` | |
-| `--accent-coral-soft` | `#3B1B15` | |
-| `--foreground` | `#E8F1EF` | |
-| `--muted-foreground` | `#8A9C98` | |
-| `--border` | `#1C312D` | |
-| `--ring` | `#4FD1B9` | |
+| `--canvas` | `#0E1116` | Outer framed canvas, never pure black |
+| `--canvas-strong` | `#24272A` | Hero/auth backdrop and strong zinc field |
+| `--surface` | `#151920` | Inner application shell |
+| `--card` | `#1C2129` | Cards and navigation |
+| `--card-muted` | `#272D36` | Nested/hovered surface |
+| `--foreground` | `#F5F6F8` | Primary heading and strongest text |
+| `--secondary-foreground` | `#D7DCE5` | Important body copy |
+| `--muted-foreground` | `#A6AFBC` | Metadata and muted copy |
+| `--primary` | `#A8B5C9` | Ordinary links, active navigation, and slate interaction |
+| `--primary-hover` | `#D7DCE5` | Slate hover/pressed state |
+| `--primary-foreground` | `#FFFFFF` | Primary-action text/icon |
+| `--brand` | `#E37B91` | Lifted burgundy for brand and focus contrast |
+| `--brand-soft` | `#351C25` | Restrained branded surface |
+| `--warning` | `#F0B44D` | Warning text/icon |
+| `--warning-strong` | `#D89222` | Warning meter/illustration fill |
+| `--warning-soft` | `#382C18` | Warning surface |
+| `--warning-foreground` | `#0F151C` | Text on strong warning fill |
+| `--danger` | `#F07D91` | Validation and critical signal |
+| `--danger-hover` | `#B4233E` | Danger hover/pressed state |
+| `--danger-soft` | `#3A1C25` | Error/critical surface |
+| `--danger-foreground` | `#FFFFFF` | Text on danger fill |
+| `--destructive-background` | `#9B2338` | Destructive action background |
+| `--destructive-hover` | `#B4233E` | Destructive hover/pressed state |
+| `--destructive-foreground` | `#FFFFFF` | Text/icon on destructive actions |
+| `--success` | `#A8B5C9` | Success signal; intentionally slate, never green |
+| `--success-soft` | `#252D39` | Success surface |
+| `--border` | `#343B45` | Hairlines, input borders, dividers |
+| `--border-strong` | `#4F5865` | Emphasized neutral boundary |
+| `--ring` | `#E37B91` | Focus ring |
+| `--zinc-900` | `#11151B` | Dark 3D metal |
+| `--zinc-700` | `#2E343C` | Secondary 3D metal |
+| `--zinc-600` | `#515862` | Vault frame |
+| `--zinc-400` | `#B9BDC2` | Metallic highlight |
+| `--zinc-300` | `#D5D8DC` | Light metallic edge |
+| `--zinc-door` | `#E7E7E8` | Dark-theme vault door material |
 
-Rules: exactly these families — **teal (brand) + mint/ink neutrals + amber + coral**. Nothing else.
-Amber and coral are **signals**, never decoration; if a coral element does not communicate danger or
-error, it is wrong. Every background override must come with a matching foreground token.
+Dark primary actions set `--primary-gradient` to
+`linear-gradient(135deg, #52617A 0%, #3B4860 45%, #29354C 100%)` with white text/icons at every
+stop.
+
+Rules: exactly these families — **white/zinc neutrals + midnight slate + burgundy**, with amber and
+danger red/burgundy reserved for functional states. No teal, mint, aqua, or green may remain in the
+interface or active assets. Burgundy carries brand typography, editorial eyebrows, focus treatment,
+validation, destructive actions, and critical quota states according to semantic context; ordinary
+links and navigation use midnight slate. Amber appears only for real warnings such as offline,
+grace-period, and 80% quota states. Success uses slate, never green. Every background override must
+come with a matching foreground token.
 Theme via `class="dark"` on `<html>`, default = system, persisted in `localStorage`, and the
 `<html>` element always carries the canvas background class.
 
@@ -225,20 +283,20 @@ Theme via `class="dark"` on `<html>`, default = system, persisted in `localStora
   (`p-[17px]` is a defect). Section rhythm ≥ `gap-8` desktop, `gap-6` mobile.
 - Never mix `margin`/`padding` with `gap` on the same element. Never use `space-y-*`.
 - Elevation (3 levels only):
-  - rest `0 1px 2px rgba(16,44,40,.04)`
-  - float `0 10px 25px -5px rgba(16,44,40,.08)`
-  - hover `0 16px 40px -8px rgba(16,44,40,.14)`
-  - Dark mode: reduce shadow, add `--border` hairline instead.
+  - light rest `0 1px 2px rgba(15,21,28,.06)`
+  - light float `0 10px 25px -5px rgba(15,21,28,.11)`
+  - light hover `0 16px 40px -8px rgba(15,21,28,.17)`
+  - dark uses the same neutral geometry with `rgba(0,0,0,.16/.22/.28)` and a `--border` hairline
 - Glass (`backdrop-blur-md` + 70% card alpha) is allowed on **exactly two** surfaces: the floating
   command/search bar and the upload dock. Nowhere else.
 
 ### 3.6 Layout language (this is what makes it not a dashboard)
 
-- **Framed workspace:** the mint canvas is always visible as a margin (`p-3 md:p-5`) around a
+- **Framed workspace:** the gray `--canvas` is always visible as a margin (`p-3 md:p-5`) around a
   `rounded-2xl` app shell. The app never bleeds edge-to-edge on desktop.
 - **Floating rail, not a sidebar:** a detached `rounded-2xl` vertical rail (icon + label, 72px
   collapsed / 232px expanded) sitting *inside* the frame with its own shadow. Active item = soft
-  `--card-muted` fill + 3px teal indicator. No full-height grey sidebar with tab list.
+  `--card-muted` fill + 3px `--brand` indicator. No full-height grey sidebar with tab list.
 - **No top "header bar with search + bell + avatar."** Instead: a page-owned editorial header
   (greeting/heading + one primary action) and a **floating command bar** (⌘K / `/`) that is the
   hero search interaction.
@@ -277,12 +335,15 @@ Theme via `class="dark"` on `<html>`, default = system, persisted in `localStora
 Use `@react-three/fiber` + `drei` on **exactly these four surfaces**:
 
 1. **Landing hero** — the SkyVault Vault: a rounded-cube vault with a slowly rotating dial,
-   matte teal material, soft studio lighting, subtle pointer-parallax (max 6° tilt), *not* auto-spinning.
+   graphite frame, soft-white/zinc door, silver dial, restrained burgundy hub, soft neutral studio
+   lighting, subtle pointer-parallax (max 6° tilt), *not* auto-spinning.
 2. **Storage/quota object** — a translucent vault or stacked-shell volume that visually fills with
-   aqua-mint as usage rises; amber past 80%, coral past 95%. Driven by real API quota values.
+   midnight slate as usage rises; amber at 80% and above, danger/burgundy at 95% and above. The shell
+   uses zinc materials and every state is driven by real API quota values.
 3. **Empty states** — a single small floating 3D object (empty vault / drifting document plane) with
    a real CTA underneath.
 4. **Auth aside** — a slow, calm 3D key/dial panel beside the form (form itself stays 2D and fast).
+   Use a graphite dial, zinc key and wheel, and restrained burgundy hub.
 
 Hard rules:
 - Every 3D surface is `React.lazy` + `<Suspense>` with a **static PNG/SVG fallback**, and is skipped
@@ -295,11 +356,13 @@ Hard rules:
 
 ### 3.9 Component rules (abbreviated spec)
 
-- **Buttons:** pill; primary = solid teal + `primary-foreground`; secondary = solid amber + dark text;
-  ghost = transparent + `card-muted` hover; destructive = coral. Icon buttons are 36px circles.
+- **Buttons:** pill; primary = the approved semantic midnight-slate gradient + white
+  `primary-foreground`; secondary = neutral `card-muted` surface + foreground; ghost = transparent +
+  `card-muted` hover; destructive = `destructive-background` + `destructive-foreground`. Icon buttons
+  preserve a minimum 44px circular target.
   Press = `scale .97`. Loading = inline spinner + label swap, never a blank button.
 - **Inputs:** 44px min height, `radius-sm`, 1px `--border`, focus = 2px `--ring` + offset. Errors
-  appear **below** the field in coral with an icon, and the field border turns coral. Never rely on
+  appear **below** the field in `--danger` with an icon, and the field border turns `--danger`. Never rely on
   color alone.
 - **File/folder cards:** `radius-lg`, `p-5`, mono file size + relative date in `muted-foreground`,
   file-type glyph in a tinted 40px squircle, hover lift + reveal of a 3-dot menu (menu is always
@@ -317,9 +380,10 @@ Hard rules:
 
 ### 3.10 Anti-patterns — automatic rejection
 
-Do not produce: a grey left sidebar + top search bar + 4 stat cards layout; violet/purple gradient
-backgrounds; glowing orbs, gradient blobs, or blurry decorative shapes; neumorphism; emoji as icons;
-more than 5 colors; more than 2 font families; a second toast/dialog system; `any`-typed models;
+Do not produce: a grey left sidebar + top search bar + 4 stat cards layout; decorative gradients
+(the semantic primary-action gradient is the sole approved gradient); glowing orbs, gradient blobs,
+or blurry decorative shapes; neumorphism; emoji as icons; color families outside the approved
+semantic system; more than 2 font families; a second toast/dialog system; `any`-typed models;
 inline hex colors; `fetch` inside a component; `useEffect` data fetching; localStorage as a data
 store for domain data; hardcoded/mock file, plan, or user data; a page that renders nothing while
 loading; a screen with no error state; a desktop-only layout that scrolls horizontally on a phone;
@@ -330,16 +394,24 @@ canceled" toast.
 
 | Asset | File | Use |
 | --- | --- | --- |
-| Horizontal lockup (light bg) | `skyvault-logo-horizontal.png` | Landing header, auth, emails |
-| Horizontal lockup (dark bg) | `skyvault-logo-horizontal-dark.png` | Dark theme header |
-| Icon mark (vector) | `skyvault-mark.svg` | Rail, favicon source, loaders, 512px PWA icon |
-| Favicon raster | `skyvault-favicon.png` | `favicon.ico` / `apple-touch-icon` source |
+| Raster emblem, light | `skyvault-emblem-light-v3.png` | Light surfaces in `BrandSignature` |
+| Raster emblem, dark | `skyvault-emblem-dark-v3.png` | Dark surfaces in `BrandSignature` |
+| Vector mark, light | `skyvault-mark.svg` | Light rail, loaders, code-native mark |
+| Vector mark, dark | `skyvault-mark-dark-v3.svg` | Dark rail, loaders, code-native mark |
+| Landing fallback, light | `landing-vault-fallback-light-v3.png` | Light mobile/reduced-motion/low-core/Canvas fallback |
+| Landing fallback, dark | `landing-vault-fallback-dark-v3.png` | Dark mobile/reduced-motion/low-core/Canvas fallback |
+| Auth fallback, light/dark | `auth-key-fallback.svg`, `auth-key-fallback-dark-v3.svg` | Auth scene fallbacks |
+| Quota fallback, light/dark | `quota-vault-fallback.svg`, `quota-vault-fallback-dark-v3.svg` | Storage scene fallbacks |
+| Transparent favicon raster | `skyvault-favicon-v3.png` | Favicon, Apple touch icon, and manifest source |
 
-The mark is a **cloud whose lower half becomes a vault door** with a 6-spoke dial and an amber hub —
-deep teal `#0A524D` → aqua-mint `#4FD1B9`, transparent background. Swap the lockup by theme. Never
-place the logo on a white box inside a dark surface, never recolor it, never stretch it, minimum
-width 120px (lockup) / 20px (mark), clear space = mark height ÷ 2. Tagline: *"Your files. Your space.
-Always secure."* Page title pattern: `SkyVault — <Page>`.
+The mark remains a **cloud whose lower half becomes a vault door**, preserving its silhouette,
+composition, proportions, transparency, and edges. Active materials are zinc/graphite with a
+restrained burgundy hub/accent. `BrandSignature` always renders the wordmark as live text:
+`Sky` uses `--foreground` and `Vault` uses `--brand`; do not use a raster horizontal wordmark.
+Theme-specific emblem, vector, and fallback assets switch with the active theme. Never place the
+logo on a white box inside a dark surface, stretch it, or recolor it ad hoc. Minimum width is 120px
+for the signature / 20px for the mark; clear space = mark height ÷ 2. Tagline: *"Your files. Your
+space. Always secure."* Page title pattern: `SkyVault — <Page>`.
 
 ### 3.12 Responsive contract (non-negotiable — mobile is a first-class target)
 
@@ -356,7 +428,7 @@ is not `DONE`.
 | `sm` | `≥ 640px` | Two-up file/folder grid, larger type step. |
 | `md` | `≥ 768px` | Rail returns as a collapsed 72px floating rail. 2-col bento. **3D becomes eligible** (below this, always the flat fallback). |
 | `lg` | `≥ 1024px` | 3-col bento, rail expandable to 232px, split panes allowed (list + detail). |
-| `xl` | `≥ 1280px` | 4-col grid, max content width `1440px`, centered with the mint canvas visible as margin. |
+| `xl` | `≥ 1280px` | 4-col grid, max content width `1440px`, centered with the gray canvas visible as margin. |
 | `2xl` | `≥ 1536px` | Do not keep growing content — grow the canvas margin instead. |
 
 **Mandatory rules**
@@ -474,7 +546,7 @@ exactly as the API defines, and redirect-after-login.
 Plan catalogue (editorial cards, one recommended plan, real plan data), subscribe flow, additional
 storage purchase, payment hand-off exactly as the API prescribes (success/failure/pending return
 states all handled), current subscription panel, and the **storage quota object** (3D + accessible
-numeric/bar fallback) with amber ≥80% / coral ≥95% states and an over-quota explanation.
+numeric/bar fallback) with amber ≥80% / danger-burgundy ≥95% states and an over-quota explanation.
 *Acceptance:* quota values come only from the API; no client-side quota arithmetic beyond formatting;
 pending/failed payment returns are real screens.
 
@@ -566,10 +638,12 @@ Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 
 ### 5.1 Visual references (study before Phase 0; imitate structure, never copy assets)
 
-- The owner-approved reference: pale-mint canvas, floating white panels, deep-teal + amber + coral
-  pills, large radii (Dribbble — mint/teal SaaS dashboards).
+- The owner-approved light-theme palette reference: a gray framed canvas around white/zinc surfaces,
+  midnight-slate interaction, burgundy identity accents, graphite/zinc vault materials, and large
+  radii. Its edge-to-edge mockup layout is **not** a structural reference.
 - Dribbble searches: *"personal workspace UI"*, *"cloud storage app"*, *"file manager UI"*,
-  *"bento dashboard"*, *"floating sidebar card"*, *"mint teal dashboard"*, *"3D vault illustration"*.
+  *"bento dashboard"*, *"floating sidebar card"*, *"zinc burgundy dashboard"*,
+  *"graphite 3D vault illustration"*.
 - Product references for **feel** (not layout copying): Linear (precision, keyboard-first),
   Notion (calm surfaces), Arc (personality), Raycast (command bar), Vercel (dark-mode discipline).
 
@@ -583,9 +657,16 @@ frontend/
 │   ├── manifest.webmanifest
 │   └── brand/
 │       ├── skyvault-mark.svg
-│       ├── skyvault-logo-horizontal.png
-│       ├── skyvault-logo-horizontal-dark.png
-│       └── skyvault-favicon.png
+│       ├── skyvault-mark-dark-v3.svg
+│       ├── skyvault-emblem-light-v3.png
+│       ├── skyvault-emblem-dark-v3.png
+│       ├── landing-vault-fallback-light-v3.png
+│       ├── landing-vault-fallback-dark-v3.png
+│       ├── auth-key-fallback.svg
+│       ├── auth-key-fallback-dark-v3.svg
+│       ├── quota-vault-fallback.svg
+│       ├── quota-vault-fallback-dark-v3.svg
+│       └── skyvault-favicon-v3.png
 ├── docs/
 │   ├── PHASE-LEDGER.md
 │   ├── API-GAPS.md
