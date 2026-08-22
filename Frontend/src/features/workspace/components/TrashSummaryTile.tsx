@@ -11,14 +11,14 @@ export function TrashSummaryTile() {
   if (items.isPending) {
     return (
       <section
-        className="flex min-h-72 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest md:col-span-2 lg:col-span-4"
+        className="flex min-h-64 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest md:col-span-2 lg:col-span-4"
         role="status"
         aria-label="Loading trash summary"
       >
         <Skeleton className="h-7 w-32" />
         <Skeleton className="h-12 w-20" />
-        <Skeleton className="h-20 w-full" />
-        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-16 w-full" />
       </section>
     )
   }
@@ -38,18 +38,15 @@ export function TrashSummaryTile() {
   if (items.data.length === 0) {
     return (
       <section
-        className="flex min-h-72 flex-col items-center justify-center gap-5 rounded-xl bg-card p-6 text-center shadow-rest md:col-span-2 lg:col-span-4"
+        className="flex min-h-64 flex-col items-center justify-center gap-4 rounded-xl bg-card p-5 text-center shadow-rest md:col-span-2 lg:col-span-4"
         aria-labelledby="trash-summary-heading"
       >
         <span className="flex min-h-11 min-w-11 items-center justify-center rounded-full bg-card-muted text-primary">
           <Archive aria-hidden="true" size={20} />
         </span>
         <div className="flex max-w-sm flex-col gap-2">
-          <p className="text-sm font-semibold text-brand">Trash</p>
-          <h3
-            id="trash-summary-heading"
-            className="font-display text-2xl font-bold text-foreground"
-          >
+          <p className="text-xs font-semibold text-brand">Trash</p>
+          <h3 id="trash-summary-heading" className="font-display text-xl font-bold text-foreground">
             Nothing waiting here
           </h3>
           <p className="text-sm text-muted-foreground">
@@ -64,16 +61,13 @@ export function TrashSummaryTile() {
 
   return (
     <section
-      className="flex min-h-72 min-w-0 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest md:col-span-2 lg:col-span-4"
+      className="flex min-h-64 min-w-0 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest md:col-span-2 lg:col-span-4"
       aria-labelledby="trash-summary-heading"
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-col gap-2">
-          <p className="text-sm font-semibold text-brand">Trash</p>
-          <h3
-            id="trash-summary-heading"
-            className="font-display text-2xl font-bold text-foreground"
-          >
+        <div className="flex min-w-0 flex-col gap-1">
+          <p className="text-xs font-semibold text-brand">Trash</p>
+          <h3 id="trash-summary-heading" className="font-display text-xl font-bold text-foreground">
             Recently deleted
           </h3>
         </div>
@@ -81,14 +75,14 @@ export function TrashSummaryTile() {
           {items.data.length}
         </span>
       </div>
-      <ul className="grid gap-3 sm:grid-cols-2">
+      <ul className="grid gap-2 sm:grid-cols-2">
         {recentItems.map((item) => {
           const ItemIcon = item.itemType === 'Folder' ? Folder : FileText
 
           return (
             <li
               key={item.itemId}
-              className="flex min-w-0 flex-col gap-3 rounded-md bg-card-muted p-4"
+              className="flex min-w-0 flex-col gap-3 rounded-md bg-card-muted p-3"
             >
               <div className="flex min-w-0 items-center gap-3">
                 <ItemIcon aria-hidden="true" className="shrink-0 text-primary" size={20} />

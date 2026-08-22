@@ -19,10 +19,13 @@ and API integration.
 
 The owner subsequently approved two explicit layout refinements for the signed-in workspace. At
 tablet and desktop widths, the floating rail stays within the framed viewport while page content
-scrolls; its bottom account area contains a generic account icon for Settings and a destructive Sign
-out action, with no Admin destination exposed in user navigation. On the Phase 5 home, Quick actions
-sit directly below the greeting as a full-width strip of horizontal action cards. These decisions
-supersede the earlier geometry-preservation rule only for the named surfaces.
+scrolls; its bottom account area contains a generic account icon for Settings and a Sign out action
+whose muted neutral surface carries danger-colored text and icon, with no Admin destination exposed
+in user navigation. On the Phase 5 home, Quick actions sit directly below the greeting as a compact
+full-width strip of horizontal action cards. The signed-in shell and workspace bento use compact
+application typography and spacing so quota begins inside the initial reference tablet/desktop
+viewport. These decisions supersede the earlier geometry-preservation rule only for the named
+surfaces.
 
 ## Brand
 
@@ -103,8 +106,13 @@ orbs, and gradient blobs remain prohibited.
 - Place the Phase 5 Quick actions strip immediately below its greeting. Its two working destinations
   use horizontal icon/text/arrow cards, sit side by side when space permits, and stack on narrow
   screens.
-- Keep content groups spacious with Tailwind scale spacing, but let important hero copy confidently
-  occupy its column.
+- Keep signed-in shell headings and page greetings at application scale; reserve landing-page hero
+  typography and large editorial whitespace for marketing surfaces.
+- Use compact, consistent card padding and section gaps on the Phase 5 home. At 1024×768 and
+  1440×900, the beginning of the quota signature should remain visible below Quick actions so users
+  can discover the continuation of the page without losing the calm hierarchy.
+- Keep content groups intentionally spaced with Tailwind scale values; whitespace should establish
+  hierarchy without pushing the next primary region completely below the fold.
 - Avoid repeating information solely to fill space; strengthen hierarchy and scale instead.
 
 ## Components
@@ -123,8 +131,8 @@ orbs, and gradient blobs remain prohibited.
 - Apply the same semantic treatment to badges, meters, dialogs, forms, plan illustrations,
   checkout processing/success/failure states, error surfaces, and navigation states.
 - In the signed-in rail, Settings belongs in the bottom account area with a generic account
-  depiction. Sign out sits beneath it with destructive semantic tokens. Do not advertise the Admin
-  route in ordinary user navigation.
+  depiction. Sign out sits beneath it on `bg-card-muted` with danger-colored text/icon rather than a
+  solid destructive fill. Do not advertise the Admin route in ordinary user navigation.
 
 ## Motion and scrolling
 

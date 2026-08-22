@@ -11,14 +11,14 @@ export function SharedLinksTile() {
   if (links.isPending) {
     return (
       <section
-        className="flex min-h-72 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest lg:col-span-2"
+        className="flex min-h-64 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest lg:col-span-2"
         role="status"
         aria-label="Loading shared links summary"
       >
         <Skeleton className="h-7 w-32" />
         <Skeleton className="h-12 w-20" />
-        <Skeleton className="h-20 w-full" />
-        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-16 w-full" />
       </section>
     )
   }
@@ -38,15 +38,15 @@ export function SharedLinksTile() {
   if (links.data.length === 0) {
     return (
       <section
-        className="flex min-h-72 flex-col items-center justify-center gap-5 rounded-xl bg-card p-6 text-center shadow-rest lg:col-span-2"
+        className="flex min-h-64 flex-col items-center justify-center gap-4 rounded-xl bg-card p-5 text-center shadow-rest lg:col-span-2"
         aria-labelledby="shared-links-heading"
       >
         <span className="flex min-h-11 min-w-11 items-center justify-center rounded-full bg-card-muted text-primary">
           <Link2 aria-hidden="true" size={20} />
         </span>
         <div className="flex flex-col gap-2">
-          <p className="text-sm font-semibold text-brand">Shared links</p>
-          <h3 id="shared-links-heading" className="font-display text-2xl font-bold text-foreground">
+          <p className="text-xs font-semibold text-brand">Shared links</p>
+          <h3 id="shared-links-heading" className="font-display text-xl font-bold text-foreground">
             Nothing shared yet
           </h3>
           <p className="text-sm text-muted-foreground">
@@ -61,13 +61,13 @@ export function SharedLinksTile() {
 
   return (
     <section
-      className="flex min-h-72 min-w-0 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest lg:col-span-2"
+      className="flex min-h-64 min-w-0 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest lg:col-span-2"
       aria-labelledby="shared-links-heading"
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-col gap-2">
-          <p className="text-sm font-semibold text-brand">Shared links</p>
-          <h3 id="shared-links-heading" className="font-display text-2xl font-bold text-foreground">
+        <div className="flex min-w-0 flex-col gap-1">
+          <p className="text-xs font-semibold text-brand">Shared links</p>
+          <h3 id="shared-links-heading" className="font-display text-xl font-bold text-foreground">
             Sharing summary
           </h3>
         </div>
@@ -75,11 +75,11 @@ export function SharedLinksTile() {
           {links.data.length}
         </span>
       </div>
-      <ul className="grid gap-3">
+      <ul className="grid gap-2">
         {newestLinks.map((link) => (
           <li
             key={link.shareLinkId}
-            className="flex min-w-0 flex-col gap-2 rounded-md bg-card-muted p-4"
+            className="flex min-w-0 flex-col gap-2 rounded-md bg-card-muted p-3"
           >
             <div className="flex items-center justify-between gap-3">
               <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground">

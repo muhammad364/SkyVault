@@ -108,8 +108,8 @@ export function WorkspaceRail() {
         </NavLink>
         <Button
           type="button"
-          variant="destructive"
-          className="px-3 lg:justify-start"
+          variant="secondary"
+          className="px-3 text-danger hover:bg-border hover:text-danger lg:justify-start"
           disabled={logout.isPending}
           onClick={() =>
             logout.mutate(undefined, {

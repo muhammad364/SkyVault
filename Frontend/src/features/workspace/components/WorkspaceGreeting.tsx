@@ -9,26 +9,26 @@ export function WorkspaceGreeting() {
   if (profile.isPending) {
     return (
       <header
-        className="flex max-w-3xl flex-col gap-3"
+        className="flex max-w-3xl flex-col gap-2"
         role="status"
         aria-label="Loading your greeting"
       >
-        <Skeleton className="h-5 w-32" />
-        <Skeleton className="h-12 w-full max-w-xl" />
-        <Skeleton className="h-6 w-full max-w-2xl" />
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-9 w-full max-w-xl" />
+        <Skeleton className="h-5 w-full max-w-2xl" />
       </header>
     )
   }
 
   if (profile.isError) {
     return (
-      <header className="flex max-w-3xl flex-col items-start gap-4">
-        <div className="flex flex-col gap-2">
-          <p className="text-sm font-semibold text-brand">Your workspace</p>
-          <h2 className="text-balance font-display text-4xl font-bold text-foreground">
+      <header className="flex max-w-3xl flex-col items-start gap-3">
+        <div className="flex flex-col gap-1">
+          <p className="text-xs font-semibold text-brand">Your workspace</p>
+          <h2 className="text-balance font-display text-3xl font-bold text-foreground">
             Welcome back.
           </h2>
-          <p className="text-pretty text-secondary-foreground">
+          <p className="text-pretty text-sm text-secondary-foreground">
             We couldn&apos;t personalize your welcome, but the rest of your vault is still here.
           </p>
         </div>
@@ -48,12 +48,12 @@ export function WorkspaceGreeting() {
   const firstName = profile.data.firstName.trim()
 
   return (
-    <header className="flex max-w-3xl flex-col gap-3">
-      <p className="text-sm font-semibold text-brand">Your workspace</p>
-      <h2 className="text-balance font-display text-4xl font-bold text-foreground md:text-5xl">
+    <header className="flex max-w-3xl flex-col gap-2">
+      <p className="text-xs font-semibold text-brand">Your workspace</p>
+      <h2 className="text-balance font-display text-3xl font-bold text-foreground md:text-4xl">
         {firstName ? `Welcome back, ${firstName}.` : 'Welcome back.'}
       </h2>
-      <p className="text-pretty text-secondary-foreground">
+      <p className="text-pretty text-sm text-secondary-foreground">
         Your space, plan, recent files, and the things you may want to revisit—all in one calm view.
       </p>
     </header>

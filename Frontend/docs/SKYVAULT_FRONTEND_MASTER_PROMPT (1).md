@@ -299,9 +299,16 @@ Theme via `class="dark"` on `<html>`, default = system, persisted in `localStora
   `--card-muted` fill + 3px `--brand` indicator. No full-height grey sidebar with tab list.
 - **Persistent signed-in rail:** at `md` and above, the rail is contracted to the framed viewport
   height and remains sticky while the page-owned content scrolls. Its bottom account area uses a
-  generic account depiction linking to Settings, followed by a destructive semantic Sign out
-  action. Never expose the separate Admin route in the user rail; admin access remains protected by
-  its role guard and is reached only through an explicitly authorised admin journey.
+  generic account depiction linking to Settings, followed by Sign out on a muted neutral surface
+  with danger-colored text and icon. Never expose the separate Admin route in the user rail; admin
+  access remains protected by its role guard and is reached only through an explicitly authorised
+  admin journey.
+- **Workspace density:** signed-in shell headings, page greetings, bento headings, card padding, and
+  section gaps use an application-scale hierarchy rather than landing-page hero scale. On the
+  workspace home, the shell header, greeting, and shallow quick-actions strip must leave the start
+  of the quota signature visible in the initial 1024×768 and 1440×900 viewports, making continued
+  scrolling discoverable without crowding or removing content. Interactive targets remain at least
+  44px.
 - **No top "header bar with search + bell + avatar."** Instead: a page-owned editorial header
   (greeting/heading + one primary action) and a **floating command bar** (⌘K / `/`) that is the
   hero search interaction.
@@ -560,7 +567,9 @@ The asymmetric bento home: greeting, then a full-width quick-actions strip made 
 then quota signature, recent-files, shared-links, trash-summary, and plan-status tiles. Quick actions
 remain limited to working storage-management and account-settings destinations. The home composes
 existing feature hooks only — it introduces no new endpoints of its own.
-*Acceptance:* no four-identical-stat-card row; each tile has loading, empty and error states.
+*Acceptance:* no four-identical-stat-card row; each tile has loading, empty and error states; compact
+application typography and spacing reveal the beginning of quota within the initial reference
+tablet/desktop viewport.
 
 **Phase 6 — M-03 Folder Management + M-04 File Management**
 Folder tree/rail navigation, breadcrumbs, create/rename/move/delete folder, folder view with

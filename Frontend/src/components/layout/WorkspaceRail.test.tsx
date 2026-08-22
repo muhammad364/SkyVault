@@ -40,7 +40,9 @@ describe('WorkspaceRail', () => {
     expect(rail).not.toHaveClass('md:min-h-dvh')
     expect(screen.queryByRole('link', { name: 'Admin' })).not.toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: 'Account settings' })).toHaveLength(2)
-    expect(screen.getByRole('button', { name: 'Sign out' })).toHaveClass('bg-destructive')
+    const signOut = screen.getByRole('button', { name: 'Sign out' })
+    expect(signOut).toHaveClass('bg-card-muted', 'text-danger')
+    expect(signOut).not.toHaveClass('bg-destructive')
   })
 
   it('signs out from the rail and returns to login after session cleanup settles', () => {

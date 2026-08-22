@@ -61,9 +61,11 @@ describe('QuotaSignatureTile', () => {
       isError: false,
       data: quota,
     } as ReturnType<typeof useStorageQuota>)
-    renderTile()
+    const { container } = renderTile()
 
     const meter = screen.getByRole('meter', { name: 'Workspace storage used' })
+    const tile = container.querySelector('section')
+    expect(tile).toHaveClass('gap-5', 'p-5', 'md:p-6')
     expect(meter).toHaveAttribute('aria-valuenow', '80')
     expect(meter.firstElementChild).toHaveClass('bg-warning-strong')
     expect(screen.getByText('20 GB ready for what comes next.')).toBeInTheDocument()

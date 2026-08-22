@@ -18,11 +18,11 @@ export function QuotaSignatureTile() {
   if (quota.isPending) {
     return (
       <section
-        className="grid min-h-96 gap-6 rounded-xl bg-card p-6 shadow-float md:col-span-2 md:grid-cols-2 md:p-8 lg:col-span-3"
+        className="grid min-h-80 gap-5 rounded-xl bg-card p-5 shadow-float md:col-span-2 md:grid-cols-2 md:p-6 lg:col-span-3"
         role="status"
         aria-label="Loading your storage overview"
       >
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-5">
           <Skeleton className="h-5 w-36" />
           <Skeleton className="h-20 w-full" />
           <Skeleton className="h-3 w-full rounded-full" />
@@ -53,15 +53,15 @@ export function QuotaSignatureTile() {
 
   return (
     <section
-      className="grid min-w-0 gap-6 rounded-xl bg-card p-6 shadow-float md:col-span-2 md:grid-cols-[minmax(0,1.15fr)_minmax(12rem,0.85fr)] md:p-8 lg:col-span-3"
+      className="grid min-w-0 gap-5 rounded-xl bg-card p-5 shadow-float md:col-span-2 md:grid-cols-[minmax(0,1.15fr)_minmax(12rem,0.85fr)] md:p-6 lg:col-span-3"
       aria-labelledby="workspace-quota-heading"
     >
-      <div className="flex min-w-0 flex-col justify-between gap-8">
-        <div className="flex flex-col gap-3">
-          <p className="text-sm font-semibold text-brand">Your vault</p>
+      <div className="flex min-w-0 flex-col justify-between gap-6">
+        <div className="flex flex-col gap-2">
+          <p className="text-xs font-semibold text-brand">Your vault</p>
           <h3
             id="workspace-quota-heading"
-            className="text-balance font-display text-3xl font-bold text-foreground"
+            className="text-balance font-display text-2xl font-bold text-foreground"
           >
             {data.hasActiveSubscription
               ? `${formatBytes(data.availableStorageBytes)} ready for what comes next.`
@@ -76,11 +76,11 @@ export function QuotaSignatureTile() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           <div className="flex items-end justify-between gap-4">
             <div className="flex flex-col gap-1">
               <span className="text-sm text-muted-foreground">Used</span>
-              <strong className="font-mono text-2xl tabular-nums text-foreground">
+              <strong className="font-mono text-xl tabular-nums text-foreground">
                 {formatBytes(data.usedStorageBytes)}
               </strong>
             </div>
@@ -89,7 +89,7 @@ export function QuotaSignatureTile() {
             </span>
           </div>
           <div
-            className="h-3 overflow-hidden rounded-full bg-card-muted"
+            className="h-2 overflow-hidden rounded-full bg-card-muted"
             role="meter"
             aria-label="Workspace storage used"
             aria-valuemin={0}
@@ -102,21 +102,21 @@ export function QuotaSignatureTile() {
               style={{ width: `${boundedPercentage}%` }}
             />
           </div>
-          <dl className="grid gap-3 sm:grid-cols-2">
-            <div className="flex min-w-0 flex-col gap-1 rounded-md bg-card-muted p-4">
+          <dl className="grid gap-2 sm:grid-cols-2">
+            <div className="flex min-w-0 flex-col gap-1 rounded-md bg-card-muted p-3">
               <dt className="text-sm text-muted-foreground">Allocated</dt>
               <dd className="font-mono text-sm font-semibold tabular-nums text-foreground">
                 {formatBytes(data.allocatedStorageBytes)}
               </dd>
             </div>
-            <div className="flex min-w-0 flex-col gap-1 rounded-md bg-card-muted p-4">
+            <div className="flex min-w-0 flex-col gap-1 rounded-md bg-card-muted p-3">
               <dt className="text-sm text-muted-foreground">Available</dt>
               <dd className="font-mono text-sm font-semibold tabular-nums text-foreground">
                 {formatBytes(data.availableStorageBytes)}
               </dd>
             </div>
           </dl>
-          <div className="flex items-start gap-3 rounded-md border border-border p-4 text-sm text-muted-foreground">
+          <div className="flex items-start gap-3 rounded-md border border-border p-3 text-sm text-muted-foreground">
             <SignalIcon
               aria-hidden="true"
               className={data.isOverQuota ? 'shrink-0 text-danger' : 'shrink-0 text-primary'}
@@ -137,11 +137,11 @@ export function QuotaSignatureTile() {
         </div>
       </div>
 
-      <div className="mx-auto flex w-full max-w-sm min-w-0 items-center justify-center">
+      <div className="mx-auto flex w-full max-w-xs min-w-0 items-center justify-center">
         {data.hasActiveSubscription ? (
           <QuotaVisual usagePercentage={data.usagePercentage} />
         ) : (
-          <div className="flex aspect-square w-full items-center justify-center rounded-lg bg-card-muted p-8">
+          <div className="flex aspect-square w-full items-center justify-center rounded-lg bg-card-muted p-6">
             <Database aria-hidden="true" className="text-primary" size={48} />
           </div>
         )}

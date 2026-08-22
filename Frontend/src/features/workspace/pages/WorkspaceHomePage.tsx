@@ -8,10 +8,10 @@ import { WorkspaceGreeting } from '@/features/workspace/components/WorkspaceGree
 
 export default function WorkspaceHomePage() {
   return (
-    <div className="flex min-w-0 flex-col gap-8">
+    <div className="flex min-w-0 flex-col gap-5">
       <WorkspaceGreeting />
       <QuickActionsTile />
-      <div className="grid min-w-0 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid min-w-0 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <QuotaSignatureTile />
         <PlanStatusTile />
         <RecentFilesTile />

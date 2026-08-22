@@ -51,6 +51,8 @@ describe('WorkspaceGreeting', () => {
 
     render(<WorkspaceGreeting />)
 
-    expect(screen.getByRole('heading', { name: 'Welcome back, Haroon.' })).toBeInTheDocument()
+    const heading = screen.getByRole('heading', { name: 'Welcome back, Haroon.' })
+    expect(heading).toHaveClass('text-3xl', 'md:text-4xl')
+    expect(heading).not.toHaveClass('md:text-5xl')
   })
 })

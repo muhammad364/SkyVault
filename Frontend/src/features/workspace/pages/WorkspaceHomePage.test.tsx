@@ -28,7 +28,7 @@ afterEach(cleanup)
 
 describe('WorkspaceHomePage', () => {
   it('composes the complete Phase 5 bento without a workspace endpoint', () => {
-    render(<WorkspaceHomePage />)
+    const { container } = render(<WorkspaceHomePage />)
 
     expect(screen.getByText('Workspace greeting')).toBeInTheDocument()
     expect(screen.getByText('Quota signature')).toBeInTheDocument()
@@ -47,5 +47,7 @@ describe('WorkspaceHomePage', () => {
     expect(quickActions.compareDocumentPosition(quota) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(
       0,
     )
+    expect(container.firstElementChild).toHaveClass('gap-5')
+    expect(quota.parentElement).toHaveClass('gap-4')
   })
 })

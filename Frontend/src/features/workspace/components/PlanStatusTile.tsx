@@ -16,7 +16,7 @@ export function PlanStatusTile() {
   if (subscription.isPending) {
     return (
       <section
-        className="flex min-h-80 flex-col gap-6 rounded-xl bg-card p-6 shadow-rest"
+        className="flex min-h-64 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest"
         role="status"
         aria-label="Loading your plan status"
       >
@@ -41,18 +41,18 @@ export function PlanStatusTile() {
   if (!subscription.data) {
     return (
       <section
-        className="flex min-h-80 flex-col justify-between gap-8 rounded-xl bg-card p-6 shadow-rest"
+        className="flex min-h-64 flex-col justify-between gap-6 rounded-xl bg-card p-5 shadow-rest"
         aria-labelledby="workspace-plan-heading"
       >
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           <span className="flex min-h-11 min-w-11 self-start items-center justify-center rounded-full bg-card-muted text-primary">
             <HardDrive aria-hidden="true" size={20} />
           </span>
           <div className="flex flex-col gap-2">
-            <p className="text-sm font-semibold text-brand">Plan status</p>
+            <p className="text-xs font-semibold text-brand">Plan status</p>
             <h3
               id="workspace-plan-heading"
-              className="font-display text-2xl font-bold text-foreground"
+              className="font-display text-xl font-bold text-foreground"
             >
               No plan yet
             </h3>
@@ -75,16 +75,16 @@ export function PlanStatusTile() {
 
   return (
     <section
-      className="flex min-h-80 min-w-0 flex-col justify-between gap-8 rounded-xl bg-card p-6 shadow-rest"
+      className="flex min-h-64 min-w-0 flex-col justify-between gap-6 rounded-xl bg-card p-5 shadow-rest"
       aria-labelledby="workspace-plan-heading"
     >
-      <div className="flex min-w-0 flex-col gap-5">
+      <div className="flex min-w-0 flex-col gap-4">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-brand">Plan status</p>
+            <p className="text-xs font-semibold text-brand">Plan status</p>
             <h3
               id="workspace-plan-heading"
-              className="truncate font-display text-2xl font-bold text-foreground"
+              className="truncate font-display text-xl font-bold text-foreground"
             >
               {current.storagePlanName}
             </h3>
@@ -99,14 +99,14 @@ export function PlanStatusTile() {
             {subscriptionStatusLabel(current.status)}
           </span>
         </div>
-        <dl className="grid gap-3">
-          <div className="flex items-center justify-between gap-3 rounded-md bg-card-muted p-4">
+        <dl className="grid gap-2">
+          <div className="flex items-center justify-between gap-3 rounded-md bg-card-muted p-3">
             <dt className="text-sm text-muted-foreground">Storage</dt>
             <dd className="font-mono text-sm font-semibold tabular-nums text-foreground">
               {current.storageSizeGb} GB
             </dd>
           </div>
-          <div className="flex items-center justify-between gap-3 rounded-md bg-card-muted p-4">
+          <div className="flex items-center justify-between gap-3 rounded-md bg-card-muted p-3">
             <dt className="text-sm text-muted-foreground">Billing</dt>
             <dd className="text-right text-sm font-semibold text-foreground">
               {formatBillingCycle(current.billingCycle)}
