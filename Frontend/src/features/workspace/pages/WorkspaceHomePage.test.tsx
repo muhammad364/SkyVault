@@ -37,5 +37,15 @@ describe('WorkspaceHomePage', () => {
     expect(screen.getByText('Quick actions')).toBeInTheDocument()
     expect(screen.getByText('Shared links')).toBeInTheDocument()
     expect(screen.getByText('Trash summary')).toBeInTheDocument()
+
+    const greeting = screen.getByText('Workspace greeting')
+    const quickActions = screen.getByText('Quick actions')
+    const quota = screen.getByText('Quota signature')
+    expect(
+      greeting.compareDocumentPosition(quickActions) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).not.toBe(0)
+    expect(quickActions.compareDocumentPosition(quota) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(
+      0,
+    )
   })
 })

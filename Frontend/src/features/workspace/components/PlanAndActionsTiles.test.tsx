@@ -86,7 +86,11 @@ describe('PlanStatusTile and QuickActionsTile', () => {
     )
 
     const links = screen.getAllByRole('link')
+    const actions = screen.getByLabelText('Available quick actions')
     expect(links).toHaveLength(2)
+    expect(actions).toHaveClass('grid', 'sm:grid-cols-2')
+    expect(links[0]).toHaveClass('flex', 'items-center', 'rounded-lg')
+    expect(links[1]).toHaveClass('flex', 'items-center', 'rounded-lg')
     expect(screen.getByRole('link', { name: /manage storage/i })).toHaveAttribute(
       'href',
       '/vault/storage',

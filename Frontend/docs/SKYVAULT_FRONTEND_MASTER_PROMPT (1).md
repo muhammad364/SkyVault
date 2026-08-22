@@ -297,6 +297,11 @@ Theme via `class="dark"` on `<html>`, default = system, persisted in `localStora
 - **Floating rail, not a sidebar:** a detached `rounded-2xl` vertical rail (icon + label, 72px
   collapsed / 232px expanded) sitting *inside* the frame with its own shadow. Active item = soft
   `--card-muted` fill + 3px `--brand` indicator. No full-height grey sidebar with tab list.
+- **Persistent signed-in rail:** at `md` and above, the rail is contracted to the framed viewport
+  height and remains sticky while the page-owned content scrolls. Its bottom account area uses a
+  generic account depiction linking to Settings, followed by a destructive semantic Sign out
+  action. Never expose the separate Admin route in the user rail; admin access remains protected by
+  its role guard and is reached only through an explicitly authorised admin journey.
 - **No top "header bar with search + bell + avatar."** Instead: a page-owned editorial header
   (greeting/heading + one primary action) and a **floating command bar** (⌘K / `/`) that is the
   hero search interaction.
@@ -551,9 +556,10 @@ numeric/bar fallback) with amber ≥80% / danger-burgundy ≥95% states and an o
 pending/failed payment returns are real screens.
 
 **Phase 5 — Workspace Home (post-login hub)**
-The asymmetric bento home: greeting + quota signature tile, recent files, quick actions, shared-links
-summary, trash summary, plan status. Composes existing feature hooks only — introduces no new
-endpoints of its own.
+The asymmetric bento home: greeting, then a full-width quick-actions strip made of horizontal cards,
+then quota signature, recent-files, shared-links, trash-summary, and plan-status tiles. Quick actions
+remain limited to working storage-management and account-settings destinations. The home composes
+existing feature hooks only — it introduces no new endpoints of its own.
 *Acceptance:* no four-identical-stat-card row; each tile has loading, empty and error states.
 
 **Phase 6 — M-03 Folder Management + M-04 File Management**

@@ -11,7 +11,7 @@ export function TrashSummaryTile() {
   if (items.isPending) {
     return (
       <section
-        className="flex min-h-72 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest md:col-span-2 lg:col-span-2"
+        className="flex min-h-72 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest md:col-span-2 lg:col-span-4"
         role="status"
         aria-label="Loading trash summary"
       >
@@ -25,7 +25,7 @@ export function TrashSummaryTile() {
 
   if (items.isError) {
     return (
-      <div className="md:col-span-2 lg:col-span-2">
+      <div className="md:col-span-2 lg:col-span-4">
         <ErrorState
           title="Your trash summary stayed closed."
           description="We couldn't load the things waiting in your recycle bin."
@@ -38,7 +38,7 @@ export function TrashSummaryTile() {
   if (items.data.length === 0) {
     return (
       <section
-        className="flex min-h-72 flex-col items-center justify-center gap-5 rounded-xl bg-card p-6 text-center shadow-rest md:col-span-2 lg:col-span-2"
+        className="flex min-h-72 flex-col items-center justify-center gap-5 rounded-xl bg-card p-6 text-center shadow-rest md:col-span-2 lg:col-span-4"
         aria-labelledby="trash-summary-heading"
       >
         <span className="flex min-h-11 min-w-11 items-center justify-center rounded-full bg-card-muted text-primary">
@@ -64,7 +64,7 @@ export function TrashSummaryTile() {
 
   return (
     <section
-      className="flex min-h-72 min-w-0 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest md:col-span-2 lg:col-span-2"
+      className="flex min-h-72 min-w-0 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest md:col-span-2 lg:col-span-4"
       aria-labelledby="trash-summary-heading"
     >
       <div className="flex items-start justify-between gap-4">

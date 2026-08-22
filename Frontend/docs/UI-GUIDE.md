@@ -17,6 +17,13 @@ The approved redesign changed color and asset presentation only. Preserve the ex
 structure, spacing, padding, radii, typography, responsive behavior, ordering, motion, functionality,
 and API integration.
 
+The owner subsequently approved two explicit layout refinements for the signed-in workspace. At
+tablet and desktop widths, the floating rail stays within the framed viewport while page content
+scrolls; its bottom account area contains a generic account icon for Settings and a destructive Sign
+out action, with no Admin destination exposed in user navigation. On the Phase 5 home, Quick actions
+sit directly below the greeting as a full-width strip of horizontal action cards. These decisions
+supersede the earlier geometry-preservation rule only for the named surfaces.
+
 ## Brand
 
 - Use `BrandSignature` for the theme-aware emblem and live `SkyVault` wordmark.
@@ -89,8 +96,13 @@ orbs, and gradient blobs remain prohibited.
 
 - Preserve the gray framed canvas and rounded inner surface on every application layout. The outer
   frame remains `p-3 md:p-5`; no page becomes edge-to-edge.
+- Keep the signed-in rail viewport-sticky at `md` and above, contracted inside the frame so scrolling
+  long page content never carries navigation or its bottom account controls out of reach.
 - Build mobile-first with Tailwind's default breakpoints and never introduce fixed layout widths.
 - Use asymmetric editorial composition instead of identical metric-card rows.
+- Place the Phase 5 Quick actions strip immediately below its greeting. Its two working destinations
+  use horizontal icon/text/arrow cards, sit side by side when space permits, and stack on narrow
+  screens.
 - Keep content groups spacious with Tailwind scale spacing, but let important hero copy confidently
   occupy its column.
 - Avoid repeating information solely to fill space; strengthen hierarchy and scale instead.
@@ -110,6 +122,9 @@ orbs, and gradient blobs remain prohibited.
   useful copy and an action.
 - Apply the same semantic treatment to badges, meters, dialogs, forms, plan illustrations,
   checkout processing/success/failure states, error surfaces, and navigation states.
+- In the signed-in rail, Settings belongs in the bottom account area with a generic account
+  depiction. Sign out sits beneath it with destructive semantic tokens. Do not advertise the Admin
+  route in ordinary user navigation.
 
 ## Motion and scrolling
 

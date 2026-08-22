@@ -10,11 +10,11 @@ export default function WorkspaceHomePage() {
   return (
     <div className="flex min-w-0 flex-col gap-8">
       <WorkspaceGreeting />
+      <QuickActionsTile />
       <div className="grid min-w-0 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <QuotaSignatureTile />
         <PlanStatusTile />
         <RecentFilesTile />
-        <QuickActionsTile />
         <SharedLinksTile />
         <TrashSummaryTile />
       </div>

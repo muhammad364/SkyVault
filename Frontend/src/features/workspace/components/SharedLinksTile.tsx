@@ -11,7 +11,7 @@ export function SharedLinksTile() {
   if (links.isPending) {
     return (
       <section
-        className="flex min-h-72 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest"
+        className="flex min-h-72 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest lg:col-span-2"
         role="status"
         aria-label="Loading shared links summary"
       >
@@ -25,18 +25,20 @@ export function SharedLinksTile() {
 
   if (links.isError) {
     return (
-      <ErrorState
-        title="Your links stayed private."
-        description="We couldn't load your sharing summary."
-        onRetry={() => void links.refetch()}
-      />
+      <div className="lg:col-span-2">
+        <ErrorState
+          title="Your links stayed private."
+          description="We couldn't load your sharing summary."
+          onRetry={() => void links.refetch()}
+        />
+      </div>
     )
   }
 
   if (links.data.length === 0) {
     return (
       <section
-        className="flex min-h-72 flex-col items-center justify-center gap-5 rounded-xl bg-card p-6 text-center shadow-rest"
+        className="flex min-h-72 flex-col items-center justify-center gap-5 rounded-xl bg-card p-6 text-center shadow-rest lg:col-span-2"
         aria-labelledby="shared-links-heading"
       >
         <span className="flex min-h-11 min-w-11 items-center justify-center rounded-full bg-card-muted text-primary">
@@ -59,7 +61,7 @@ export function SharedLinksTile() {
 
   return (
     <section
-      className="flex min-h-72 min-w-0 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest"
+      className="flex min-h-72 min-w-0 flex-col gap-5 rounded-xl bg-card p-6 shadow-rest lg:col-span-2"
       aria-labelledby="shared-links-heading"
     >
       <div className="flex items-start justify-between gap-4">
