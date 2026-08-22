@@ -37,6 +37,7 @@ const AdditionalStorageCheckoutPage = lazy(
 const RenewSubscriptionPage = lazy(
   () => import('@/features/subscriptions/pages/RenewSubscriptionPage'),
 )
+const WorkspaceHomePage = lazy(() => import('@/features/workspace/pages/WorkspaceHomePage'))
 
 function withSuspense(element: JSX.Element, fallback: JSX.Element = <PageSkeleton />) {
   return <Suspense fallback={fallback}>{element}</Suspense>
@@ -87,7 +88,7 @@ export const router = createBrowserRouter(
       ),
       errorElement: <RouteErrorFallback />,
       children: [
-        { index: true, element: withSuspense(<PhasePendingPage />) },
+        { index: true, element: withSuspense(<WorkspaceHomePage />) },
         { path: 'storage', element: withSuspense(<StorageDashboardPage />) },
         {
           path: 'storage/subscribe/:storagePlanId',

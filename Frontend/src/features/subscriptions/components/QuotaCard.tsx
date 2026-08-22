@@ -4,19 +4,19 @@ import { Button } from '@/components/ui/button'
 import { QuotaVisual } from '@/features/subscriptions/components/QuotaVisual'
 import { formatBytes, formatQuotaPercentage } from '@/lib/formatters'
 import type { StorageQuotaResponse } from '@/models/storage/StorageQuotaResponse'
+import {
+  boundedQuotaPercentage,
+  getQuotaSignal,
+  quotaMeterClass,
+} from '@/features/subscriptions/lib/quotaPresentation'
 
 interface QuotaCardProps {
   quota: StorageQuotaResponse
 }
 
 export function QuotaCard({ quota }: QuotaCardProps) {
-  const boundedPercentage = Math.max(0, Math.min(100, quota.usagePercentage))
-  const signalClass =
-    quota.usagePercentage >= 95
-      ? 'bg-danger'
-      : quota.usagePercentage >= 80
-        ? 'bg-warning-strong'
-        : 'bg-primary'
+  const boundedPercentage = boundedQuotaPercentage(quota.usagePercentage)
+  const signalClass = quotaMeterClass(getQuotaSignal(quota.usagePercentage))
   const SignalIcon =
     quota.isOverQuota || !quota.canPerformStorageWriteOperations ? AlertTriangle : ShieldCheck
 

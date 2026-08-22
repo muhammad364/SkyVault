@@ -23,3 +23,10 @@ The authentication API exposes JWT issuance through login but no refresh-token e
 - Resolved by owner decision on 2026-08-21: the API has no recommended-plan designation. Optional public configuration `VITE_RECOMMENDED_STORAGE_PLAN_ID` may label only the matching active API plan; absent, invalid, inactive, or unmatched configuration creates no fallback recommendation.
 - `GET /api/subscriptions/me` uses `404` to represent a user without a subscription. The frontend normalizes that response to `null` in the subscription service so the expected no-plan state is not presented as an error.
 - `PaymentResponseDto` remains an internal backend detail and is deliberately not mirrored because no Phase 4 controller action returns it.
+
+## Phase 5
+
+- No unresolved API gap blocks the Workspace Home implementation. By owner decision on 2026-08-22, Phase 5 composes the existing profile, quota, subscription, file-list, share-link-list, and recycle-bin-list contracts instead of inventing a workspace-summary endpoint.
+- The API exposes no count, limit, pagination, or recent-files query contract for these summaries. The frontend therefore keeps each response unchanged in its feature query cache and derives only the visible presentation: up to four files ordered by `updatedAt`, two links ordered by `createdAt`, and two recycle-bin items ordered by `deletedAt`.
+- `GET /api/share-links` returns no file name. The Phase 5 summary does not join or invent one and does not render `shareUrl`; it displays only explicit creation, expiry, and revocation metadata. Expiry validity remains backend-owned and is not inferred by the home.
+- Phase 5 adds no file, sharing, or recycle-bin mutation and no link to their unfinished routes. Those capabilities remain scoped to Phases 6â€“8.

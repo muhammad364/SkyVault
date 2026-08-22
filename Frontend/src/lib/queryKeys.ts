@@ -18,4 +18,13 @@ export const queryKeys = {
   auth: {
     profile: () => [...queryKeys.root, 'auth', 'profile'] as const,
   },
+  files: {
+    all: () => [...queryKeys.root, 'files', 'all'] as const,
+  },
+  sharing: {
+    own: () => [...queryKeys.root, 'sharing', 'own'] as const,
+  },
+  recycleBin: {
+    items: () => [...queryKeys.root, 'recycle-bin', 'items'] as const,
+  },
 }
