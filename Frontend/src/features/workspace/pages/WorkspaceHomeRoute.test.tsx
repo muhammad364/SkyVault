@@ -17,4 +17,13 @@ describe('WorkspaceHome route', () => {
     }
     expect(indexRoute?.element).toBeDefined()
   })
+
+  it('registers lazy root and nested file-manager routes under the protected vault', () => {
+    const routes = router.routes as unknown as RouteObject[]
+    const vaultRoute = routes.find((route) => route.path === '/vault')
+    expect(vaultRoute?.children?.find((route) => route.path === 'files')?.element).toBeDefined()
+    expect(
+      vaultRoute?.children?.find((route) => route.path === 'files/:folderId')?.element,
+    ).toBeDefined()
+  })
 })

@@ -17,7 +17,7 @@ The approved redesign changed color and asset presentation only. Preserve the ex
 structure, spacing, padding, radii, typography, responsive behavior, ordering, motion, functionality,
 and API integration.
 
-The owner subsequently approved two explicit layout refinements for the signed-in workspace. At
+The owner subsequently approved explicit layout refinements for the signed-in workspace. At
 tablet and desktop widths, the floating rail stays within the framed viewport while page content
 scrolls; its bottom account area contains a generic account icon for Settings and a Sign out action
 whose muted neutral surface carries danger-colored text and icon, with no Admin destination exposed
@@ -25,7 +25,8 @@ in user navigation. On the Phase 5 home, Quick actions sit directly below the gr
 full-width strip of horizontal action cards. The signed-in shell and workspace bento use compact
 application typography and spacing so quota begins inside the initial reference tablet/desktop
 viewport. These decisions supersede the earlier geometry-preservation rule only for the named
-surfaces.
+surfaces. Phase 6 adds a file-first home order, a responsive root/nested file manager, and a
+workspace-level operation dock under the same Quiet Vault system.
 
 ## Brand
 
@@ -103,9 +104,9 @@ orbs, and gradient blobs remain prohibited.
   long page content never carries navigation or its bottom account controls out of reach.
 - Build mobile-first with Tailwind's default breakpoints and never introduce fixed layout widths.
 - Use asymmetric editorial composition instead of identical metric-card rows.
-- Place the Phase 5 Quick actions strip immediately below its greeting. Its two working destinations
-  use horizontal icon/text/arrow cards, sit side by side when space permits, and stack on narrow
-  screens.
+- Place the Phase 5 Quick actions strip immediately below its greeting. After Phase 6 its three
+  working destinations are Upload files, New folder, and Browse files; the recent-files and root-folders
+  cards receive equal weight, followed by one combined quota/plan overview.
 - Keep signed-in shell headings and page greetings at application scale; reserve landing-page hero
   typography and large editorial whitespace for marketing surfaces.
 - Use compact, consistent card padding and section gaps on the Phase 5 home. At 1024×768 and
@@ -133,6 +134,16 @@ orbs, and gradient blobs remain prohibited.
 - In the signed-in rail, Settings belongs in the bottom account area with a generic account
   depiction. Sign out sits beneath it on `bg-card-muted` with danger-colored text/icon rather than a
   solid destructive fill. Do not advertise the Admin route in ordinary user navigation.
+- File/folder cards keep a 44px selection control and always-reachable three-dot menu. Folders precede
+  files; grid/list preference persists locally; name/extension filtering and API-field sorting apply
+  only to the currently loaded folder. Breadcrumbs remain API-driven and collapse middle ancestors
+  into the Radix overflow menu.
+- Desktop uses a lazy split-pane folder tree; mobile exposes the same navigator in a bottom sheet.
+  Create/rename use focused pending labels. Move, copy, replace, and Trash confirmations state the
+  real backend effect, including hierarchy deletion and the absence of version history.
+- The floating file-operation dock uses glass only at that permitted overlay surface. It reports real
+  upload/replace transport percentages, indeterminate backend processing, cancellable preview/download,
+  and sequential batch counts. Never fabricate percentages or show Cancel for a submitted server write.
 
 ## Motion and scrolling
 
@@ -153,13 +164,16 @@ orbs, and gradient blobs remain prohibited.
 - Auth key: graphite dial, zinc key and wheel, burgundy hub.
 - Quota volume: zinc shell; midnight-slate normal fill, amber warning fill at 80%+, and
   danger/burgundy critical fill at 95%+.
+- Empty file manager: one zinc folder with burgundy tab, rendered only when the current folder is truly
+  empty. It never appears in populated grids, dialogs, the folder tree, or Workspace Home.
 - Materials and lighting consume theme-derived tokens. Preserve the existing geometry and motion.
 - Every scene remains lazy and demand-rendered where possible, and uses its matching light/dark
   fallback on mobile, reduced motion, low-core hardware, loading, or Canvas failure.
 - Active fallbacks are `landing-vault-fallback-light-v3.png`,
   `landing-vault-fallback-dark-v3.png`, `auth-key-fallback.svg`,
-  `auth-key-fallback-dark-v3.svg`, `quota-vault-fallback.svg`, and
-  `quota-vault-fallback-dark-v3.svg`.
+  `auth-key-fallback-dark-v3.svg`, `quota-vault-fallback.svg`,
+  `quota-vault-fallback-dark-v3.svg`, `folder-empty-fallback.svg`, and
+  `folder-empty-fallback-dark.svg`.
 
 ## Accessibility and themes
 

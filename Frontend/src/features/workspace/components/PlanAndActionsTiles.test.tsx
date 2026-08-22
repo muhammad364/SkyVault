@@ -78,7 +78,7 @@ describe('PlanStatusTile and QuickActionsTile', () => {
     expect(container.querySelector('time[datetime="2026-11-01T00:00:00Z"]')).toBeInTheDocument()
   })
 
-  it('offers only working storage and account quick actions', () => {
+  it('offers the three working file-first quick actions', () => {
     render(
       <MemoryRouter>
         <QuickActionsTile />
@@ -86,24 +86,23 @@ describe('PlanStatusTile and QuickActionsTile', () => {
     )
 
     const links = screen.getAllByRole('link')
-    const actions = screen.getByLabelText('Available quick actions')
-    const quickActions = screen
-      .getByRole('heading', { name: 'Keep your vault comfortable.' })
-      .closest('section')
-    expect(links).toHaveLength(2)
-    expect(quickActions).toHaveClass('gap-4', 'p-4', 'xl:flex-row')
-    expect(actions).toHaveClass('grid', 'sm:grid-cols-2')
+    const actions = screen.getByLabelText('File quick actions')
+    expect(links).toHaveLength(3)
+    expect(actions).toHaveClass('grid', 'sm:grid-cols-3')
     expect(links[0]).toHaveClass('flex', 'min-h-16', 'items-center', 'rounded-lg', 'p-3')
     expect(links[1]).toHaveClass('flex', 'min-h-16', 'items-center', 'rounded-lg', 'p-3')
-    expect(screen.getByRole('link', { name: /manage storage/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /upload files/i })).toHaveAttribute(
       'href',
-      '/vault/storage',
+      '/vault/files?action=upload',
     )
-    expect(screen.getByRole('link', { name: /account settings/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /new folder/i })).toHaveAttribute(
       'href',
-      '/vault/settings',
+      '/vault/files?action=new-folder',
     )
-    expect(links.map((link) => link.getAttribute('href'))).not.toContain('/vault/files')
+    expect(screen.getByRole('link', { name: /browse files/i })).toHaveAttribute(
+      'href',
+      '/vault/files',
+    )
     expect(links.map((link) => link.getAttribute('href'))).not.toContain('/vault/search')
     expect(links.map((link) => link.getAttribute('href'))).not.toContain('/vault/trash')
   })

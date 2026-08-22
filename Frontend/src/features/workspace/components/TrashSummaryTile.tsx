@@ -11,7 +11,7 @@ export function TrashSummaryTile() {
   if (items.isPending) {
     return (
       <section
-        className="flex min-h-64 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest md:col-span-2 lg:col-span-4"
+        className="flex min-h-56 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest md:col-span-2 lg:col-span-2"
         role="status"
         aria-label="Loading trash summary"
       >
@@ -25,7 +25,7 @@ export function TrashSummaryTile() {
 
   if (items.isError) {
     return (
-      <div className="md:col-span-2 lg:col-span-4">
+      <div className="md:col-span-2 lg:col-span-2">
         <ErrorState
           title="Your trash summary stayed closed."
           description="We couldn't load the things waiting in your recycle bin."
@@ -38,7 +38,7 @@ export function TrashSummaryTile() {
   if (items.data.length === 0) {
     return (
       <section
-        className="flex min-h-64 flex-col items-center justify-center gap-4 rounded-xl bg-card p-5 text-center shadow-rest md:col-span-2 lg:col-span-4"
+        className="flex min-h-56 flex-col items-center justify-center gap-4 rounded-xl bg-card p-5 text-center shadow-rest md:col-span-2 lg:col-span-2"
         aria-labelledby="trash-summary-heading"
       >
         <span className="flex min-h-11 min-w-11 items-center justify-center rounded-full bg-card-muted text-primary">
@@ -61,7 +61,7 @@ export function TrashSummaryTile() {
 
   return (
     <section
-      className="flex min-h-64 min-w-0 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest md:col-span-2 lg:col-span-4"
+      className="flex min-h-56 min-w-0 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest md:col-span-2 lg:col-span-2"
       aria-labelledby="trash-summary-heading"
     >
       <div className="flex items-start justify-between gap-4">
@@ -75,7 +75,7 @@ export function TrashSummaryTile() {
           {items.data.length}
         </span>
       </div>
-      <ul className="grid gap-2 sm:grid-cols-2">
+      <ul className="grid gap-2">
         {recentItems.map((item) => {
           const ItemIcon = item.itemType === 'Folder' ? Folder : FileText
 

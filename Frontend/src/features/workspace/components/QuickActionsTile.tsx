@@ -1,60 +1,55 @@
-import { ArrowRight, HardDrive, Settings } from 'lucide-react'
+import { ArrowRight, FileUp, FolderOpen, FolderPlus } from 'lucide-react'
 import { Link } from 'react-router-dom'
+
+const actions = [
+  {
+    to: '/vault/files?action=upload',
+    title: 'Upload files',
+    description: 'Add files to your root folder',
+    icon: FileUp,
+  },
+  {
+    to: '/vault/files?action=new-folder',
+    title: 'New folder',
+    description: 'Organize your vault',
+    icon: FolderPlus,
+  },
+  {
+    to: '/vault/files',
+    title: 'Browse files',
+    description: 'Open your file manager',
+    icon: FolderOpen,
+  },
+]
 
 export function QuickActionsTile() {
   return (
-    <section
-      className="flex flex-col gap-4 rounded-xl bg-card p-4 shadow-rest xl:flex-row xl:items-center"
-      aria-labelledby="quick-actions-heading"
-    >
-      <div className="flex max-w-xl flex-col gap-1 xl:w-64 xl:shrink-0">
-        <p className="text-xs font-semibold text-brand">Quick actions</p>
-        <h2 id="quick-actions-heading" className="font-display text-xl font-bold text-foreground">
-          Keep your vault comfortable.
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Reach the parts of SkyVault that are ready to use today.
-        </p>
-      </div>
-      <div
-        className="grid min-w-0 flex-1 gap-3 sm:grid-cols-2"
-        aria-label="Available quick actions"
-      >
-        <Link
-          to="/vault/storage"
-          className="pressable group flex min-h-16 items-center gap-3 rounded-lg bg-card-muted p-3 text-foreground shadow-rest transition duration-default ease-vault hover:shadow-hover motion-reduce:transform-none"
-        >
-          <span className="flex min-h-11 min-w-11 items-center justify-center rounded-lg bg-brand-soft text-brand">
-            <HardDrive aria-hidden="true" size={20} />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-sm font-bold">Manage storage</span>
-            <span className="block text-xs text-muted-foreground">Review quota and plans</span>
-          </span>
-          <ArrowRight
-            className="shrink-0 transition-transform duration-micro ease-vault group-hover:translate-x-1 motion-reduce:transform-none"
-            aria-hidden="true"
-            size={18}
-          />
-        </Link>
-        <Link
-          to="/vault/settings"
-          className="pressable group flex min-h-16 items-center gap-3 rounded-lg bg-card-muted p-3 text-foreground shadow-rest transition duration-default ease-vault hover:shadow-hover motion-reduce:transform-none"
-        >
-          <span className="flex min-h-11 min-w-11 items-center justify-center rounded-lg bg-brand-soft text-brand">
-            <Settings aria-hidden="true" size={20} />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-sm font-bold">Account settings</span>
-            <span className="block text-xs text-muted-foreground">Update your profile</span>
-          </span>
-          <ArrowRight
-            className="shrink-0 transition-transform duration-micro ease-vault group-hover:translate-x-1 motion-reduce:transform-none"
-            aria-hidden="true"
-            size={18}
-          />
-        </Link>
-      </div>
+    <section className="grid gap-2 sm:grid-cols-3" aria-label="File quick actions">
+      {actions.map((action) => {
+        const Icon = action.icon
+        return (
+          <Link
+            key={action.to}
+            to={action.to}
+            className="pressable group flex min-h-16 min-w-0 items-center gap-3 rounded-lg bg-card p-3 text-foreground shadow-rest transition duration-default ease-vault hover:shadow-hover motion-reduce:transform-none"
+          >
+            <span className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md bg-brand-soft text-brand">
+              <Icon aria-hidden="true" size={20} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-bold">{action.title}</span>
+              <span className="block truncate text-xs text-muted-foreground">
+                {action.description}
+              </span>
+            </span>
+            <ArrowRight
+              className="shrink-0 transition-transform duration-micro group-hover:translate-x-0.5 motion-reduce:transform-none"
+              aria-hidden="true"
+              size={17}
+            />
+          </Link>
+        )
+      })}
     </section>
   )
 }

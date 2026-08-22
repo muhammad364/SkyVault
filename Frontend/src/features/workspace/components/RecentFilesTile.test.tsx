@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
 import { useUserFiles } from '@/features/files/hooks/useUserFiles'
 import { RecentFilesTile } from '@/features/workspace/components/RecentFilesTile'
 import type { FileResponse } from '@/models/file/FileResponse'
@@ -27,7 +28,11 @@ describe('RecentFilesTile', () => {
 
   it('renders loading, error/retry, and empty states', () => {
     vi.mocked(useUserFiles).mockReturnValue({ isPending: true } as ReturnType<typeof useUserFiles>)
-    const view = render(<RecentFilesTile />)
+    const view = render(
+      <MemoryRouter>
+        <RecentFilesTile />
+      </MemoryRouter>,
+    )
     expect(screen.getByRole('status', { name: 'Loading recent files' })).toBeInTheDocument()
     view.unmount()
 
@@ -36,7 +41,11 @@ describe('RecentFilesTile', () => {
       isError: true,
       refetch,
     } as unknown as ReturnType<typeof useUserFiles>)
-    const errorView = render(<RecentFilesTile />)
+    const errorView = render(
+      <MemoryRouter>
+        <RecentFilesTile />
+      </MemoryRouter>,
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
     expect(refetch).toHaveBeenCalledOnce()
     errorView.unmount()
@@ -46,8 +55,12 @@ describe('RecentFilesTile', () => {
       isError: false,
       data: [],
     } as unknown as ReturnType<typeof useUserFiles>)
-    render(<RecentFilesTile />)
-    expect(screen.getByRole('heading', { name: 'Nothing here yet' })).toBeInTheDocument()
+    render(
+      <MemoryRouter>
+        <RecentFilesTile />
+      </MemoryRouter>,
+    )
+    expect(screen.getByText(/files will settle here/i)).toBeInTheDocument()
   })
 
   it('shows only the four most recently updated DTOs', () => {
@@ -56,7 +69,11 @@ describe('RecentFilesTile', () => {
       isError: false,
       data: [file(0), file(5), file(2), file(4), file(1), file(3)],
     } as ReturnType<typeof useUserFiles>)
-    render(<RecentFilesTile />)
+    render(
+      <MemoryRouter>
+        <RecentFilesTile />
+      </MemoryRouter>,
+    )
 
     expect(screen.getByText('File 5')).toBeInTheDocument()
     expect(screen.getByText('File 4')).toBeInTheDocument()

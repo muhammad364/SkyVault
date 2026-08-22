@@ -21,6 +21,13 @@ export const queryKeys = {
   files: {
     all: () => [...queryKeys.root, 'files', 'all'] as const,
   },
+  folders: {
+    all: () => [...queryKeys.root, 'folders'] as const,
+    contents: (folderId: string | null) =>
+      [...queryKeys.root, 'folders', 'contents', folderId ?? 'root'] as const,
+    ancestry: (folderId: string | null) =>
+      [...queryKeys.root, 'folders', 'ancestry', folderId ?? 'root'] as const,
+  },
   sharing: {
     own: () => [...queryKeys.root, 'sharing', 'own'] as const,
   },

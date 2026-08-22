@@ -5,11 +5,11 @@ import WorkspaceHomePage from '@/features/workspace/pages/WorkspaceHomePage'
 vi.mock('@/features/workspace/components/WorkspaceGreeting', () => ({
   WorkspaceGreeting: () => <header>Workspace greeting</header>,
 }))
-vi.mock('@/features/workspace/components/QuotaSignatureTile', () => ({
-  QuotaSignatureTile: () => <section>Quota signature</section>,
+vi.mock('@/features/workspace/components/StorageOverviewTile', () => ({
+  StorageOverviewTile: () => <section>Storage overview</section>,
 }))
-vi.mock('@/features/workspace/components/PlanStatusTile', () => ({
-  PlanStatusTile: () => <section>Plan status</section>,
+vi.mock('@/features/workspace/components/RootFoldersTile', () => ({
+  RootFoldersTile: () => <section>Root folders</section>,
 }))
 vi.mock('@/features/workspace/components/RecentFilesTile', () => ({
   RecentFilesTile: () => <section>Recent files</section>,
@@ -31,8 +31,8 @@ describe('WorkspaceHomePage', () => {
     const { container } = render(<WorkspaceHomePage />)
 
     expect(screen.getByText('Workspace greeting')).toBeInTheDocument()
-    expect(screen.getByText('Quota signature')).toBeInTheDocument()
-    expect(screen.getByText('Plan status')).toBeInTheDocument()
+    expect(screen.getByText('Storage overview')).toBeInTheDocument()
+    expect(screen.getByText('Root folders')).toBeInTheDocument()
     expect(screen.getByText('Recent files')).toBeInTheDocument()
     expect(screen.getByText('Quick actions')).toBeInTheDocument()
     expect(screen.getByText('Shared links')).toBeInTheDocument()
@@ -40,14 +40,16 @@ describe('WorkspaceHomePage', () => {
 
     const greeting = screen.getByText('Workspace greeting')
     const quickActions = screen.getByText('Quick actions')
-    const quota = screen.getByText('Quota signature')
+    const files = screen.getByText('Recent files')
+    const folders = screen.getByText('Root folders')
     expect(
       greeting.compareDocumentPosition(quickActions) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).not.toBe(0)
-    expect(quickActions.compareDocumentPosition(quota) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(
+    expect(quickActions.compareDocumentPosition(files) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(
       0,
     )
+    expect(files.compareDocumentPosition(folders) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0)
     expect(container.firstElementChild).toHaveClass('gap-5')
-    expect(quota.parentElement).toHaveClass('gap-4')
+    expect(files.parentElement).toHaveClass('gap-4')
   })
 })

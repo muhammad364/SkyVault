@@ -1,0 +1,7 @@
+export interface FolderResponse {
+  folderId: string
+  name: string
+  parentFolderId: string | null
+  createdAt: string
+  updatedAt: string
+}

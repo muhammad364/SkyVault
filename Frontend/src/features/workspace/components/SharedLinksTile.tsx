@@ -11,7 +11,7 @@ export function SharedLinksTile() {
   if (links.isPending) {
     return (
       <section
-        className="flex min-h-64 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest lg:col-span-2"
+        className="flex min-h-56 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest lg:col-span-2"
         role="status"
         aria-label="Loading shared links summary"
       >
@@ -38,7 +38,7 @@ export function SharedLinksTile() {
   if (links.data.length === 0) {
     return (
       <section
-        className="flex min-h-64 flex-col items-center justify-center gap-4 rounded-xl bg-card p-5 text-center shadow-rest lg:col-span-2"
+        className="flex min-h-56 flex-col items-center justify-center gap-4 rounded-xl bg-card p-5 text-center shadow-rest lg:col-span-2"
         aria-labelledby="shared-links-heading"
       >
         <span className="flex min-h-11 min-w-11 items-center justify-center rounded-full bg-card-muted text-primary">
@@ -61,7 +61,7 @@ export function SharedLinksTile() {
 
   return (
     <section
-      className="flex min-h-64 min-w-0 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest lg:col-span-2"
+      className="flex min-h-56 min-w-0 flex-col gap-4 rounded-xl bg-card p-5 shadow-rest lg:col-span-2"
       aria-labelledby="shared-links-heading"
     >
       <div className="flex items-start justify-between gap-4">

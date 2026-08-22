@@ -36,7 +36,7 @@ documentation. Your mandate is **only** the presentation layer.
 3. **No backend logic in the frontend.** The frontend knows only the HTTP contract: request shape,
    response shape, status codes. It does not replicate quota math, permission rules, token
    validation, storage-provider behaviour, or any business rule owned by the service layer. It
-   *displays* what the API returns and *respects* what the API rejects.
+   _displays_ what the API returns and _respects_ what the API rejects.
 4. **No secrets in the frontend.** No provider keys, no connection strings, no admin credentials,
    no Google Drive credentials. Only `VITE_API_BASE_URL` and equally public config values.
 5. **Work strictly one phase at a time** (Section 4). Never begin a phase before the previous phase
@@ -76,16 +76,16 @@ Positioning line for all copy and design decisions:
 
 ### 1.3 Functional modules (from the SRS — this is the whole scope; nothing new is permitted)
 
-| ID | Module | Frontend feature folder |
-| --- | --- | --- |
+| ID   | Module                                   | Frontend feature folder             |
+| ---- | ---------------------------------------- | ----------------------------------- |
 | M-01 | User Authentication & Account Management | `features/auth`, `features/account` |
-| M-02 | Storage Subscription & Allocation | `features/subscriptions` |
-| M-03 | Folder Management | `features/folders` |
-| M-04 | File Management | `features/files` |
-| M-05 | Recycle Bin Management | `features/recycle-bin` |
-| M-06 | File Sharing (secure, view-only links) | `features/sharing` |
-| M-07 | Intelligent Search & Discovery | `features/search` |
-| M-08 | Administration | `features/admin` |
+| M-02 | Storage Subscription & Allocation        | `features/subscriptions`            |
+| M-03 | Folder Management                        | `features/folders`                  |
+| M-04 | File Management                          | `features/files`                    |
+| M-05 | Recycle Bin Management                   | `features/recycle-bin`              |
+| M-06 | File Sharing (secure, view-only links)   | `features/sharing`                  |
+| M-07 | Intelligent Search & Discovery           | `features/search`                   |
+| M-08 | Administration                           | `features/admin`                    |
 
 **Explicitly out of scope (MVP exclusions — do not build UI for these):** mobile apps, real-time
 collaboration, offline sync, resumable uploads, file versioning, multi-cloud distribution.
@@ -99,23 +99,23 @@ reflect it.
 
 ### 1.5 Locked technology stack
 
-| Concern | Choice | Notes |
-| --- | --- | --- |
-| Build tool | **Vite** + React 18 + **TypeScript (strict)** | `strict: true`, no `any` in models |
-| Routing | **react-router-dom v6** | Data-agnostic; route-level code splitting |
-| Styling | **Tailwind CSS v3** + CSS variables | All colors via semantic tokens only |
-| Components | **shadcn/ui** (Radix primitives) | Restyled to SkyVault tokens, not defaults |
-| Icons | **lucide-react** | 16 / 20 / 24 px only |
-| Motion | **framer-motion** | Budget in §3.7 |
-| 3D | **@react-three/fiber** + **@react-three/drei** | Only where §3.8 permits |
-| Server state | **@tanstack/react-query v5** | All API reads/writes; no `fetch` in components |
-| Client state | **zustand** | Auth session, UI prefs, upload queue only |
-| Forms | **react-hook-form** + **zod** | Client validation mirrors API validation, never replaces it |
-| HTTP | **axios** instance + interceptors | Single client, typed wrappers |
-| Charts | **recharts** | Admin/storage only, 2–3 colors max |
-| Toasts | **sonner** | One toast system app-wide |
-| Tests | **vitest** + **@testing-library/react** | Per-phase smoke tests |
-| Lint | ESLint + Prettier + `eslint-plugin-jsx-a11y` | Must pass before a phase is `DONE` |
+| Concern      | Choice                                         | Notes                                                       |
+| ------------ | ---------------------------------------------- | ----------------------------------------------------------- |
+| Build tool   | **Vite** + React 18 + **TypeScript (strict)**  | `strict: true`, no `any` in models                          |
+| Routing      | **react-router-dom v6**                        | Data-agnostic; route-level code splitting                   |
+| Styling      | **Tailwind CSS v3** + CSS variables            | All colors via semantic tokens only                         |
+| Components   | **shadcn/ui** (Radix primitives)               | Restyled to SkyVault tokens, not defaults                   |
+| Icons        | **lucide-react**                               | 16 / 20 / 24 px only                                        |
+| Motion       | **framer-motion**                              | Budget in §3.7                                              |
+| 3D           | **@react-three/fiber** + **@react-three/drei** | Only where §3.8 permits                                     |
+| Server state | **@tanstack/react-query v5**                   | All API reads/writes; no `fetch` in components              |
+| Client state | **zustand**                                    | Auth session, UI prefs, upload queue only                   |
+| Forms        | **react-hook-form** + **zod**                  | Client validation mirrors API validation, never replaces it |
+| HTTP         | **axios** instance + interceptors              | Single client, typed wrappers                               |
+| Charts       | **recharts**                                   | Admin/storage only, 2–3 colors max                          |
+| Toasts       | **sonner**                                     | One toast system app-wide                                   |
+| Tests        | **vitest** + **@testing-library/react**        | Per-phase smoke tests                                       |
+| Lint         | ESLint + Prettier + `eslint-plugin-jsx-a11y`   | Must pass before a phase is `DONE`                          |
 
 Do **not** add any other dependency without recording it in the phase report with a one-line
 justification. No UI kit other than shadcn/ui. No Redux. No Bootstrap/MUI/Ant.
@@ -135,8 +135,8 @@ justification. No UI kit other than shadcn/ui. No Redux. No Bootstrap/MUI/Ant.
 
 **Design implications:**
 
-- Users must always know *where they are*, *how much space they have left*, and *how to get their
-  file back*. Those three answers are never more than one glance away.
+- Users must always know _where they are_, _how much space they have left_, and _how to get their
+  file back_. Those three answers are never more than one glance away.
 - Every destructive action is confirmed, reversible where the API allows it, and clearly labelled.
 - Admin UI is deliberately quieter and denser than the user workspace, but uses the same tokens.
 
@@ -164,43 +164,43 @@ the mockup's edge-to-edge composition.
 Define in `src/styles/theme.css` as CSS variables and expose through `tailwind.config.ts`.
 **Never write a raw hex or `bg-white`/`text-black` in a component.**
 
-| Token | Hex | Use |
-| --- | --- | --- |
-| `--canvas` | `#D9DADD` | Outer framed canvas |
-| `--canvas-strong` | `#E7E7E8` | Hero/auth backdrop and strong zinc field |
-| `--surface` | `#FDFDFD` | Inner application shell / workspace panel |
-| `--card` | `#FAFAFA` | Cards, navigation, sheets, popovers |
-| `--card-muted` | `#E9EAEC` | Nested/secondary card and hovered row |
-| `--foreground` | `#0F151C` | Primary heading and strongest text |
-| `--secondary-foreground` | `#121D2F` | Important body copy |
-| `--muted-foreground` | `#596474` | Metadata and muted copy |
-| `--primary` | `#172237` | Ordinary links, active navigation, and slate interaction |
-| `--primary-hover` | `#29354C` | Slate hover/pressed state |
-| `--primary-foreground` | `#FFFFFF` | Text/icon on primary actions |
-| `--brand` | `#6D0615` | `Vault` wordmark, tagline, eyebrows, focus accents |
-| `--brand-soft` | `#F6E8EB` | Restrained branded surface |
-| `--warning` | `#985E00` | Warning text/icon; 80% quota, grace period, offline |
-| `--warning-strong` | `#D89222` | Warning meter/illustration fill |
-| `--warning-soft` | `#FFF3DE` | Warning surface |
-| `--warning-foreground` | `#0F151C` | Text on strong warning fill |
-| `--danger` | `#9B2338` | Validation, critical quota, and destructive signal |
-| `--danger-hover` | `#7E172A` | Danger hover/pressed state |
-| `--danger-soft` | `#F8E7EA` | Error/critical surface |
-| `--danger-foreground` | `#FFFFFF` | Text on danger fill |
-| `--destructive-background` | `#9B2338` | Destructive action background |
-| `--destructive-hover` | `#7E172A` | Destructive action hover/pressed state |
-| `--destructive-foreground` | `#FFFFFF` | Text/icon on destructive actions |
-| `--success` | `#29354C` | Success signal; intentionally slate, never green |
-| `--success-soft` | `#E5E9EF` | Success surface |
-| `--border` | `#D9DCE1` | Hairlines, input borders, dividers |
-| `--border-strong` | `#B9BDC2` | Emphasized neutral boundary |
-| `--ring` | `#6D0615` | Focus ring (2px, offset 2px) |
-| `--zinc-900` | `#24272A` | Dark 3D metal |
-| `--zinc-700` | `#373C42` | Secondary 3D metal |
-| `--zinc-600` | `#4F5359` | Vault frame |
-| `--zinc-400` | `#A2A2A4` | Metallic highlight |
-| `--zinc-300` | `#B9BDC2` | Light metallic edge |
-| `--zinc-door` | `#FAFAFA` | Light vault door material |
+| Token                      | Hex       | Use                                                      |
+| -------------------------- | --------- | -------------------------------------------------------- |
+| `--canvas`                 | `#D9DADD` | Outer framed canvas                                      |
+| `--canvas-strong`          | `#E7E7E8` | Hero/auth backdrop and strong zinc field                 |
+| `--surface`                | `#FDFDFD` | Inner application shell / workspace panel                |
+| `--card`                   | `#FAFAFA` | Cards, navigation, sheets, popovers                      |
+| `--card-muted`             | `#E9EAEC` | Nested/secondary card and hovered row                    |
+| `--foreground`             | `#0F151C` | Primary heading and strongest text                       |
+| `--secondary-foreground`   | `#121D2F` | Important body copy                                      |
+| `--muted-foreground`       | `#596474` | Metadata and muted copy                                  |
+| `--primary`                | `#172237` | Ordinary links, active navigation, and slate interaction |
+| `--primary-hover`          | `#29354C` | Slate hover/pressed state                                |
+| `--primary-foreground`     | `#FFFFFF` | Text/icon on primary actions                             |
+| `--brand`                  | `#6D0615` | `Vault` wordmark, tagline, eyebrows, focus accents       |
+| `--brand-soft`             | `#F6E8EB` | Restrained branded surface                               |
+| `--warning`                | `#985E00` | Warning text/icon; 80% quota, grace period, offline      |
+| `--warning-strong`         | `#D89222` | Warning meter/illustration fill                          |
+| `--warning-soft`           | `#FFF3DE` | Warning surface                                          |
+| `--warning-foreground`     | `#0F151C` | Text on strong warning fill                              |
+| `--danger`                 | `#9B2338` | Validation, critical quota, and destructive signal       |
+| `--danger-hover`           | `#7E172A` | Danger hover/pressed state                               |
+| `--danger-soft`            | `#F8E7EA` | Error/critical surface                                   |
+| `--danger-foreground`      | `#FFFFFF` | Text on danger fill                                      |
+| `--destructive-background` | `#9B2338` | Destructive action background                            |
+| `--destructive-hover`      | `#7E172A` | Destructive action hover/pressed state                   |
+| `--destructive-foreground` | `#FFFFFF` | Text/icon on destructive actions                         |
+| `--success`                | `#29354C` | Success signal; intentionally slate, never green         |
+| `--success-soft`           | `#E5E9EF` | Success surface                                          |
+| `--border`                 | `#D9DCE1` | Hairlines, input borders, dividers                       |
+| `--border-strong`          | `#B9BDC2` | Emphasized neutral boundary                              |
+| `--ring`                   | `#6D0615` | Focus ring (2px, offset 2px)                             |
+| `--zinc-900`               | `#24272A` | Dark 3D metal                                            |
+| `--zinc-700`               | `#373C42` | Secondary 3D metal                                       |
+| `--zinc-600`               | `#4F5359` | Vault frame                                              |
+| `--zinc-400`               | `#A2A2A4` | Metallic highlight                                       |
+| `--zinc-300`               | `#B9BDC2` | Light metallic edge                                      |
+| `--zinc-door`              | `#FAFAFA` | Light vault door material                                |
 
 Primary actions use one approved gradient, exposed as `--primary-gradient` and Tailwind's
 `bg-primary-action` semantic background-image utility:
@@ -210,43 +210,43 @@ these hex values.
 
 ### 3.3 Color tokens — DARK (first-class, built in the same commit as light)
 
-| Token | Hex | Notes |
-| --- | --- | --- |
-| `--canvas` | `#0E1116` | Outer framed canvas, never pure black |
-| `--canvas-strong` | `#24272A` | Hero/auth backdrop and strong zinc field |
-| `--surface` | `#151920` | Inner application shell |
-| `--card` | `#1C2129` | Cards and navigation |
-| `--card-muted` | `#272D36` | Nested/hovered surface |
-| `--foreground` | `#F5F6F8` | Primary heading and strongest text |
-| `--secondary-foreground` | `#D7DCE5` | Important body copy |
-| `--muted-foreground` | `#A6AFBC` | Metadata and muted copy |
-| `--primary` | `#A8B5C9` | Ordinary links, active navigation, and slate interaction |
-| `--primary-hover` | `#D7DCE5` | Slate hover/pressed state |
-| `--primary-foreground` | `#FFFFFF` | Primary-action text/icon |
-| `--brand` | `#E37B91` | Lifted burgundy for brand and focus contrast |
-| `--brand-soft` | `#351C25` | Restrained branded surface |
-| `--warning` | `#F0B44D` | Warning text/icon |
-| `--warning-strong` | `#D89222` | Warning meter/illustration fill |
-| `--warning-soft` | `#382C18` | Warning surface |
-| `--warning-foreground` | `#0F151C` | Text on strong warning fill |
-| `--danger` | `#F07D91` | Validation and critical signal |
-| `--danger-hover` | `#B4233E` | Danger hover/pressed state |
-| `--danger-soft` | `#3A1C25` | Error/critical surface |
-| `--danger-foreground` | `#FFFFFF` | Text on danger fill |
-| `--destructive-background` | `#9B2338` | Destructive action background |
-| `--destructive-hover` | `#B4233E` | Destructive hover/pressed state |
-| `--destructive-foreground` | `#FFFFFF` | Text/icon on destructive actions |
-| `--success` | `#A8B5C9` | Success signal; intentionally slate, never green |
-| `--success-soft` | `#252D39` | Success surface |
-| `--border` | `#343B45` | Hairlines, input borders, dividers |
-| `--border-strong` | `#4F5865` | Emphasized neutral boundary |
-| `--ring` | `#E37B91` | Focus ring |
-| `--zinc-900` | `#11151B` | Dark 3D metal |
-| `--zinc-700` | `#2E343C` | Secondary 3D metal |
-| `--zinc-600` | `#515862` | Vault frame |
-| `--zinc-400` | `#B9BDC2` | Metallic highlight |
-| `--zinc-300` | `#D5D8DC` | Light metallic edge |
-| `--zinc-door` | `#E7E7E8` | Dark-theme vault door material |
+| Token                      | Hex       | Notes                                                    |
+| -------------------------- | --------- | -------------------------------------------------------- |
+| `--canvas`                 | `#0E1116` | Outer framed canvas, never pure black                    |
+| `--canvas-strong`          | `#24272A` | Hero/auth backdrop and strong zinc field                 |
+| `--surface`                | `#151920` | Inner application shell                                  |
+| `--card`                   | `#1C2129` | Cards and navigation                                     |
+| `--card-muted`             | `#272D36` | Nested/hovered surface                                   |
+| `--foreground`             | `#F5F6F8` | Primary heading and strongest text                       |
+| `--secondary-foreground`   | `#D7DCE5` | Important body copy                                      |
+| `--muted-foreground`       | `#A6AFBC` | Metadata and muted copy                                  |
+| `--primary`                | `#A8B5C9` | Ordinary links, active navigation, and slate interaction |
+| `--primary-hover`          | `#D7DCE5` | Slate hover/pressed state                                |
+| `--primary-foreground`     | `#FFFFFF` | Primary-action text/icon                                 |
+| `--brand`                  | `#E37B91` | Lifted burgundy for brand and focus contrast             |
+| `--brand-soft`             | `#351C25` | Restrained branded surface                               |
+| `--warning`                | `#F0B44D` | Warning text/icon                                        |
+| `--warning-strong`         | `#D89222` | Warning meter/illustration fill                          |
+| `--warning-soft`           | `#382C18` | Warning surface                                          |
+| `--warning-foreground`     | `#0F151C` | Text on strong warning fill                              |
+| `--danger`                 | `#F07D91` | Validation and critical signal                           |
+| `--danger-hover`           | `#B4233E` | Danger hover/pressed state                               |
+| `--danger-soft`            | `#3A1C25` | Error/critical surface                                   |
+| `--danger-foreground`      | `#FFFFFF` | Text on danger fill                                      |
+| `--destructive-background` | `#9B2338` | Destructive action background                            |
+| `--destructive-hover`      | `#B4233E` | Destructive hover/pressed state                          |
+| `--destructive-foreground` | `#FFFFFF` | Text/icon on destructive actions                         |
+| `--success`                | `#A8B5C9` | Success signal; intentionally slate, never green         |
+| `--success-soft`           | `#252D39` | Success surface                                          |
+| `--border`                 | `#343B45` | Hairlines, input borders, dividers                       |
+| `--border-strong`          | `#4F5865` | Emphasized neutral boundary                              |
+| `--ring`                   | `#E37B91` | Focus ring                                               |
+| `--zinc-900`               | `#11151B` | Dark 3D metal                                            |
+| `--zinc-700`               | `#2E343C` | Secondary 3D metal                                       |
+| `--zinc-600`               | `#515862` | Vault frame                                              |
+| `--zinc-400`               | `#B9BDC2` | Metallic highlight                                       |
+| `--zinc-300`               | `#D5D8DC` | Light metallic edge                                      |
+| `--zinc-door`              | `#E7E7E8` | Dark-theme vault door material                           |
 
 Dark primary actions set `--primary-gradient` to
 `linear-gradient(135deg, #52617A 0%, #3B4860 45%, #29354C 100%)` with white text/icons at every
@@ -295,7 +295,7 @@ Theme via `class="dark"` on `<html>`, default = system, persisted in `localStora
 - **Framed workspace:** the gray `--canvas` is always visible as a margin (`p-3 md:p-5`) around a
   `rounded-2xl` app shell. The app never bleeds edge-to-edge on desktop.
 - **Floating rail, not a sidebar:** a detached `rounded-2xl` vertical rail (icon + label, 72px
-  collapsed / 232px expanded) sitting *inside* the frame with its own shadow. Active item = soft
+  collapsed / 232px expanded) sitting _inside_ the frame with its own shadow. Active item = soft
   `--card-muted` fill + 3px `--brand` indicator. No full-height grey sidebar with tab list.
 - **Persistent signed-in rail:** at `md` and above, the rail is contracted to the framed viewport
   height and remains sticky while the page-owned content scrolls. Its bottom account area uses a
@@ -323,6 +323,7 @@ Theme via `class="dark"` on `<html>`, default = system, persisted in `localStora
   ```
 
   Not: `[ 12 ][ 32 ][ 43 ][ 91 ]`.
+
 - **Asymmetric bento** for the workspace home: one large "signature" tile (3D vault + quota),
   supported by 3–5 differently sized tiles (recent files, storage plan, shared links, trash).
   Deliberately uneven — never four identical stat cards in a row.
@@ -348,7 +349,7 @@ Use `@react-three/fiber` + `drei` on **exactly these four surfaces**:
 
 1. **Landing hero** — the SkyVault Vault: a rounded-cube vault with a slowly rotating dial,
    graphite frame, soft-white/zinc door, silver dial, restrained burgundy hub, soft neutral studio
-   lighting, subtle pointer-parallax (max 6° tilt), *not* auto-spinning.
+   lighting, subtle pointer-parallax (max 6° tilt), _not_ auto-spinning.
 2. **Storage/quota object** — a translucent vault or stacked-shell volume that visually fills with
    midnight slate as usage rises; amber at 80% and above, danger/burgundy at 95% and above. The shell
    uses zinc materials and every state is driven by real API quota values.
@@ -358,6 +359,7 @@ Use `@react-three/fiber` + `drei` on **exactly these four surfaces**:
    Use a graphite dial, zinc key and wheel, and restrained burgundy hub.
 
 Hard rules:
+
 - Every 3D surface is `React.lazy` + `<Suspense>` with a **static PNG/SVG fallback**, and is skipped
   entirely under `prefers-reduced-motion`, on `navigator.hardwareConcurrency <= 4`, or on viewports
   `< 768px` (mobile gets the flat fallback).
@@ -404,17 +406,17 @@ canceled" toast.
 
 ### 3.11 Brand assets (already generated, in `/frontend/public/brand/`)
 
-| Asset | File | Use |
-| --- | --- | --- |
-| Raster emblem, light | `skyvault-emblem-light-v3.png` | Light surfaces in `BrandSignature` |
-| Raster emblem, dark | `skyvault-emblem-dark-v3.png` | Dark surfaces in `BrandSignature` |
-| Vector mark, light | `skyvault-mark.svg` | Light rail, loaders, code-native mark |
-| Vector mark, dark | `skyvault-mark-dark-v3.svg` | Dark rail, loaders, code-native mark |
-| Landing fallback, light | `landing-vault-fallback-light-v3.png` | Light mobile/reduced-motion/low-core/Canvas fallback |
-| Landing fallback, dark | `landing-vault-fallback-dark-v3.png` | Dark mobile/reduced-motion/low-core/Canvas fallback |
-| Auth fallback, light/dark | `auth-key-fallback.svg`, `auth-key-fallback-dark-v3.svg` | Auth scene fallbacks |
-| Quota fallback, light/dark | `quota-vault-fallback.svg`, `quota-vault-fallback-dark-v3.svg` | Storage scene fallbacks |
-| Transparent favicon raster | `skyvault-favicon-v3.png` | Favicon, Apple touch icon, and manifest source |
+| Asset                      | File                                                           | Use                                                  |
+| -------------------------- | -------------------------------------------------------------- | ---------------------------------------------------- |
+| Raster emblem, light       | `skyvault-emblem-light-v3.png`                                 | Light surfaces in `BrandSignature`                   |
+| Raster emblem, dark        | `skyvault-emblem-dark-v3.png`                                  | Dark surfaces in `BrandSignature`                    |
+| Vector mark, light         | `skyvault-mark.svg`                                            | Light rail, loaders, code-native mark                |
+| Vector mark, dark          | `skyvault-mark-dark-v3.svg`                                    | Dark rail, loaders, code-native mark                 |
+| Landing fallback, light    | `landing-vault-fallback-light-v3.png`                          | Light mobile/reduced-motion/low-core/Canvas fallback |
+| Landing fallback, dark     | `landing-vault-fallback-dark-v3.png`                           | Dark mobile/reduced-motion/low-core/Canvas fallback  |
+| Auth fallback, light/dark  | `auth-key-fallback.svg`, `auth-key-fallback-dark-v3.svg`       | Auth scene fallbacks                                 |
+| Quota fallback, light/dark | `quota-vault-fallback.svg`, `quota-vault-fallback-dark-v3.svg` | Storage scene fallbacks                              |
+| Transparent favicon raster | `skyvault-favicon-v3.png`                                      | Favicon, Apple touch icon, and manifest source       |
 
 The mark remains a **cloud whose lower half becomes a vault door**, preserving its silhouette,
 composition, proportions, transparency, and edges. Active materials are zinc/graphite with a
@@ -422,26 +424,26 @@ restrained burgundy hub/accent. `BrandSignature` always renders the wordmark as 
 `Sky` uses `--foreground` and `Vault` uses `--brand`; do not use a raster horizontal wordmark.
 Theme-specific emblem, vector, and fallback assets switch with the active theme. Never place the
 logo on a white box inside a dark surface, stretch it, or recolor it ad hoc. Minimum width is 120px
-for the signature / 20px for the mark; clear space = mark height ÷ 2. Tagline: *"Your files. Your
-space. Always secure."* Page title pattern: `SkyVault — <Page>`.
+for the signature / 20px for the mark; clear space = mark height ÷ 2. Tagline: _"Your files. Your
+space. Always secure."_ Page title pattern: `SkyVault — <Page>`.
 
 ### 3.12 Responsive contract (non-negotiable — mobile is a first-class target)
 
-SkyVault is a **fully responsive web application**. Every screen you build must be *designed* at small
-width and *enhanced* upward — never a desktop layout squeezed down, never a "mobile version" with
+SkyVault is a **fully responsive web application**. Every screen you build must be _designed_ at small
+width and _enhanced_ upward — never a desktop layout squeezed down, never a "mobile version" with
 features removed. A screen that only looks correct at 1440px is an incomplete screen, and the phase
 is not `DONE`.
 
 **Breakpoints (Tailwind defaults only — do not invent custom ones):**
 
-| Token | Width | Treatment |
-| --- | --- | --- |
-| base | `< 640px` (design at **360px**) | One column. Rail becomes a bottom-anchored pill dock. Frame margin `p-3`. Bento tiles stack full-width in priority order. Command bar becomes a full-width sheet. |
-| `sm` | `≥ 640px` | Two-up file/folder grid, larger type step. |
-| `md` | `≥ 768px` | Rail returns as a collapsed 72px floating rail. 2-col bento. **3D becomes eligible** (below this, always the flat fallback). |
-| `lg` | `≥ 1024px` | 3-col bento, rail expandable to 232px, split panes allowed (list + detail). |
-| `xl` | `≥ 1280px` | 4-col grid, max content width `1440px`, centered with the gray canvas visible as margin. |
-| `2xl` | `≥ 1536px` | Do not keep growing content — grow the canvas margin instead. |
+| Token | Width                           | Treatment                                                                                                                                                         |
+| ----- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| base  | `< 640px` (design at **360px**) | One column. Rail becomes a bottom-anchored pill dock. Frame margin `p-3`. Bento tiles stack full-width in priority order. Command bar becomes a full-width sheet. |
+| `sm`  | `≥ 640px`                       | Two-up file/folder grid, larger type step.                                                                                                                        |
+| `md`  | `≥ 768px`                       | Rail returns as a collapsed 72px floating rail. 2-col bento. **3D becomes eligible** (below this, always the flat fallback).                                      |
+| `lg`  | `≥ 1024px`                      | 3-col bento, rail expandable to 232px, split panes allowed (list + detail).                                                                                       |
+| `xl`  | `≥ 1280px`                      | 4-col grid, max content width `1440px`, centered with the gray canvas visible as margin.                                                                          |
+| `2xl` | `≥ 1536px`                      | Do not keep growing content — grow the canvas margin instead.                                                                                                     |
 
 **Mandatory rules**
 
@@ -510,7 +512,7 @@ does not expose) and `/frontend/docs/ADR-001-react-frontend.md`.
 
 Each phase = one functional slice, shippable and reviewable on its own.
 
-**Phase 0 — Foundation & Design System** *(no feature UI)*
+**Phase 0 — Foundation & Design System** _(no feature UI)_
 Scaffold `/frontend` (Vite + React + TS strict), Tailwind + `theme.css` tokens (light + dark), fonts,
 shadcn/ui initialised and restyled to SkyVault tokens, `lib/utils`, formatters (bytes, relative
 date, percentage), constants, `providers.tsx` (QueryClient, theme, router, toaster), the **axios
@@ -521,7 +523,7 @@ per-read timeouts, `useMediaQuery`/`useBreakpoint` for the §3.12 behavioural br
 (favicon/apple-touch/manifest/title), `prefers-reduced-motion` plumbing, base 3D `<Scene>` wrapper
 with lazy loading + fallback, and a **`/design-system` internal route** rendering every token,
 button, input, card, badge, skeleton, empty state and error state in both themes.
-*Acceptance:* `/design-system` shows the full kit in light and dark; no feature code exists yet;
+_Acceptance:_ `/design-system` shows the full kit in light and dark; no feature code exists yet;
 one raw hex anywhere = fail.
 
 **Phase 1 — App Shell, Routing, Error & Resilience Layer**
@@ -533,7 +535,7 @@ rail + command-bar slot), `AdminLayout`; global `ErrorBoundary`; route-level err
 (mark + short warm copy + "Back to my vault" + "Try again" where retry is safe, and an optional
 correlation/trace id if the API returns one); network-offline banner; `NotFound` catch-all;
 suspense fallbacks/skeletons for every route.
-*Acceptance:* every unhappy path renders a branded page, never a blank screen and never a stack
+_Acceptance:_ every unhappy path renders a branded page, never a blank screen and never a stack
 trace; manually forcing each status shows the right page; the app cannot be crashed by a thrown
 render error.
 
@@ -542,7 +544,7 @@ Landing page with the 3D vault hero (lazy + fallback), value proposition from th
 affordable, intelligent search), how-it-works, public plans preview (from the real plans endpoint if
 it is public; otherwise static copy that links to sign-up — never faked data), footer, theme toggle,
 and CTAs into sign-up/sign-in.
-*Acceptance:* Lighthouse-reasonable, hero degrades to a static image on low-end/reduced-motion, no
+_Acceptance:_ Lighthouse-reasonable, hero degrades to a static image on low-end/reduced-motion, no
 invented pricing numbers.
 
 **Phase 3 — M-01 Authentication & Account (UC-01…UC-06)**
@@ -551,7 +553,7 @@ reset password (token from URL), logout, profile view/update, change password. S
 layout (calm 3D aside + fast 2D form), `react-hook-form` + `zod` mirroring API validation, field-level
 API error mapping, unverified-account state, session store + token attach/refresh in interceptors
 exactly as the API defines, and redirect-after-login.
-*Acceptance:* every UC-01…UC-06 step is reachable; expired/invalid token states have real screens;
+_Acceptance:_ every UC-01…UC-06 step is reachable; expired/invalid token states have real screens;
 401 handling is centralised.
 
 **Phase 4 — M-02 Storage Subscription & Allocation (UC-07…UC-10)**
@@ -559,38 +561,40 @@ Plan catalogue (editorial cards, one recommended plan, real plan data), subscrib
 storage purchase, payment hand-off exactly as the API prescribes (success/failure/pending return
 states all handled), current subscription panel, and the **storage quota object** (3D + accessible
 numeric/bar fallback) with amber ≥80% / danger-burgundy ≥95% states and an over-quota explanation.
-*Acceptance:* quota values come only from the API; no client-side quota arithmetic beyond formatting;
+_Acceptance:_ quota values come only from the API; no client-side quota arithmetic beyond formatting;
 pending/failed payment returns are real screens.
 
 **Phase 5 — Workspace Home (post-login hub)**
-The asymmetric bento home: greeting, then a full-width quick-actions strip made of horizontal cards,
-then quota signature, recent-files, shared-links, trash-summary, and plan-status tiles. Quick actions
-remain limited to working storage-management and account-settings destinations. The home composes
-existing feature hooks only — it introduces no new endpoints of its own.
-*Acceptance:* no four-identical-stat-card row; each tile has loading, empty and error states; compact
-application typography and spacing reveal the beginning of quota within the initial reference
-tablet/desktop viewport.
+The asymmetric bento home evolves alongside Phases 6–8 by explicit owner decision while remaining
+`IN_PROGRESS`. After Phase 6 it leads with compact Upload files, New folder, and Browse files actions,
+then equally weighted recent-files and root-folders panels. Quota and subscription facts share one
+storage overview instead of competing tiles; sharing and trash remain smaller independent summaries.
+The home composes existing feature hooks only — it introduces no summary endpoint or early mutation.
+_Acceptance:_ no four-identical-stat-card row; every API-backed region has loading, empty and error
+states; root folders means only `GET /api/folders/root` subfolders; Phase 5 may be refined only with
+real contracts unlocked by the phase just implemented.
 
 **Phase 6 — M-03 Folder Management + M-04 File Management**
 Folder tree/rail navigation, breadcrumbs, create/rename/move/delete folder, folder view with
 grid/list toggle; file upload (drag-and-drop **plus** a button alternative, upload dock with
-per-file progress via `onUploadProgress`, size/type rejection surfaced from the API, quota rejection
-message), download, preview (only formats the API supports), rename, move, replace, delete →
-recycle bin; multi-select with a bulk action bar; sort/filter; pagination or infinite list as the
-API supports; optimistic updates with rollback on failure.
-*Acceptance:* every action maps 1:1 to a real endpoint; cancelled/failed uploads are recoverable;
-empty folder state is designed; keyboard-only file management is possible.
+per-file browser-to-API progress via `onUploadProgress`, size rejection, and quota rejection message),
+download, response-type-gated preview, rename, move, copy, replace, delete → recycle bin; mixed
+file/folder multi-select with a bulk action bar; and presentation-only sort/filter. No pagination,
+ancestry/tree, preview-capability, folder-copy, bulk-operation, or server-progress contract is assumed.
+_Acceptance:_ every action maps 1:1 to a real endpoint; cancelled/failed uploads are recoverable;
+empty folder state is designed; keyboard-only file management is possible; submitted storage writes
+are never aborted after the safe client-transfer boundary.
 
 **Phase 7 — M-05 Recycle Bin**
 Deleted files/folders list, restore, permanent delete (typed/explicit confirmation), retention
 information as returned by the API, empty-bin state, bulk restore/delete.
-*Acceptance:* no permanent deletion without confirmation; restore conflicts surfaced from the API.
+_Acceptance:_ no permanent deletion without confirmation; restore conflicts surfaced from the API.
 
 **Phase 8 — M-06 File Sharing**
 Create view-only share link, copy link, list active links, revoke link, expiry/limits as the API
 defines, and the **public share-view page** (unauthenticated, minimal chrome, view-only, plus its
 own invalid/expired/revoked/not-found states).
-*Acceptance:* the public page never exposes owner data beyond what the response DTO contains; no
+_Acceptance:_ the public page never exposes owner data beyond what the response DTO contains; no
 download affordance unless the API allows it.
 
 **Phase 9 — M-07 Intelligent Search & Discovery**
@@ -598,15 +602,15 @@ The command bar as a hero interaction (⌘K / `/`), keyword and natural-language
 filters (type, date, size, folder) exactly as the API supports, ranked results with match context,
 recent searches, debounced querying, cancellation of stale requests, no-results state with guidance,
 and a full search results page with deep-linkable query params.
-*Acceptance:* filters map to real query parameters; no client-side re-ranking invented; results are
+_Acceptance:_ filters map to real query parameters; no client-side re-ranking invented; results are
 keyboard navigable end to end.
 
-**Phase 10 — M-08 Administration** *(gated — build only when the owner explicitly requests it)*
+**Phase 10 — M-08 Administration** _(gated — build only when the owner explicitly requests it)_
 Admin shell (quieter, denser, same tokens), user management, plan management, platform monitoring
 (recharts, 2–3 colors), operational settings — all limited to real admin endpoints, all behind
 `AdminRoute`, with a real `403` experience for non-admins.
 
-**Phase 11 — Hardening & Handover** *(only after 0–9 are `DONE`)*
+**Phase 11 — Hardening & Handover** _(only after 0–9 are `DONE`)_
 Accessibility audit pass, contrast verification in both themes, bundle/code-split review, empty/error
 state coverage matrix, `README.md` (setup, env vars, scripts, structure), and a
 `docs/UI-GUIDE.md` documenting the design system as built.
@@ -627,15 +631,17 @@ state coverage matrix, `README.md` (setup, env vars, scripts, structure), and a
 
 ```markdown
 # SkyVault Frontend — Phase Ledger
+
 Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 
-| # | Phase | Status | Verified on | Notes |
-|---|-------|--------|-------------|-------|
-| 0 | Foundation & Design System | NOT_STARTED | — | |
-| 1 | App Shell, Routing, Errors  | NOT_STARTED | — | |
+| #   | Phase                      | Status      | Verified on | Notes |
+| --- | -------------------------- | ----------- | ----------- | ----- |
+| 0   | Foundation & Design System | NOT_STARTED | —           |       |
+| 1   | App Shell, Routing, Errors | NOT_STARTED | —           |       |
 | ... |
 
 ## Phase <n> — <name>
+
 - Status:
 - Date:
 - Controllers read:
@@ -656,9 +662,9 @@ Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 - The owner-approved light-theme palette reference: a gray framed canvas around white/zinc surfaces,
   midnight-slate interaction, burgundy identity accents, graphite/zinc vault materials, and large
   radii. Its edge-to-edge mockup layout is **not** a structural reference.
-- Dribbble searches: *"personal workspace UI"*, *"cloud storage app"*, *"file manager UI"*,
-  *"bento dashboard"*, *"floating sidebar card"*, *"zinc burgundy dashboard"*,
-  *"graphite 3D vault illustration"*.
+- Dribbble searches: _"personal workspace UI"_, _"cloud storage app"_, _"file manager UI"_,
+  _"bento dashboard"_, _"floating sidebar card"_, _"zinc burgundy dashboard"_,
+  _"graphite 3D vault illustration"_.
 - Product references for **feel** (not layout copying): Linear (precision, keyboard-first),
   Notion (calm surfaces), Arc (personality), Raycast (command bar), Vercel (dark-mode discipline).
 
@@ -750,7 +756,7 @@ A component must never import axios, never build a URL, and never know a status 
 - Enums mirror backend enums as string-literal unions (or const objects), never magic numbers.
 - Nullability mirrors the DTO exactly (`string | null` vs optional `?`). No `any`, no `object`.
 - Never model EF Core entities, navigation properties, internal ids, or provider-side fields.
-- If a DTO changes on the backend, the *model file* changes — nothing else should need to.
+- If a DTO changes on the backend, the _model file_ changes — nothing else should need to.
 
 ```ts
 // src/models/file/FileResponse.ts  — mirrors FileResponseDto exactly
@@ -778,18 +784,20 @@ const BASE = '/api/files' // ← must match the controller's [Route] exactly
 
 export const filesApi = {
   getByFolder: (folderId: string) =>
-    apiClient.get<FileResponse[]>(`${BASE}`, { params: { folderId } }).then(r => r.data),
+    apiClient.get<FileResponse[]>(`${BASE}`, { params: { folderId } }).then((r) => r.data),
 
   upload: (form: FormData, onProgress?: (pct: number) => void) =>
-    apiClient.post<FileResponse>(`${BASE}`, form, {
-      onUploadProgress: e => e.total && onProgress?.(Math.round((e.loaded / e.total) * 100)),
-    }).then(r => r.data),
+    apiClient
+      .post<FileResponse>(`${BASE}`, form, {
+        onUploadProgress: (e) => e.total && onProgress?.(Math.round((e.loaded / e.total) * 100)),
+      })
+      .then((r) => r.data),
 
   rename: (id: string, body: RenameFileRequest) =>
-    apiClient.put<FileResponse>(`${BASE}/${id}/rename`, body).then(r => r.data),
+    apiClient.put<FileResponse>(`${BASE}/${id}/rename`, body).then((r) => r.data),
 
   download: (id: string) =>
-    apiClient.get<Blob>(`${BASE}/${id}/download`, { responseType: 'blob' }).then(r => r.data),
+    apiClient.get<Blob>(`${BASE}/${id}/download`, { responseType: 'blob' }).then((r) => r.data),
 }
 ```
 
@@ -808,7 +816,9 @@ export class ApiError extends Error {
     message: string,
     readonly fieldErrors?: Record<string, string[]>,
     readonly traceId?: string,
-  ) { super(message) }
+  ) {
+    super(message)
+  }
 }
 export class RequestCancelledError extends Error {} // aborted, NOT a failure — see §5.8
 
@@ -825,9 +835,13 @@ export class RequestCancelledError extends Error {} // aborted, NOT a failure �
 ```ts
 // features/files/hooks/useFiles.ts
 export function useFiles(folderId: string) {
-  return useQuery({ queryKey: queryKeys.files.byFolder(folderId), queryFn: () => fileService.list(folderId) })
+  return useQuery({
+    queryKey: queryKeys.files.byFolder(folderId),
+    queryFn: () => fileService.list(folderId),
+  })
 }
 ```
+
 Components render `isPending → <FileGridSkeleton/>`, `isError → <ErrorState onRetry/>`,
 `data.length === 0 → <EmptyVault/>`, else the grid. **All four branches, every time.**
 
@@ -861,10 +875,12 @@ forget requests that ignore abortion are a defect, not an optimisation.
 
 3. **Services are pass-through for the signal.** `fileService.list(folderId, signal)` →
    `filesApi.getByFolder(folderId, signal)`. A service must never drop the parameter.
-4. **Mutations and user-cancellable work own an `AbortController`.** Uploads, downloads, bulk
-   move/delete/restore, and any exportable/long operation must expose a real **Cancel** control that
-   calls `controller.abort()`. `upload.store.ts` keeps one `AbortController` per queued item (plus a
-   "Cancel all" that aborts the whole batch) and clears it in `finally`.
+4. **Only safely cancellable work owns an active `AbortController`.** Reads and downloads/previews
+   remain cancellable throughout. Upload/replace exposes Cancel only while browser bytes are still
+   transferring; at 100% it becomes indeterminate “Securing in your vault” and Cancel disappears.
+   Submitted copy/move/delete work is not aborted because the backend has no cancellation compensation;
+   sequential batches may stop only queued items after the current request. The transient operation
+   store clears every controller in `finally` and sign-out aborts only queued/safely cancellable work.
 
    ```ts
    // features/files/hooks/useFileUpload.ts (shape)
@@ -880,7 +896,7 @@ forget requests that ignore abortion are a defect, not an optimisation.
    sentinel) **before** it reaches `ApiError` mapping. Rules for consumers:
    - Do not log it as a failure, do not increment retry counters, do not fire error telemetry.
    - Do not toast anything for automatic cancellation (navigation, stale search, unmount).
-   - For *user-initiated* cancellation show a neutral, warm confirmation: **"Upload cancelled."** /
+   - For _user-initiated_ cancellation show a neutral, warm confirmation: **"Upload cancelled."** /
      **"Cancelled — nothing was changed."** Never "Request failed" and never "Error: canceled".
    - Aborted mutations must leave the UI in a clean state: roll back optimistic updates, remove the
      item from the upload dock (or mark it `Cancelled` with a **Retry**), and invalidate the affected
@@ -888,9 +904,9 @@ forget requests that ignore abortion are a defect, not an optimisation.
 6. **Search and any type-ahead must cancel the previous in-flight request.** Debounce (300ms) **and**
    abort the stale one — this is exactly what the backend's tokens are there for. Never let a slow
    earlier response overwrite a newer one.
-7. **Timeouts also abort.** The axios client sets a sensible `timeout` (short for reads, generous or
-   disabled for uploads/downloads) and a timeout is surfaced as the 408-style "This is taking longer
-   than expected" state with **Retry** — distinct from user cancellation.
+7. **Timeouts also abort.** The axios client keeps a sensible read timeout, while Phase 6 file/folder
+   writes and transfers explicitly use `timeout: 0`. A client timer must never abort a storage mutation
+   after backend reservation/provider work may have begun. Timed reads use the 408-style retry state.
 8. **On sign-out and on switching accounts**, call `queryClient.cancelQueries()` then
    `queryClient.clear()`, and abort all tracked upload controllers.
 9. **Never abort a mutation the user did not ask to cancel.** Do not attach unmount-abortion to
@@ -907,32 +923,34 @@ Updated endpoint template (this is the required shape, replacing §5.5's simplif
 // src/api/endpoints/files.api.ts
 export const filesApi = {
   getByFolder: (folderId: string, signal?: AbortSignal) =>
-    apiClient.get<FileResponse[]>(BASE, { params: { folderId }, signal }).then(r => r.data),
+    apiClient.get<FileResponse[]>(BASE, { params: { folderId }, signal }).then((r) => r.data),
 
   upload: (form: FormData, onProgress?: (pct: number) => void, signal?: AbortSignal) =>
-    apiClient.post<FileResponse>(BASE, form, {
-      signal,
-      timeout: 0, // uploads must not time out; they are cancelled by the user instead
-      onUploadProgress: e => e.total && onProgress?.(Math.round((e.loaded / e.total) * 100)),
-    }).then(r => r.data),
+    apiClient
+      .post<FileResponse>(BASE, form, {
+        signal,
+        timeout: 0, // uploads must not time out; they are cancelled by the user instead
+        onUploadProgress: (e) => e.total && onProgress?.(Math.round((e.loaded / e.total) * 100)),
+      })
+      .then((r) => r.data),
 
   rename: (id: string, body: RenameFileRequest, signal?: AbortSignal) =>
-    apiClient.put<FileResponse>(`${BASE}/${id}/rename`, body, { signal }).then(r => r.data),
+    apiClient.put<FileResponse>(`${BASE}/${id}/rename`, body, { signal }).then((r) => r.data),
 }
 ```
 
 ### 5.9 Copy examples (tone calibration)
 
-| Situation | Write | Never write |
-| --- | --- | --- |
-| Empty folder | "Nothing here yet — drop a file in to start filling this space." | "No records found." |
-| Over quota | "Your vault is full. Free up space or add more storage to keep uploading." | "Error: quota exceeded (507)." |
-| 500 | "Something went wrong on our side. Your files are safe." | "Internal Server Error." |
-| 403 | "This part of SkyVault isn't yours to open." | "Forbidden." |
-| Offline | "You're offline. We'll reconnect to your vault automatically." | "Network request failed." |
-| User cancelled an upload | "Upload cancelled." | "Error: canceled" / "Request failed" |
-| User cancelled a bulk action | "Cancelled — nothing was changed." | "Operation aborted (ERR_CANCELED)." |
-| Request timed out | "This is taking longer than expected." + Retry | "Timeout of 30000ms exceeded." |
+| Situation                    | Write                                                                      | Never write                          |
+| ---------------------------- | -------------------------------------------------------------------------- | ------------------------------------ |
+| Empty folder                 | "Nothing here yet — drop a file in to start filling this space."           | "No records found."                  |
+| Over quota                   | "Your vault is full. Free up space or add more storage to keep uploading." | "Error: quota exceeded (507)."       |
+| 500                          | "Something went wrong on our side. Your files are safe."                   | "Internal Server Error."             |
+| 403                          | "This part of SkyVault isn't yours to open."                               | "Forbidden."                         |
+| Offline                      | "You're offline. We'll reconnect to your vault automatically."             | "Network request failed."            |
+| User cancelled an upload     | "Upload cancelled."                                                        | "Error: canceled" / "Request failed" |
+| User cancelled a bulk action | "Cancelled — nothing was changed."                                         | "Operation aborted (ERR_CANCELED)."  |
+| Request timed out            | "This is taking longer than expected." + Retry                             | "Timeout of 30000ms exceeded."       |
 
 ---
 
@@ -978,6 +996,7 @@ Next phase: <n+1> — <name> (awaiting your go-ahead)
 ## 7. GUARDRAILS (violations are failures, not stylistic preferences)
 
 **Backend & contract**
+
 1. Never write outside `/frontend/**`. Never edit `.cs`, `.csproj`, `.sln`, `appsettings*`, migrations, or `/backend/docs/**`.
 2. Never invent endpoints, fields, verbs, params, or status codes. Unknown → `API-GAPS.md` + ask.
 3. Never reimplement business rules (quota math, permissions, retention, token validation) client-side.
@@ -989,36 +1008,19 @@ Next phase: <n+1> — <name> (awaiting your go-ahead)
    exactly as the API's auth scheme requires.
 8. Never log or store tokens, passwords, or share secrets.
 
-**Process**
-9. Never work on more than one phase per session; never start a phase with an unverified predecessor.
-10. Never mark a phase `DONE` without meeting the full §4.3 Definition of Done.
-11. Never delete or rewrite another phase's files to make yours pass.
-12. Never silently deviate from this document — deviations are declared in the report with a reason.
-13. Never add a dependency outside §1.5 without declaring and justifying it.
+**Process** 9. Never work on more than one phase per session; never start a phase with an unverified predecessor. 10. Never mark a phase `DONE` without meeting the full §4.3 Definition of Done. 11. Never delete or rewrite another phase's files to make yours pass. 12. Never silently deviate from this document — deviations are declared in the report with a reason. 13. Never add a dependency outside §1.5 without declaring and justifying it.
 
-**Design**
-14. Never break the token system (§3.2/§3.3) — no raw hex, no `bg-white`, no arbitrary spacing.
-15. Never ship a screen without loading, empty, and error states.
-16. Never ship a route without a branded error boundary/fallback.
-17. Never ship light-only or dark-only UI.
-18. Never make 3D a dependency for functionality, and never exceed the 3D budget (§3.8).
-19. Never fall back to the generic sidebar-plus-stat-cards dashboard (§3.10).
-20. Never break the accessibility floor (§3.9): contrast, focus, keyboard, semantics, `aria-live`.
+**Design** 14. Never break the token system (§3.2/§3.3) — no raw hex, no `bg-white`, no arbitrary spacing. 15. Never ship a screen without loading, empty, and error states. 16. Never ship a route without a branded error boundary/fallback. 17. Never ship light-only or dark-only UI. 18. Never make 3D a dependency for functionality, and never exceed the 3D budget (§3.8). 19. Never fall back to the generic sidebar-plus-stat-cards dashboard (§3.10). 20. Never break the accessibility floor (§3.9): contrast, focus, keyboard, semantics, `aria-live`.
 
-**Responsiveness (§3.12)**
-21. Never ship a screen that is only verified at desktop width, and never produce horizontal scroll
-    at 360px. All five reference viewports, both themes, every phase.
-22. Never lock functionality behind hover, drag, or a desktop-only control without a tap/keyboard
-    equivalent; never use fixed `px` layout sizes, `100vh`, or arbitrary breakpoints.
+**Responsiveness (§3.12)** 21. Never ship a screen that is only verified at desktop width, and never produce horizontal scroll
+at 360px. All five reference viewports, both themes, every phase. 22. Never lock functionality behind hover, drag, or a desktop-only control without a tap/keyboard
+equivalent; never use fixed `px` layout sizes, `100vh`, or arbitrary breakpoints.
 
-**Cancellation (§5.8)**
-23. Never call an endpoint function without forwarding react-query's `signal` for reads; never drop
-    the `signal` parameter in a service or endpoint module.
-24. Never treat an aborted request as an error — no error page, no red toast, no retry loop, no
-    error telemetry. Aborted uploads/bulk actions must leave a clean, re-syncable UI.
-25. Never ship a long-running operation (upload, download, bulk move/delete/restore) without a real
-    user-facing Cancel wired to an `AbortController`, and never auto-abort a state-changing mutation
-    on unmount.
+**Cancellation (§5.8)** 23. Never call an endpoint function without forwarding react-query's `signal` for reads; never drop
+the `signal` parameter in a service or endpoint module. 24. Never treat an aborted request as an error — no error page, no red toast, no retry loop, no
+error telemetry. Aborted uploads/bulk actions must leave a clean, re-syncable UI. 25. Never ship a long-running operation (upload, download, bulk move/delete/restore) without a real
+user-facing Cancel wired to an `AbortController`, and never auto-abort a state-changing mutation
+on unmount.
 
 **When stuck:** stop, choose the most conservative option that cannot break anything, document the
 choice and the question in the ledger and report, and hand the decision back to the owner.

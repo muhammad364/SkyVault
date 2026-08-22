@@ -14,6 +14,11 @@ export type ApiErrorCode =
   | 'current_password_incorrect'
   | 'email_already_registered'
   | 'email_not_verified'
+  | 'duplicate_name'
+  | 'empty_file'
+  | 'file_too_large'
+  | 'insufficient_quota'
+  | 'invalid_destination'
   | 'invalid_credentials'
   | 'invalid_reset_token'
   | 'invalid_verification_token'
@@ -26,6 +31,8 @@ export type ApiErrorCode =
   | 'subscription_already_active'
   | 'subscription_required'
   | 'subscription_unavailable'
+  | 'storage_unavailable'
+  | 'vault_item_not_found'
   | 'user_not_found'
 
 export class ApiError extends Error {
@@ -41,7 +48,7 @@ export class ApiError extends Error {
   }
 }
 
-function authErrorCode(payload: ApiErrorPayload): ApiErrorCode | undefined {
+function apiErrorCode(payload: ApiErrorPayload): ApiErrorCode | undefined {
   const message = payload.message.trim().toLowerCase()
   if (message === 'invalid email or password.') return 'invalid_credentials'
   if (message === 'please verify your email before logging in.') return 'email_not_verified'
@@ -73,6 +80,29 @@ function authErrorCode(payload: ApiErrorPayload): ApiErrorCode | undefined {
   if (message === 'the card has expired.') return 'payment_card_expired'
   if (message.includes('cvv') || message.includes('card holder name'))
     return 'payment_details_invalid'
+  if (message.includes('already exists') || message.includes('duplicate')) return 'duplicate_name'
+  if (message.includes('cannot be empty') || message.includes('empty file')) return 'empty_file'
+  if (message.includes('100 mb') || message.includes('file size limit')) return 'file_too_large'
+  if (message.includes('insufficient storage') || message.includes('storage quota')) {
+    return 'insufficient_quota'
+  }
+  if (
+    message.includes('destination') ||
+    message.includes('descendant') ||
+    message.includes('into itself')
+  ) {
+    return 'invalid_destination'
+  }
+  if (
+    message.includes('storage provider') ||
+    message.includes('cloud storage') ||
+    message.includes('physical storage')
+  ) {
+    return 'storage_unavailable'
+  }
+  if (message.includes('file not found') || message.includes('folder not found')) {
+    return 'vault_item_not_found'
+  }
   return undefined
 }
 
@@ -140,7 +170,7 @@ export function normalizeApiError(error: unknown): Error {
     const payload = readApiErrorPayload(error.response?.data)
     const fields = payload?.errors ?? undefined
     const traceId = payload?.traceId || undefined
-    const code = payload ? authErrorCode(payload) : undefined
+    const code = payload ? apiErrorCode(payload) : undefined
     return new ApiError(status, safeMessage(status), fields, traceId, code)
   }
 
