@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using SkyVault.Configurations;
 using SkyVault.DTOs.Common.Responses;
 using SkyVault.DTOs.UserFile.Requests;
 using SkyVault.DTOs.UserFile.Responses;
@@ -14,8 +15,6 @@ namespace SkyVault.Services.UserFileService;
 
 public class UserFileService : IUserFileService
 {
-    private const long MaxFileSizeBytes = 100L * 1024L * 1024L;
-
     private readonly IUserFileRepository _userFileRepository;
     private readonly IFolderRepository _folderRepository;
     private readonly IStorageQuotaService _storageQuotaService;
@@ -896,7 +895,7 @@ public class UserFileService : IUserFileService
                 "Empty files cannot be uploaded.");
         }
 
-        if (file.Length > MaxFileSizeBytes)
+        if (file.Length > FileUploadLimits.MaxFileSizeBytes)
         {
             throw new InvalidOperationException(
                 "The maximum supported file size is 100 MB.");

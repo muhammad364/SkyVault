@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SkyVault.Configurations;
 using SkyVault.DTOs.Common.Responses;
 using SkyVault.DTOs.UserFile.Requests;
 using SkyVault.DTOs.UserFile.Responses;
@@ -23,6 +24,8 @@ public class UserFileController : ControllerBase
 
     [HttpPost]
     [Consumes("multipart/form-data")]
+    [RequestSizeLimit(FileUploadLimits.MaxMultipartRequestSizeBytes)]
+    [RequestFormLimits(MultipartBodyLengthLimit = FileUploadLimits.MaxMultipartRequestSizeBytes)]
     public async Task<ActionResult<FileResponseDto>> Upload(
         [FromForm] UploadFileRequestDto request,
         CancellationToken cancellationToken)
@@ -128,6 +131,8 @@ public class UserFileController : ControllerBase
 
     [HttpPut("{fileId:guid}/replace")]
     [Consumes("multipart/form-data")]
+    [RequestSizeLimit(FileUploadLimits.MaxMultipartRequestSizeBytes)]
+    [RequestFormLimits(MultipartBodyLengthLimit = FileUploadLimits.MaxMultipartRequestSizeBytes)]
     public async Task<ActionResult<MessageResponseDto>> Replace(
         Guid fileId,
         [FromForm] ReplaceFileRequestDto request,
