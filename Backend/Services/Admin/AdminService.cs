@@ -109,15 +109,27 @@ public class AdminService : IAdminService
 
         var users = await _userRepository.GetAllAsync(cancellationToken);
 
+        var customerUsers = users.Where(u => u.Role == 0).ToList();
+
+        var activeStorageAccounts = storageAccounts.Where(sa => sa.Isactive).ToList();
+
+        long physicalStorageBytes = activeStorageAccounts.Sum(sa => sa.Totalcapacitybytes);
+
+        long allocatedStorageBytes = customerUsers.Sum(u => u.Allocatedstoragebytes);
+
+        long usedStorageBytes = activeStorageAccounts.Sum(sa => sa.Usedcapacitybytes);
+
+        long availableStorageBytes = physicalStorageBytes - allocatedStorageBytes;
+
         return new StorageOverviewDto
         {
-            TotalPhysicalCapacityBytes = storageAccounts.Sum(x => x.Totalcapacitybytes),
+            TotalPhysicalCapacityBytes = physicalStorageBytes,
 
-            TotalAllocatedBytes = users.Sum(x => x.Allocatedstoragebytes),
+            TotalAllocatedBytes = allocatedStorageBytes,
 
-            TotalUsedBytes = users.Sum(x => x.Usedstoragebytes),
+            TotalUsedBytes = usedStorageBytes,
 
-            TotalAvailableBytes = users.Sum(x => x.Allocatedstoragebytes - x.Usedstoragebytes)
+            TotalAvailableBytes = availableStorageBytes
         };
     }
 
