@@ -14,7 +14,11 @@ import {
   type ChangePasswordValues,
 } from '@/features/account/validators/account.schemas'
 
-export function ChangePasswordForm() {
+interface ChangePasswordFormProps {
+  context?: 'vault' | 'admin'
+}
+
+export function ChangePasswordForm({ context = 'vault' }: ChangePasswordFormProps) {
   const changePassword = useChangePassword()
   const navigate = useNavigate()
   const {
@@ -35,7 +39,10 @@ export function ChangePasswordForm() {
           await clearClientSession()
           navigate('/auth/login', {
             replace: true,
-            state: { notice: 'Your password has changed. Sign in again with your new password.' },
+            state: {
+              notice: 'Your password has changed. Sign in again with your new password.',
+              loginMode: context === 'admin' ? 'admin' : 'user',
+            },
           })
         },
         onError: (error) => {
@@ -59,7 +66,9 @@ export function ChangePasswordForm() {
     <section className="rounded-xl bg-card p-6 shadow-rest" aria-labelledby="password-heading">
       <div className="flex flex-col gap-6">
         <header className="flex flex-col gap-3">
-          <p className="text-sm font-semibold text-brand">Vault access</p>
+          <p className="text-sm font-semibold text-brand">
+            {context === 'admin' ? 'Administrative access' : 'Vault access'}
+          </p>
           <div className="flex flex-col gap-2">
             <h2 id="password-heading" className="font-display text-2xl font-bold text-foreground">
               Change password

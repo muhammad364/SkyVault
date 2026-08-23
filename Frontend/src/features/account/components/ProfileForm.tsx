@@ -13,9 +13,10 @@ import type { UserProfileResponse } from '@/models/auth/UserProfileResponse'
 
 interface ProfileFormProps {
   profile: UserProfileResponse
+  context?: 'vault' | 'admin'
 }
 
-export function ProfileForm({ profile }: ProfileFormProps) {
+export function ProfileForm({ profile, context = 'vault' }: ProfileFormProps) {
   const updateProfile = useUpdateProfile()
   const {
     register,
@@ -61,7 +62,9 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               Profile details
             </h2>
             <p className="text-sm text-muted-foreground">
-              Keep the name attached to your private workspace current.
+              {context === 'admin'
+                ? 'Keep the name attached to your administrator profile current.'
+                : 'Keep the name attached to your private workspace current.'}
             </p>
           </div>
         </header>

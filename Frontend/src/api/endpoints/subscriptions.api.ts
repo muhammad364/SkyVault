@@ -20,4 +20,14 @@ export const subscriptionsApi = {
     apiClient
       .post<SubscriptionResponse>(`${BASE}/cancel`, undefined, { signal })
       .then((response) => response.data),
+  getAll: (signal?: AbortSignal) =>
+    apiClient.get<SubscriptionResponse[]>(BASE, { signal }).then((response) => response.data),
+  getById: (subscriptionId: string, signal?: AbortSignal) =>
+    apiClient
+      .get<SubscriptionResponse>(`${BASE}/${subscriptionId}`, { signal })
+      .then((response) => response.data),
+  getByUserId: (userId: string, signal?: AbortSignal) =>
+    apiClient
+      .get<SubscriptionResponse[]>(`${BASE}/user/${userId}`, { signal })
+      .then((response) => response.data),
 }

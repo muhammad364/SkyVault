@@ -63,3 +63,42 @@ The authentication API exposes JWT issuance through login but no refresh-token e
 - The endpoint exposes no pagination, page size, total count, or continuation token. The frontend consumes the returned collection as-is and does not invent client paging.
 - `SearchResultDto` exposes no score, highlights, matched fields, snippets, or match context. Backend result order is preserved exactly and the UI does not calculate relevance or fabricate why a file matched.
 - Search mutations do not exist. Result actions reuse the real Phase 6 file endpoints and Phase 8 share-link endpoint, then invalidate the active parameterized reads.
+
+## Phase 10
+
+- Authentication exposes one `POST /api/auth/login` contract with `email` and `password`; there is no separate
+  admin login endpoint or username request field. The User/Admin tabs are a frontend entry distinction only.
+  Admin mode verifies the returned JWT role before persisting a session and does not invent username, MFA,
+  refresh-token, or admin recovery behavior.
+- `AdminUserDto` exposes no role, username, last-active date, subscription summary, file count, or admin-safe
+  self-deactivation indicator. The UI cannot distinguish administrators from users in the returned collection,
+  invent activity, or prevent an action based on unavailable role/self metadata. User list/filter/pagination
+  parameters and bulk activation endpoints are also absent, so filtering is presentation-only and mutations are
+  single-user actions.
+- System statistics are current aggregate counts only, and storage overview is a current aggregate byte
+  snapshot. No time series, revenue, growth, sign-in activity, failure/health status, provider utilization
+  history, or forecast contract exists. Admin charts visualize only returned current values.
+- Admin subscriptions are read-only and expose no server filter, pagination, total, or embedded user name.
+  Management composes the independent users list when available and never invents lifecycle mutations.
+- `GET /api/storage-plans` is public and hard-coded to active plans. The backend exposes activate/deactivate
+  actions but no admin endpoint that lists inactive plan IDs, so a deactivated plan leaves the discoverable
+  catalogue and cannot be offered for reactivation unless the API adds an inactive/all-plans read contract.
+  The create UI therefore submits new plans active instead of allowing creation of an immediately
+  undiscoverable record.
+- Storage providers expose no credentials/settings DTO, delete action, filtering, or pagination. Provider
+  update accepts only `name`; `providerType` is immutable in the UI. Storage-account update accepts name,
+  total-capacity bytes, and priority but not provider reassignment. The account list's optional `isActive`
+  parameter is the only server-side infrastructure filter.
+- Email configuration has no connection-test or delivery-health endpoint. Responses intentionally omit the
+  password. Current service validation requires a password whenever authentication is enabled, including an
+  update, so the frontend requests it again and never claims the stored secret was preserved without input.
+  Only one active configuration is enforced by the backend; deletion returns no response DTO.
+- Audit logs expose `skip` and `take` but no total count, page metadata, continuation token, action catalogue,
+  or role-filtered administrator list. The UI therefore does not display a total/page count and accepts only
+  the controller's administrator GUID, free-text action, and performed-date filters.
+- Role-restricted admin management writes accept server cancellation tokens but expose no compensation/status
+  contract. The frontend submits them without unmount cancellation or automatic Axios timeout and removes
+  Cancel after submission; completion is followed by invalidating the complete admin read family.
+- No additional operational-settings controller exists beyond email configurations. Provider keys,
+  connection strings, scheduler controls, feature flags, arbitrary platform settings, and fabricated admin
+  controls remain absent.

@@ -67,4 +67,65 @@ describe('route guards', () => {
 
     expect(screen.getByText('Admin route')).toBeInTheDocument()
   })
+
+  it('keeps administrator sessions out of the user vault', () => {
+    act(() =>
+      useAuthStore.setState({
+        session: {
+          accessToken: 'admin-session',
+          expiresAt: new Date(Date.now() + 60_000).toISOString(),
+          role: 'admin',
+        },
+      }),
+    )
+
+    render(
+      <MemoryRouter initialEntries={['/vault']}>
+        <Routes>
+          <Route
+            path="/vault"
+            element={
+              <ProtectedRoute>
+                <p>User vault</p>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/admin" element={<p>Admin workspace</p>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Admin workspace')).toBeInTheDocument()
+    expect(screen.queryByText('User vault')).not.toBeInTheDocument()
+  })
+
+  it('sends an authenticated non-admin to the real forbidden experience', () => {
+    act(() =>
+      useAuthStore.setState({
+        session: {
+          accessToken: 'user-session',
+          expiresAt: new Date(Date.now() + 60_000).toISOString(),
+          role: 'user',
+        },
+      }),
+    )
+
+    render(
+      <MemoryRouter initialEntries={['/admin']}>
+        <Routes>
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <p>Admin workspace</p>
+              </AdminRoute>
+            }
+          />
+          <Route path="/errors/403" element={<p>Forbidden experience</p>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Forbidden experience')).toBeInTheDocument()
+  })
 })

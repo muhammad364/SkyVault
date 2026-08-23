@@ -16,7 +16,6 @@ const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'))
 const StatusErrorPage = lazy(() => import('@/pages/errors/StatusErrorPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 const PhasePendingPage = lazy(() => import('@/pages/PhasePendingPage'))
-const AdminPendingPage = lazy(() => import('@/pages/AdminPendingPage'))
 const AuthEntryRedirect = lazy(() => import('@/features/auth/pages/AuthEntryRedirect'))
 const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'))
 const RegisterPage = lazy(() => import('@/features/auth/pages/RegisterPage'))
@@ -43,6 +42,15 @@ const RecycleBinPage = lazy(() => import('@/features/recycle-bin/pages/RecycleBi
 const SharingPage = lazy(() => import('@/features/sharing/pages/SharingPage'))
 const PublicSharePage = lazy(() => import('@/features/sharing/pages/PublicSharePage'))
 const SearchPage = lazy(() => import('@/features/search/pages/SearchPage'))
+const AdminDashboardPage = lazy(() => import('@/features/admin/pages/AdminDashboardPage'))
+const AdminUsersPage = lazy(() => import('@/features/admin/pages/AdminUsersPage'))
+const AdminUserDetailPage = lazy(() => import('@/features/admin/pages/AdminUserDetailPage'))
+const AdminPlansPage = lazy(() => import('@/features/admin/pages/AdminPlansPage'))
+const AdminSubscriptionsPage = lazy(() => import('@/features/admin/pages/AdminSubscriptionsPage'))
+const AdminInfrastructurePage = lazy(() => import('@/features/admin/pages/AdminInfrastructurePage'))
+const AdminEmailPage = lazy(() => import('@/features/admin/pages/AdminEmailPage'))
+const AdminAuditPage = lazy(() => import('@/features/admin/pages/AdminAuditPage'))
+const AdminAccountPage = lazy(() => import('@/features/admin/pages/AdminAccountPage'))
 
 function withSuspense(element: JSX.Element, fallback: JSX.Element = <PageSkeleton />) {
   return <Suspense fallback={fallback}>{element}</Suspense>
@@ -123,7 +131,18 @@ export const router = createBrowserRouter(
         </AdminRoute>
       ),
       errorElement: <RouteErrorFallback />,
-      children: [{ index: true, element: withSuspense(<AdminPendingPage />) }],
+      children: [
+        { index: true, element: withSuspense(<AdminDashboardPage />) },
+        { path: 'users', element: withSuspense(<AdminUsersPage />) },
+        { path: 'users/:userId', element: withSuspense(<AdminUserDetailPage />) },
+        { path: 'plans', element: withSuspense(<AdminPlansPage />) },
+        { path: 'subscriptions', element: withSuspense(<AdminSubscriptionsPage />) },
+        { path: 'infrastructure', element: withSuspense(<AdminInfrastructurePage />) },
+        { path: 'email', element: withSuspense(<AdminEmailPage />) },
+        { path: 'audit', element: withSuspense(<AdminAuditPage />) },
+        { path: 'settings', element: withSuspense(<AdminAccountPage />) },
+        { path: '*', element: withSuspense(<NotFoundPage />) },
+      ],
     },
     {
       path: '*',

@@ -510,6 +510,12 @@ run only after each phase has passed its complete automated gate and its documen
 Phases 5–9 remain `IN_PROGRESS` until the owner's rendered review; this exception does not permit
 later-phase contracts to be pulled into an earlier checkpoint or any backend change.
 
+Owner-approved progression exception (2026-08-23): Phase 10 may begin while Phases 5–9 remain
+`IN_PROGRESS` because the owner has chosen to finish functional implementation before returning to
+the recorded revisions and rendered reviews. Phase 10 remains `IN_PROGRESS` after automated
+verification until the owner completes that review. This exception opens only the explicitly gated
+administration phase; it does not mark Phases 5–9 complete, permit backend changes, or open Phase 11.
+
 Additionally maintained by you: `/frontend/docs/API-GAPS.md` (anything the UI needs that the API
 does not expose) and `/frontend/docs/ADR-001-react-frontend.md`.
 
@@ -619,6 +625,22 @@ invented; results and the command dialog are keyboard navigable end to end.
 Admin shell (quieter, denser, same tokens), user management, plan management, platform monitoring
 (recharts, 2–3 colors), operational settings — all limited to real admin endpoints, all behind
 `AdminRoute`, with a real `403` experience for non-admins.
+The approved implementation uses User/Admin tabs on the shared login route. Both tabs submit the
+real `LoginRequestDto` (`email`, `password`); Admin mode removes registration and password-recovery
+links, verifies the returned JWT role before persisting the session, and routes only administrators
+to `/admin`. Admin sessions are redirected away from `/vault`, ordinary users receive the real 403
+experience for `/admin`, and the admin shell exposes no file, folder, quota, purchase, sharing,
+search, or recycle-bin destinations.
+
+The administration information architecture is Overview, Users, Plans, Subscriptions,
+Infrastructure, Email delivery, Audit log, and Admin account. Overview charts visualize only the
+current system-statistics and storage-overview response values with two semantic colors and no
+invented history, trend, revenue, health, or forecast. Management screens consume only the
+role-restricted actions actually exposed across the admin, storage-plan, subscription,
+storage-provider, storage-account, email-configuration, and shared authenticated account
+controllers. Admin tables become label–value cards below `md`, long content is contained with
+`min-w-0`/truncate/break rules, and submitted writes have no automatic Axios timeout or client
+Cancel. No 3D appears because §3.8 explicitly excludes admin screens.
 
 **Phase 11 — Hardening & Handover** _(only after 0–9 are `DONE`)_
 Accessibility audit pass, contrast verification in both themes, bundle/code-split review, empty/error

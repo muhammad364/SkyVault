@@ -165,6 +165,50 @@ orbs, and gradient blobs remain prohibited.
 - Search result menus and selection reuse the file-manager actions, confirmations, progress dock, and Share
   dialog. The returned folder name is a 44px location link to root or the exact returned folder route.
 
+## Administration
+
+- The login card uses accessible User/Admin tabs. Admin mode still submits the backend's exact email and
+  password request—there is no username login contract—and omits registration and password-recovery links.
+  Persist a session only after the returned token role matches the selected tab.
+- The admin shell is role-exclusive, quieter, and denser than the personal vault. Its sticky desktop rail
+  and six-slot mobile dock expose Overview, Users, Plans, Subscriptions, Infrastructure, and More; More
+  contains Email delivery, Audit log, Account settings, and danger-colored Sign out. Never include ordinary
+  vault destinations in this shell or admin destinations in the user rail.
+- Overview uses a compact editorial heading, three factual record summaries, one current-state record chart,
+  one storage chart, and recent audit work. Recharts uses only midnight slate and burgundy, disables chart
+  animation, and visualizes response values without trends, growth, revenue, forecasts, or health scores.
+- Admin lists use hairline rows, `card-muted` hover, sticky headings, mono numerics, and pill statuses. At base
+  width, every table becomes a stacked label–value card; desktop tables stay inside deliberate
+  `overflow-x-auto` wrappers. Every flex/grid child that can contain an email, provider name, host, plan, or
+  description uses `min-w-0` plus truncate, line clamp, or breaking so content never leaks from a card.
+- User management supports local name/email/status filtering of the complete returned collection, exact user
+  detail, storage allocation, subscription history, and confirmed activation/deactivation. Do not infer or
+  display a user role because `AdminUserDto` does not return one.
+- Plan management describes the list as the active catalogue. Deactivation is confirmed and explicitly warns
+  that the plan leaves the discoverable list; never pretend inactive plans can be listed by the current API.
+  New plans are submitted active so the administrator does not create a record the list cannot rediscover.
+- Subscriptions are read-only. Compose user display names from the user list when available and show neutral
+  unavailable/loading copy if that independent lookup fails. Status, plan, price, billing, dates, and grace
+  period come only from the response.
+- Infrastructure keeps providers and storage accounts on one operational surface. Provider type and account
+  provider assignment become read-only after creation because their update DTOs omit those fields. Capacity
+  input uses whole bytes with a formatted preview; provider/account activation and deactivation are confirmed.
+- Email delivery treats SMTP passwords as write-only. Never prefill, display, cache, or log one. Authenticated
+  create/update requests require a newly entered password according to the current backend validation. Explain
+  that activating one configuration causes the backend to deactivate the previously active configuration;
+  permanent deletion is confirmed.
+- Audit filters map only to `administratorId`, `action`, `performedFrom`, `performedTo`, `skip`, and `take`.
+  Pagination does not claim a total: Previous uses the current offset and Next is available only after a full
+  returned page. Audit descriptions and identifiers stay contained; the default list emphasizes action,
+  administrator email, entity type, and performed date.
+- Admin account settings reuse the authenticated profile, change-password, and logout contracts with
+  administrator-specific copy. A successful password change clears the session and returns to Admin sign in.
+- Role-restricted admin management mutations use focused Radix dialogs and React Hook Form + Zod validation.
+  Once submitted, those writes have no Cancel action or automatic timeout; controls use pending labels and
+  remain open on safe normalized errors. Shared account actions retain the established Phase 3 behavior.
+- Do not place 3D in administration. The existing master rule is intentional: real current-state charts carry
+  the statistical presentation while keeping dense operational screens legible and low-distraction.
+
 ## Motion and scrolling
 
 - Use Framer Motion with 160ms, 240ms, or 320ms durations and the vault easing

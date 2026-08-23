@@ -1,22 +1,34 @@
 import { Outlet } from 'react-router-dom'
+import { BrandSignature } from '@/components/brand/BrandSignature'
+import { AdminRail } from '@/features/admin/components/AdminRail'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 
 export function AdminLayout() {
   return (
-    <div className="min-h-dvh bg-canvas p-3 md:p-5">
-      <div className="mx-auto flex min-h-dvh max-w-screen-xl flex-col gap-6 rounded-2xl bg-surface p-5 shadow-rest md:p-8">
-        <header className="flex items-start justify-between gap-4 border-b border-border pb-6">
-          <div className="flex flex-col gap-2">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-brand">
-              Admin
-            </p>
-            <h1 className="font-display text-2xl font-bold text-foreground">SkyVault operations</h1>
-          </div>
-          <ThemeToggle />
-        </header>
-        <main className="flex-1">
-          <Outlet />
-        </main>
+    <div className="min-h-dvh bg-canvas p-3 pb-24 md:p-5">
+      <div className="mx-auto flex max-w-screen-xl gap-4">
+        <AdminRail />
+        <div className="min-w-0 flex-1 overflow-hidden rounded-2xl bg-surface p-4 shadow-rest sm:p-5 md:p-6">
+          <header className="flex items-center justify-between gap-4 border-b border-border pb-4">
+            <div className="min-w-0">
+              <div className="md:hidden">
+                <BrandSignature />
+              </div>
+              <div className="hidden min-w-0 md:block">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand">
+                  Administration
+                </p>
+                <p className="truncate text-sm text-muted-foreground">
+                  Role-restricted operations console
+                </p>
+              </div>
+            </div>
+            <ThemeToggle />
+          </header>
+          <main className="min-h-96 min-w-0 pt-5">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </div>
   )
