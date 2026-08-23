@@ -28,6 +28,15 @@ public class StoragePlanController : ControllerBase
         return Ok(plans);
     }
 
+    [HttpGet("admin")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<IEnumerable<StoragePlanResponseDto>>> GetAllPlansForAdmin(CancellationToken cancellationToken = default)
+    {
+        var plans = await _storagePlanService.GetAllAsync(null, cancellationToken);
+
+        return Ok(plans);
+    }
+
     [HttpGet("{storagePlanId:guid}")]
     public async Task<ActionResult<StoragePlanResponseDto>> GetPlanById (Guid storagePlanId, CancellationToken cancellationToken = default)
     {

@@ -34,7 +34,7 @@ export const adminService = {
     adminApi.getAuditLogs(filters, signal),
   getAuditLog: (auditLogId: string, signal?: AbortSignal) =>
     adminApi.getAuditLog(auditLogId, signal),
-  getPlans: (signal?: AbortSignal) => storagePlansApi.getAllPlans(signal),
+  getPlans: (signal?: AbortSignal) => storagePlansApi.getAllPlansForAdmin(signal),
   createPlan: (request: CreateStoragePlanRequest) => storagePlansApi.create(request),
   updatePlan: (storagePlanId: string, request: UpdateStoragePlanRequest) =>
     storagePlansApi.update(storagePlanId, request),
