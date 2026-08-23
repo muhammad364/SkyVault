@@ -33,6 +33,13 @@ The authentication API exposes JWT issuance through login but no refresh-token e
 
 ## Phase 6
 
+- Resolved on 2026-08-24 by an owner-authorized backend transport correction: frontend validation and
+  `UserFileService` already enforced an exact 100 MiB file limit, but Kestrel's unconfigured
+  30,000,000-byte request-body default rejected multipart requests above about 28.6 MiB before the
+  controller. Upload and replace now declare a 101 MiB request/form envelope for multipart overhead,
+  while a shared backend constant keeps the actual file limit at 100 MiB. A production IIS/Nginx/other
+  reverse proxy must be configured to allow at least the same envelope; the application cannot override
+  an upstream proxy rejection.
 - The folder/file APIs expose no pagination, limit, count, server sorting, or server filtering. The manager loads the existing current-folder response unchanged and applies only presentation filtering/sorting; no all-folder count is implied.
 - There is no ancestry or recursive-tree endpoint. Breadcrumb ancestry uses cancellable parent-folder GET calls, and the navigator lazily reads a folder only when its branch opens.
 - There is no preview-capability/details endpoint. The frontend requests preview only on demand and renders only the returned Blob content type for common raster images excluding SVG, PDF, plain text, audio, and video; every other type is download-only.
@@ -46,7 +53,13 @@ The authentication API exposes JWT issuance through login but no refresh-token e
 - The Recycle Bin API exposes only single-file and single-folder restore/permanent-delete endpoints. Bulk work therefore calls those real endpoints sequentially, reports partial completion, and can stop queued work only after the current submitted request.
 - The API exposes no operation percentage/status endpoint and no cancellation-compensation contract. Restore and permanent deletion are indeterminate, submitted writes use no automatic timeout, and permanent provider deletion is never aborted from the client.
 - `MessageResponseDto` does not report the restored destination. The frontend explains the backend's documented original-parent/root fallback before submission but never claims which location was used afterward.
-- A deleted folder's descendants are also returned as individual Recycle Bin items even though folder restore/delete processes its complete hierarchy. The frontend collapses selected descendants beneath selected folders to prevent duplicate or hierarchy-damaging requests.
+- Resolved on 2026-08-24 by an owner-authorized backend behavior correction: `GetItemsAsync` now returns
+  only deleted hierarchy-root folders and independently deleted files. Descendant folders retain their
+  current parent links and contained files retain `FolderId`, so folder restore/permanent delete still
+  traverses the complete hierarchy without adding DTO fields. Direct file/folder mutation lookup also
+  rejects a descendant while its owning parent folder remains deleted. The frontend therefore no longer
+  presents or independently acts on deleted descendants; selection collapse remains defensive for stale
+  responses already in flight.
 - Retention is displayed only from each `RecycleBinItemDto.ExpiresAt`. The frontend does not calculate a fixed retention window, disable restore based on the client clock, or reproduce scheduler behavior.
 
 ## Phase 8
@@ -80,11 +93,12 @@ The authentication API exposes JWT issuance through login but no refresh-token e
   history, or forecast contract exists. Admin charts visualize only returned current values.
 - Admin subscriptions are read-only and expose no server filter, pagination, total, or embedded user name.
   Management composes the independent users list when available and never invents lifecycle mutations.
-- `GET /api/storage-plans` is public and hard-coded to active plans. The backend exposes activate/deactivate
-  actions but no admin endpoint that lists inactive plan IDs, so a deactivated plan leaves the discoverable
-  catalogue and cannot be offered for reactivation unless the API adds an inactive/all-plans read contract.
-  The create UI therefore submits new plans active instead of allowing creation of an immediately
-  undiscoverable record.
+- Resolved on 2026-08-24 by an owner-authorized admin read: public `GET /api/storage-plans` remains
+  anonymous and hard-coded to active plans, while role-restricted `GET /api/storage-plans/admin` calls
+  the existing service/repository chain with `isActive: null` and returns both statuses using the existing
+  `StoragePlanResponseDto`. The admin screen consumes only this endpoint, filters All/Active/Inactive in
+  presentation, and can invoke the existing activate/deactivate actions for every returned plan. No new DTO,
+  query parameter, or public exposure was introduced.
 - Storage providers expose no credentials/settings DTO, delete action, filtering, or pagination. Provider
   update accepts only `name`; `providerType` is immutable in the UI. Storage-account update accepts name,
   total-capacity bytes, and priority but not provider reassignment. The account list's optional `isActive`

@@ -350,9 +350,10 @@ Use `@react-three/fiber` + `drei` on **exactly these four surfaces**:
 1. **Landing hero** — the SkyVault Vault: a rounded-cube vault with a slowly rotating dial,
    graphite frame, soft-white/zinc door, silver dial, restrained burgundy hub, soft neutral studio
    lighting, subtle pointer-parallax (max 6° tilt), _not_ auto-spinning.
-2. **Storage/quota object** — a translucent vault or stacked-shell volume that visually fills with
-   midnight slate as usage rises; amber at 80% and above, danger/burgundy at 95% and above. The shell
-   uses zinc materials and every state is driven by real API quota values.
+2. **Storage/quota object** — an upright rounded zinc vault matching the approved quota-vault asset,
+   with a visible inner volume that fills from bottom to top as usage rises; midnight slate is normal,
+   amber begins at 80%, and danger/burgundy begins at 95%. The dial remains visible above the fill and
+   every level is driven by the real API quota percentage on both Storage and Workspace Home.
 3. **Empty states** — a single small floating 3D object (empty vault / drifting document plane) with
    a real CTA underneath.
 4. **Auth aside** — a slow, calm 3D key/dial panel beside the form (form itself stays 2D and fast).
@@ -360,9 +361,11 @@ Use `@react-three/fiber` + `drei` on **exactly these four surfaces**:
 
 Hard rules:
 
-- Every 3D surface is `React.lazy` + `<Suspense>` with a **static PNG/SVG fallback**, and is skipped
-  entirely under `prefers-reduced-motion`, on `navigator.hardwareConcurrency <= 4`, or on viewports
-  `< 768px` (mobile gets the flat fallback).
+- Every 3D surface is `React.lazy` + `<Suspense>` with a PNG/SVG fallback, and is skipped entirely
+  under `prefers-reduced-motion`, on `navigator.hardwareConcurrency <= 4`, or on viewports `< 768px`.
+  The quota surface is the one approved data-bearing exception: its flat, code-native SVG fallback is
+  derived from the light/dark quota assets and reflects the same API percentage without WebGL or
+  motion. Other fallbacks remain static.
 - Budget per scene: ≤ 60k triangles, ≤ 2 lights + 1 environment, `dpr={[1, 1.75]}`,
   `frameloop="demand"` where possible, no post-processing stack, no HDR files > 1 MB.
 - Never place 3D behind text, in tables, in the file grid, in dialogs, or in admin screens.
@@ -406,17 +409,17 @@ canceled" toast.
 
 ### 3.11 Brand assets (already generated, in `/frontend/public/brand/`)
 
-| Asset                      | File                                                           | Use                                                  |
-| -------------------------- | -------------------------------------------------------------- | ---------------------------------------------------- |
-| Raster emblem, light       | `skyvault-emblem-light-v3.png`                                 | Light surfaces in `BrandSignature`                   |
-| Raster emblem, dark        | `skyvault-emblem-dark-v3.png`                                  | Dark surfaces in `BrandSignature`                    |
-| Vector mark, light         | `skyvault-mark.svg`                                            | Light rail, loaders, code-native mark                |
-| Vector mark, dark          | `skyvault-mark-dark-v3.svg`                                    | Dark rail, loaders, code-native mark                 |
-| Landing fallback, light    | `landing-vault-fallback-light-v3.png`                          | Light mobile/reduced-motion/low-core/Canvas fallback |
-| Landing fallback, dark     | `landing-vault-fallback-dark-v3.png`                           | Dark mobile/reduced-motion/low-core/Canvas fallback  |
-| Auth fallback, light/dark  | `auth-key-fallback.svg`, `auth-key-fallback-dark-v3.svg`       | Auth scene fallbacks                                 |
-| Quota fallback, light/dark | `quota-vault-fallback.svg`, `quota-vault-fallback-dark-v3.svg` | Storage scene fallbacks                              |
-| Transparent favicon raster | `skyvault-favicon-v3.png`                                      | Favicon, Apple touch icon, and manifest source       |
+| Asset                       | File                                                           | Use                                                           |
+| --------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------- |
+| Raster emblem, light        | `skyvault-emblem-light-v3.png`                                 | Light surfaces in `BrandSignature`                            |
+| Raster emblem, dark         | `skyvault-emblem-dark-v3.png`                                  | Dark surfaces in `BrandSignature`                             |
+| Vector mark, light          | `skyvault-mark.svg`                                            | Light rail, loaders, code-native mark                         |
+| Vector mark, dark           | `skyvault-mark-dark-v3.svg`                                    | Dark rail, loaders, code-native mark                          |
+| Landing fallback, light     | `landing-vault-fallback-light-v3.png`                          | Light mobile/reduced-motion/low-core/Canvas fallback          |
+| Landing fallback, dark      | `landing-vault-fallback-dark-v3.png`                           | Dark mobile/reduced-motion/low-core/Canvas fallback           |
+| Auth fallback, light/dark   | `auth-key-fallback.svg`, `auth-key-fallback-dark-v3.svg`       | Auth scene fallbacks                                          |
+| Quota reference, light/dark | `quota-vault-fallback.svg`, `quota-vault-fallback-dark-v3.svg` | Source silhouette/palette for the dynamic flat quota fallback |
+| Transparent favicon raster  | `skyvault-favicon-v3.png`                                      | Favicon, Apple touch icon, and manifest source                |
 
 The mark remains a **cloud whose lower half becomes a vault door**, preserving its silhouette,
 composition, proportions, transparency, and edges. Active materials are zinc/graphite with a
@@ -516,6 +519,15 @@ the recorded revisions and rendered reviews. Phase 10 remains `IN_PROGRESS` afte
 verification until the owner completes that review. This exception opens only the explicitly gated
 administration phase; it does not mark Phases 5–9 complete, permit backend changes, or open Phase 11.
 
+Owner-approved revision exceptions (2026-08-24): the backend remains read-only except for three
+explicitly requested contract/behavior corrections already implemented: (1) align upload/replace HTTP
+request limits with the existing exact 100 MiB application limit, (2) make a deleted folder the sole
+Recycle Bin representative of its hierarchy and reject independent descendant actions, and (3) add an
+`Admin`-authorized all-status storage-plan read while preserving the anonymous active-only catalogue.
+These exceptions do not authorize unrelated backend work, new DTOs, or broader endpoints. The owner
+explicitly deferred automated reruns for this revision set and will perform manual verification; ledger
+entries must distinguish prior automated evidence from the unrerun revisions.
+
 Additionally maintained by you: `/frontend/docs/API-GAPS.md` (anything the UI needs that the API
 does not expose) and `/frontend/docs/ADR-001-react-frontend.md`.
 
@@ -571,9 +583,11 @@ _Acceptance:_ every UC-01…UC-06 step is reachable; expired/invalid token state
 Plan catalogue (editorial cards, one recommended plan, real plan data), subscribe flow, additional
 storage purchase, payment hand-off exactly as the API prescribes (success/failure/pending return
 states all handled), current subscription panel, and the **storage quota object** (3D + accessible
-numeric/bar fallback) with amber ≥80% / danger-burgundy ≥95% states and an over-quota explanation.
-_Acceptance:_ quota values come only from the API; no client-side quota arithmetic beyond formatting;
-pending/failed payment returns are real screens.
+numeric/bar fallback) with an upright rounded-vault silhouette, bottom-up API-driven fill, amber ≥80% /
+danger-burgundy ≥95% states, and an over-quota explanation. Mobile, reduced-motion, low-core, loading,
+and Canvas-failure paths use the matching dynamic flat vault rather than an unrelated square object.
+_Acceptance:_ quota values come only from the API; client arithmetic is limited to bounded visual
+presentation of the returned percentage; pending/failed payment returns are real screens.
 
 **Phase 5 — Workspace Home (post-login hub)**
 The asymmetric bento home evolves alongside Phases 6–8 by explicit owner decision while remaining
@@ -583,7 +597,9 @@ storage overview instead of competing tiles; sharing and trash remain smaller in
 The home composes existing feature hooks only — it introduces no summary endpoint or early mutation.
 _Acceptance:_ no four-identical-stat-card row; every API-backed region has loading, empty and error
 states; root folders means only `GET /api/folders/root` subfolders; Phase 5 may be refined only with
-real contracts unlocked by the phase just implemented.
+real contracts unlocked by the phase just implemented. Recent-file rows must constrain every flex/grid
+ancestor with `min-w-0`/overflow protection, show an ellipsis for long names, and retain the complete
+name as accessible/native-title context; a filename must never enter the Root folders card.
 
 **Phase 6 — M-03 Folder Management + M-04 File Management**
 Folder tree/rail navigation, breadcrumbs, create/rename/move/delete folder, folder view with
@@ -592,14 +608,26 @@ per-file browser-to-API progress via `onUploadProgress`, size rejection, and quo
 download, response-type-gated preview, rename, move, copy, replace, delete → recycle bin; mixed
 file/folder multi-select with a bulk action bar; and presentation-only sort/filter. No pagination,
 ancestry/tree, preview-capability, folder-copy, bulk-operation, or server-progress contract is assumed.
+The product file limit is exactly 100 MiB. Upload and replace use a 101 MiB multipart request envelope
+to cover form boundaries while the shared backend validator remains authoritative at 100 MiB; any
+production reverse proxy must permit the same envelope. Preview preparation remains inside its dialog
+and is omitted from the floating operation dock. Dock entries constrain long names, never scroll
+horizontally, and successful/cancelled work auto-dismisses after three seconds; failures remain for
+safe retry or dismissal.
 _Acceptance:_ every action maps 1:1 to a real endpoint; cancelled/failed uploads are recoverable;
 empty folder state is designed; keyboard-only file management is possible; submitted storage writes
-are never aborted after the safe client-transfer boundary.
+are never aborted after the safe client-transfer boundary; a file at or below 100 MiB reaches the
+service rather than being rejected by Kestrel's lower default request-body limit.
 
 **Phase 7 — M-05 Recycle Bin**
 Deleted files/folders list, restore, permanent delete (typed/explicit confirmation), retention
-information as returned by the API, empty-bin state, bulk restore/delete.
-_Acceptance:_ no permanent deletion without confirmation; restore conflicts surfaced from the API.
+information as returned by the API, empty-bin state, bulk restore/delete. A deleted folder is the sole
+visible representative of its deleted hierarchy: descendant folders and contained files retain their
+relationships for hierarchy processing but are neither listed nor independently actionable until the
+parent is restored. Folder rows do not open or browse deleted contents.
+_Acceptance:_ no permanent deletion without confirmation; restore conflicts surfaced from the API;
+folder restore/permanent delete still processes the complete hierarchy, while direct descendant
+mutation requests are rejected when their parent remains deleted.
 
 **Phase 8 — M-06 File Sharing**
 Create view-only share link, copy link, list returned links, revoke links explicitly reported as not
@@ -608,8 +636,10 @@ revoked, show expiry only as the API defines it, and provide the **public share-
 The owner-approved frontend wrapper parses the returned `/api/share/{shareToken}` URL only in memory
 and copies `/share/:shareToken`; that route calls only the real anonymous preview/download endpoints.
 Because the response has no explicit active/expired field, use `Not revoked` and never infer validity.
+The create-link dialog is width-contained at every breakpoint: long selected filenames and generated
+URLs truncate inside `min-w-0` controls, and the modal/bottom sheet never requires horizontal scrolling.
 _Acceptance:_ the public page never exposes owner data beyond what the response DTO contains; no
-download affordance unless the API allows it.
+download affordance unless the API allows it; the complete create/copy workflow fits at 360px.
 
 **Phase 9 — M-07 Metadata Search & Discovery**
 The command bar as a primary interaction (`Ctrl/Cmd+K` / `/`), metadata keyword query, free-text
@@ -641,6 +671,10 @@ storage-provider, storage-account, email-configuration, and shared authenticated
 controllers. Admin tables become label–value cards below `md`, long content is contained with
 `min-w-0`/truncate/break rules, and submitted writes have no automatic Axios timeout or client
 Cancel. No 3D appears because §3.8 explicitly excludes admin screens.
+Plan management reads `GET /api/storage-plans/admin`, an `Admin`-authorized all-status catalogue whose
+service call passes `isActive: null`; the anonymous `GET /api/storage-plans` remains active-only.
+All/Active/Inactive filtering is presentation-only, and each returned plan exposes the matching
+confirmed Activate or Deactivate action so a deactivated plan is always recoverable.
 
 **Phase 11 — Hardening & Handover** _(only after 0–9 are `DONE`)_
 Accessibility audit pass, contrast verification in both themes, bundle/code-split review, empty/error

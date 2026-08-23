@@ -28,6 +28,11 @@ viewport. These decisions supersede the earlier geometry-preservation rule only 
 surfaces. Phase 6 adds a file-first home order, a responsive root/nested file manager, and a
 workspace-level operation dock under the same Quiet Vault system.
 
+The 2026-08-24 revision pass adds strict long-name containment, a hierarchy-root Recycle Bin,
+an API-driven rounded quota vault, a width-contained Share dialog, self-clearing operation feedback,
+and an all-status administrator plan catalogue. These are functional presentation rules, not optional
+polish; later work must preserve them.
+
 ## Brand
 
 - Use `BrandSignature` for the theme-aware emblem and live `SkyVault` wordmark.
@@ -107,6 +112,9 @@ orbs, and gradient blobs remain prohibited.
 - Place the Phase 5 Quick actions strip immediately below its greeting. After Phase 6 its three
   working destinations are Upload files, New folder, and Browse files; the recent-files and root-folders
   cards receive equal weight, followed by one combined quota/plan overview.
+- Every Recent files row and file-operation/card container must carry width constraints through each
+  grid/flex ancestor. Long filenames use one-line ellipsis and retain the complete value in a native
+  title/accessibility context; they never widen a card, overlap Root folders, or create page scrolling.
 - Keep signed-in shell headings and page greetings at application scale; reserve landing-page hero
   typography and large editorial whitespace for marketing surfaces.
 - Use compact, consistent card padding and section gaps on the Phase 5 home. At 1024×768 and
@@ -131,6 +139,11 @@ orbs, and gradient blobs remain prohibited.
   useful copy and an action.
 - Apply the same semantic treatment to badges, meters, dialogs, forms, plan illustrations,
   checkout processing/success/failure states, error surfaces, and navigation states.
+- The shared quota visual is an upright rounded vault derived from the approved light/dark quota asset,
+  not a transparent cube or isolated dial. Its inner storage level fills bottom-up from the real quota
+  percentage and changes from slate to warning at 80% and danger at 95%. The dynamic flat SVG fallback
+  preserves the same level and silhouette on mobile, reduced motion, low-core hardware, loading, and
+  Canvas failure.
 - In the signed-in rail, Settings belongs in the bottom account area with a generic account
   depiction. Sign out sits beneath it on `bg-card-muted` with danger-colored text/icon rather than a
   solid destructive fill. Do not advertise the Admin route in ordinary user navigation.
@@ -142,15 +155,26 @@ orbs, and gradient blobs remain prohibited.
   Create/rename use focused pending labels. Move, copy, replace, and Trash confirmations state the
   real backend effect, including hierarchy deletion and the absence of version history.
 - The floating file-operation dock uses glass only at that permitted overlay surface. It reports real
-  upload/replace transport percentages, indeterminate backend processing, cancellable preview/download,
-  and sequential batch counts. Never fabricate percentages or show Cancel for a submitted server write.
+  upload/replace transport percentages, indeterminate backend processing, cancellable downloads, and
+  sequential batch counts. Preview preparation belongs inside the preview dialog and never creates a
+  dock entry. Long labels truncate, the dock is capped to the viewport with no horizontal scroll, and
+  progress remains fully visible. Completed/cancelled entries auto-dismiss after three seconds; failed
+  entries remain visible for retry or explicit dismissal. Never fabricate percentages or show Cancel
+  for a submitted server write.
+- Upload and replace advertise an exact 100 MiB maximum file size. The API request envelope is 101 MiB
+  solely for multipart overhead; UI validation and backend file validation remain aligned at 100 MiB.
 - Recycle Bin uses compact responsive rows rather than dashboard metrics. Each row keeps a 44px selection
   target and menu, displays only API-provided deletion/removal dates, and uses typed confirmation before
-  permanent deletion. Folder copy must name its hierarchy effect. Bulk restore/delete is indeterminate
-  in the shared operation dock and offers Stop queued rather than aborting the submitted request.
+  permanent deletion. A deleted folder is the only visible row for its complete deleted hierarchy;
+  descendant folders/files are neither browsable nor independently actionable while that parent remains
+  deleted. Folder copy must name its hierarchy effect. Bulk restore/delete is indeterminate in the shared
+  operation dock and offers Stop queued rather than aborting the submitted request.
 - Sharing management uses compact link rows and explicit response facts: `Not revoked` or `Revoked`,
   creation time, and API-provided expiry. Never derive `Active`, expose identifiers in place of missing
   names, or render/copy a token outside the focused creation workflow.
+- The Share dialog is always `min-w-0`, viewport-capped, and horizontally clipped. Its native file select,
+  generated-link field, form, and labels remain within the card at 360px; long selected filenames and URLs
+  truncate rather than forcing a left-to-right scrollbar.
 - The anonymous share viewer uses minimal branded chrome, generic file copy, and the shared safe-preview
   whitelist. Unsupported response types are download-only; preparation and transfer progress stay honest,
   cancellable, and keyboard reachable.
@@ -184,9 +208,10 @@ orbs, and gradient blobs remain prohibited.
 - User management supports local name/email/status filtering of the complete returned collection, exact user
   detail, storage allocation, subscription history, and confirmed activation/deactivation. Do not infer or
   display a user role because `AdminUserDto` does not return one.
-- Plan management describes the list as the active catalogue. Deactivation is confirmed and explicitly warns
-  that the plan leaves the discoverable list; never pretend inactive plans can be listed by the current API.
-  New plans are submitted active so the administrator does not create a record the list cannot rediscover.
+- Plan management consumes the role-restricted all-status catalogue, never the anonymous active-only read.
+  Provide local All/Active/Inactive filters and an honest shown/total count. Active plans expose confirmed
+  Deactivate; inactive plans expose confirmed Activate. New plans remain active by default, while editing an
+  inactive plan preserves its returned status unless the explicit activation action is used.
 - Subscriptions are read-only. Compose user display names from the user list when available and show neutral
   unavailable/loading copy if that independent lookup fails. Status, plan, price, billing, dates, and grace
   period come only from the response.
@@ -226,18 +251,22 @@ orbs, and gradient blobs remain prohibited.
 - Keep forms and functionality independent from 3D.
 - Landing vault: graphite frame, soft-white/zinc door, silver dial, burgundy hub.
 - Auth key: graphite dial, zinc key and wheel, burgundy hub.
-- Quota volume: zinc shell; midnight-slate normal fill, amber warning fill at 80%+, and
-  danger/burgundy critical fill at 95%+.
+- Quota volume: upright rounded zinc vault matching the approved asset; visible bottom-up midnight-slate
+  fill, amber warning fill at 80%+, danger/burgundy critical fill at 95%+, and a dial that stays legible
+  above the level.
 - Empty file manager: one zinc folder with burgundy tab, rendered only when the current folder is truly
   empty. It never appears in populated grids, dialogs, the folder tree, or Workspace Home.
 - Materials and lighting consume theme-derived tokens. Preserve the existing geometry and motion.
 - Every scene remains lazy and demand-rendered where possible, and uses its matching light/dark
-  fallback on mobile, reduced motion, low-core hardware, loading, or Canvas failure.
-- Active fallbacks are `landing-vault-fallback-light-v3.png`,
+  fallback on mobile, reduced motion, low-core hardware, loading, or Canvas failure. The quota fallback
+  is a code-native, theme-token SVG based on the approved assets so it can reflect the API percentage
+  without WebGL; reduced motion suppresses its transition.
+- Active static fallbacks are `landing-vault-fallback-light-v3.png`,
   `landing-vault-fallback-dark-v3.png`, `auth-key-fallback.svg`,
-  `auth-key-fallback-dark-v3.svg`, `quota-vault-fallback.svg`,
-  `quota-vault-fallback-dark-v3.svg`, `folder-empty-fallback.svg`, and
-  `folder-empty-fallback-dark.svg`.
+  `auth-key-fallback-dark-v3.svg`, `folder-empty-fallback.svg`, and
+  `folder-empty-fallback-dark.svg`. `quota-vault-fallback.svg` and
+  `quota-vault-fallback-dark-v3.svg` remain the approved source references for the live-percentage,
+  code-native quota fallback rather than displaying a fixed, misleading fill level.
 
 ## Accessibility and themes
 
