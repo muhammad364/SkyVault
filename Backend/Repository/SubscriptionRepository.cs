@@ -25,12 +25,12 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task<IEnumerable<Subscription>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Subscriptions.Where(s => s.Userid == userId).ToListAsync(cancellationToken);
+        return await _dbContext.Subscriptions.AsNoTracking().Include(s => s.Storageplan).Where(s => s.Userid == userId).OrderByDescending(s => s.Startdate).ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Subscription>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Subscriptions.ToListAsync(cancellationToken);
+        return await _dbContext.Subscriptions.AsNoTracking().Include(s => s.User).Include(s => s.Storageplan).ToListAsync(cancellationToken);
     }
 
     public void Update(Subscription subscription)
