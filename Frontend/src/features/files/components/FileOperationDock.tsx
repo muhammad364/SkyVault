@@ -1,4 +1,5 @@
 import { Check, CircleStop, LoaderCircle, RotateCcw, Trash2, X } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { useFileOperationsStore } from '@/features/files/store/fileOperations.store'
 
@@ -24,14 +25,54 @@ export function FileOperationDock() {
   const stopQueued = useFileOperationsStore((state) => state.stopQueued)
   const remove = useFileOperationsStore((state) => state.remove)
   const clearFinished = useFileOperationsStore((state) => state.clearFinished)
+  const dismissalTimers = useRef(new Map<string, number>())
 
-  if (operations.length === 0) return null
+  useEffect(() => {
+    const dismissibleIds = new Set(
+      operations
+        .filter(
+          (operation) =>
+            ['completed', 'cancelled'].includes(operation.status) ||
+            (operation.kind === 'preview' && operation.status === 'failed'),
+        )
+        .map((operation) => operation.id),
+    )
 
-  const hasFinished = operations.some((operation) => !activeStatuses.includes(operation.status))
+    dismissibleIds.forEach((id) => {
+      if (dismissalTimers.current.has(id)) return
+      const timer = window.setTimeout(() => {
+        dismissalTimers.current.delete(id)
+        remove(id)
+      }, 3000)
+      dismissalTimers.current.set(id, timer)
+    })
+
+    dismissalTimers.current.forEach((timer, id) => {
+      if (operations.some((operation) => operation.id === id)) return
+      window.clearTimeout(timer)
+      dismissalTimers.current.delete(id)
+    })
+  }, [operations, remove])
+
+  useEffect(
+    () => () => {
+      dismissalTimers.current.forEach((timer) => window.clearTimeout(timer))
+      dismissalTimers.current.clear()
+    },
+    [],
+  )
+
+  const visibleOperations = operations.filter((operation) => operation.kind !== 'preview')
+
+  if (visibleOperations.length === 0) return null
+
+  const hasFinished = visibleOperations.some(
+    (operation) => !activeStatuses.includes(operation.status),
+  )
 
   return (
     <aside
-      className="fixed inset-x-3 bottom-20 z-40 ml-auto max-h-[min(26rem,60dvh)] max-w-md overflow-y-auto rounded-xl border border-border bg-card/95 p-3 shadow-float backdrop-blur md:bottom-5 md:right-5"
+      className="fixed inset-x-3 bottom-20 z-40 ml-auto max-h-[min(26rem,60dvh)] w-[calc(100vw-1.5rem)] max-w-md overflow-x-hidden overflow-y-auto rounded-xl border border-border bg-card/95 p-3 shadow-float backdrop-blur md:inset-x-auto md:bottom-5 md:right-5 md:w-[min(28rem,calc(100vw-2.5rem))]"
       aria-label="File operations"
       aria-live="polite"
     >
@@ -47,7 +88,7 @@ export function FileOperationDock() {
         ) : null}
       </div>
       <ul className="grid gap-2">
-        {operations.map((operation) => {
+        {visibleOperations.map((operation) => {
           const active = activeStatuses.includes(operation.status)
           return (
             <li key={operation.id} className="min-w-0 overflow-hidden rounded-lg bg-card-muted p-3">

@@ -105,7 +105,7 @@ export function ShareLinkDialog({
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
-      <DialogContent>
+      <DialogContent className="min-w-0 max-w-full overflow-x-hidden md:w-[calc(100vw-2rem)] md:max-w-lg">
         <DialogHeader>
           <DialogTitle>
             {generatedUrl ? 'Your view-only link is ready' : 'Share a file'}
@@ -117,7 +117,7 @@ export function ShareLinkDialog({
           </DialogDescription>
         </DialogHeader>
         {generatedUrl ? (
-          <div className="mt-5 grid gap-4">
+          <div className="mt-5 grid min-w-0 gap-4 overflow-hidden">
             <label
               className="grid gap-2 text-sm font-semibold text-foreground"
               htmlFor="generated-share-link"
@@ -125,6 +125,7 @@ export function ShareLinkDialog({
               Share link
               <Input
                 id="generated-share-link"
+                className="min-w-0 truncate"
                 readOnly
                 value={generatedUrl}
                 onFocus={(event) => event.currentTarget.select()}
@@ -150,15 +151,19 @@ export function ShareLinkDialog({
             </p>
           </div>
         ) : (
-          <form className="mt-5 grid gap-4" onSubmit={handleSubmit(submit)} noValidate>
+          <form
+            className="mt-5 grid min-w-0 gap-4 overflow-hidden"
+            onSubmit={handleSubmit(submit)}
+            noValidate
+          >
             <label
-              className="grid gap-2 text-sm font-semibold text-foreground"
+              className="grid min-w-0 gap-2 text-sm font-semibold text-foreground"
               htmlFor="share-file-id"
             >
               File
               <select
                 id="share-file-id"
-                className="min-h-11 rounded-sm border border-border bg-card px-3 text-base text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="block min-h-11 w-full min-w-0 max-w-full truncate rounded-sm border border-border bg-card px-3 text-base text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 {...register('fileId')}
               >
                 {files.map((file) => (
@@ -172,7 +177,7 @@ export function ShareLinkDialog({
               <p className="text-sm text-danger">{errors.fileId.message}</p>
             ) : null}
             <label
-              className="grid gap-2 text-sm font-semibold text-foreground"
+              className="grid min-w-0 gap-2 text-sm font-semibold text-foreground"
               htmlFor="share-expiry"
             >
               Expiration <span className="font-normal text-muted-foreground">Optional</span>

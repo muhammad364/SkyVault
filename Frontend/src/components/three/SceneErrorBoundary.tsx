@@ -5,6 +5,7 @@ interface SceneErrorBoundaryProps {
   label: string
   imageSrc?: string
   darkImageSrc?: string
+  fallback?: ReactNode
   children: ReactNode
 }
 
@@ -24,6 +25,8 @@ export class SceneErrorBoundary extends Component<
 
   render() {
     if (this.state.hasError) {
+      if (this.props.fallback) return this.props.fallback
+
       return (
         <SceneFallback
           label={this.props.label}
