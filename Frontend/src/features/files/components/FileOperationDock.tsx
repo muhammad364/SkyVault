@@ -50,7 +50,7 @@ export function FileOperationDock() {
         {operations.map((operation) => {
           const active = activeStatuses.includes(operation.status)
           return (
-            <li key={operation.id} className="rounded-lg bg-card-muted p-3">
+            <li key={operation.id} className="min-w-0 overflow-hidden rounded-lg bg-card-muted p-3">
               <div className="flex min-w-0 items-center gap-3">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-card text-primary">
                   {operation.status === 'completed' ? (
@@ -66,7 +66,10 @@ export function FileOperationDock() {
                   )}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-foreground">
+                  <p
+                    className="truncate text-sm font-semibold text-foreground"
+                    title={operation.label}
+                  >
                     {operation.label}
                   </p>
                   <p className="text-xs text-muted-foreground">

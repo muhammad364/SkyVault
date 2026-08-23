@@ -48,14 +48,17 @@ public class RecycleBinService : IRecycleBinService
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var folders = await _recycleBinRepository.GetDeletedFoldersByOwnerAsync(
-            userId,
-            cancellationToken);
-        var files = await _recycleBinRepository.GetDeletedFilesByOwnerAsync(
-            userId,
-            cancellationToken);
+        var folders = (await _recycleBinRepository.GetDeletedFoldersByOwnerAsync(userId, cancellationToken)).ToList();
+        var files = (await _recycleBinRepository.GetDeletedFilesByOwnerAsync(userId,cancellationToken)).ToList();
+        var deletedFolderIds = folders.Select(folder => folder.Folderid).ToHashSet();
 
-        return folders.Select(folder => new RecycleBinItemDto
+        // A deleted folder represents its complete hierarchy in the Recycle Bin.
+        // Its descendants retain their parent links so restore and permanent-delete
+        // can still process the tree, but they are not independent Recycle Bin items.
+        var visibleFolders = folders.Where(folder => !folder.Parentfolderid.HasValue || !deletedFolderIds.Contains(folder.Parentfolderid.Value));
+        var visibleFiles = files.Where(file => !file.Folderid.HasValue || !deletedFolderIds.Contains(file.Folderid.Value));
+
+        return visibleFolders.Select(folder => new RecycleBinItemDto
             {
                 ItemId = folder.Folderid,
                 ItemType = "Folder",
@@ -64,7 +67,7 @@ public class RecycleBinService : IRecycleBinService
                 DeletedAt = folder.Deletedat!.Value,
                 ExpiresAt = folder.Deletedat.Value.Add(_retentionPeriod)
             })
-            .Concat(files.Select(file => new RecycleBinItemDto
+            .Concat(visibleFiles.Select(file => new RecycleBinItemDto
             {
                 ItemId = file.Fileid,
                 ItemType = "File",
@@ -278,6 +281,20 @@ public class RecycleBinService : IRecycleBinService
             throw new KeyNotFoundException("Recycle Bin file not found.");
         }
 
+        if (file.Folderid.HasValue)
+        {
+            var parentFolder = await _folderRepository.GetByIdAsync(
+                file.Folderid.Value,
+                cancellationToken);
+
+            if (parentFolder is not null &&
+                parentFolder.Ownerid == userId &&
+                parentFolder.Isdeleted)
+            {
+                throw new KeyNotFoundException("Recycle Bin file not found.");
+            }
+        }
+
         return file;
     }
 
@@ -291,6 +308,20 @@ public class RecycleBinService : IRecycleBinService
         if (folder is null || folder.Ownerid != userId || !folder.Isdeleted)
         {
             throw new KeyNotFoundException("Recycle Bin folder not found.");
+        }
+
+        if (folder.Parentfolderid.HasValue)
+        {
+            var parentFolder = await _folderRepository.GetByIdAsync(
+                folder.Parentfolderid.Value,
+                cancellationToken);
+
+            if (parentFolder is not null &&
+                parentFolder.Ownerid == userId &&
+                parentFolder.Isdeleted)
+            {
+                throw new KeyNotFoundException("Recycle Bin folder not found.");
+            }
         }
 
         return folder;

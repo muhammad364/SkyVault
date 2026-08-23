@@ -70,18 +70,23 @@ export function RecentFilesTile() {
           </Link>
         </div>
       ) : (
-        <ul className="grid min-w-0 gap-2">
+        <ul className="grid min-w-0 gap-2 overflow-hidden">
           {recentFiles.map((file) => (
-            <li key={file.fileId}>
+            <li key={file.fileId} className="min-w-0 overflow-hidden">
               <Link
-                className="flex min-h-12 min-w-0 items-center gap-3 rounded-md bg-card-muted p-3 hover:shadow-rest"
+                className="flex min-h-12 w-full min-w-0 items-center gap-3 overflow-hidden rounded-md bg-card-muted p-3 hover:shadow-rest"
                 to={fileDestination(file.folderId, file.fileId)}
               >
                 <span className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md bg-brand-soft text-brand">
                   <FileText aria-hidden="true" size={20} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-foreground">{file.fileName}</p>
+                  <p
+                    className="truncate text-sm font-semibold text-foreground"
+                    title={file.fileName}
+                  >
+                    {file.fileName}
+                  </p>
                   <p className="truncate text-sm text-muted-foreground">
                     <span className="font-mono tabular-nums">
                       {formatBytes(file.fileSizeBytes)}

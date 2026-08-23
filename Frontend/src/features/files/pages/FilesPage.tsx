@@ -415,7 +415,7 @@ export default function FilesPage() {
                 <li
                   key={key}
                   className={cn(
-                    'group relative min-w-0 rounded-lg border bg-card transition duration-default ease-vault hover:-translate-y-0.5 hover:shadow-hover motion-reduce:transform-none',
+                    'group relative min-w-0 overflow-hidden rounded-lg border bg-card transition duration-default ease-vault hover:-translate-y-0.5 hover:shadow-hover motion-reduce:transform-none',
                     checked ? 'border-brand shadow-rest' : 'border-border',
                     fileViewMode === 'grid' ? 'p-4' : 'flex items-center gap-3 p-3',
                   )}
@@ -441,7 +441,7 @@ export default function FilesPage() {
                   <button
                     type="button"
                     className={cn(
-                      'min-w-0 text-left focus-visible:rounded-sm',
+                      'max-w-full min-w-0 overflow-hidden text-left focus-visible:rounded-sm',
                       fileViewMode === 'grid'
                         ? 'flex w-full flex-col gap-4 pt-9'
                         : 'flex min-h-11 flex-1 items-center gap-3',
@@ -465,7 +465,10 @@ export default function FilesPage() {
                       )}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-semibold text-foreground">
+                      <span
+                        className="block truncate text-sm font-semibold text-foreground"
+                        title={item.name}
+                      >
                         {item.name}
                       </span>
                       <span className="block truncate font-mono text-xs tabular-nums text-muted-foreground">
