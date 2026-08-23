@@ -1,4 +1,5 @@
 import { Archive, FileText, Folder } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRecycleBinItems } from '@/features/recycle-bin/hooks/useRecycleBinItems'
@@ -99,6 +100,12 @@ export function TrashSummaryTile() {
           )
         })}
       </ul>
+      <Link
+        className="inline-flex min-h-11 items-center justify-center self-start rounded-full bg-card-muted px-4 text-sm font-semibold text-foreground hover:bg-border"
+        to="/vault/trash"
+      >
+        Open Recycle Bin
+      </Link>
     </section>
   )
 }

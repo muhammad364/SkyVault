@@ -34,4 +34,13 @@ export const queryKeys = {
   recycleBin: {
     items: () => [...queryKeys.root, 'recycle-bin', 'items'] as const,
   },
+  search: {
+    all: () => [...queryKeys.root, 'search'] as const,
+    results: (request: {
+      query: string | null
+      fileType: string | null
+      fromDate: string | null
+      toDate: string | null
+    }) => [...queryKeys.root, 'search', 'results', request] as const,
+  },
 }

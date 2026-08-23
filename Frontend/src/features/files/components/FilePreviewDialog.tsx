@@ -11,24 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { useFileOperations } from '@/features/files/components/FileOperationProvider'
 import type { FileManagerItem } from '@/features/files/lib/fileManager.types'
-
-const safeRasterTypes = new Set([
-  'image/avif',
-  'image/bmp',
-  'image/gif',
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-])
-
-function previewKind(type: string) {
-  if (safeRasterTypes.has(type)) return 'image'
-  if (type === 'application/pdf') return 'pdf'
-  if (type === 'text/plain') return 'text'
-  if (type.startsWith('audio/')) return 'audio'
-  if (type.startsWith('video/')) return 'video'
-  return 'unsupported'
-}
+import { previewKind } from '@/features/files/lib/previewKind'
 
 export function FilePreviewDialog({
   item,

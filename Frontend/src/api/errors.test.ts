@@ -1,6 +1,11 @@
 import axios, { type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
 import { describe, expect, it } from 'vitest'
-import { ApiError, normalizeApiError, RequestCancelledError } from '@/api/errors'
+import {
+  ApiError,
+  normalizeApiError,
+  normalizeApiErrorWithBlobPayload,
+  RequestCancelledError,
+} from '@/api/errors'
 
 describe('normalizeApiError', () => {
   it('keeps cancellation separate from application errors', () => {
@@ -70,6 +75,29 @@ describe('normalizeApiError', () => {
     expect(normalized).toMatchObject({
       status: 400,
       code: 'plan_allocation_too_small',
+      message: 'Some details need your attention.',
+    })
+  })
+
+  it('decodes Blob problem details and classifies revoked public links safely', async () => {
+    const config = { headers: new axios.AxiosHeaders() } as InternalAxiosRequestConfig
+    const response: AxiosResponse = {
+      config,
+      data: new Blob(
+        [JSON.stringify({ statusCode: 400, message: 'Share link has been revoked.' })],
+        { type: 'application/json' },
+      ),
+      headers: { 'content-type': 'application/json' },
+      status: 400,
+      statusText: 'Bad Request',
+    }
+    const normalized = await normalizeApiErrorWithBlobPayload(
+      new axios.AxiosError('Bad Request', 'ERR_BAD_REQUEST', config, undefined, response),
+    )
+
+    expect(normalized).toMatchObject({
+      status: 400,
+      code: 'share_link_revoked',
       message: 'Some details need your attention.',
     })
   })

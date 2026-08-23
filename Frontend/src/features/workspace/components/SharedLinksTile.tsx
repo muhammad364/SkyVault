@@ -1,4 +1,5 @@
 import { Link2, ShieldOff } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useOwnShareLinks } from '@/features/sharing/hooks/useOwnShareLinks'
@@ -106,6 +107,12 @@ export function SharedLinksTile() {
           </li>
         ))}
       </ul>
+      <Link
+        className="inline-flex min-h-11 items-center justify-center self-start rounded-full bg-card-muted px-4 text-sm font-semibold text-foreground hover:bg-border"
+        to="/vault/sharing"
+      >
+        Manage shared links
+      </Link>
     </section>
   )
 }

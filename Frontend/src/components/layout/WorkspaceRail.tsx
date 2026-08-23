@@ -5,21 +5,31 @@ import {
   HardDrive,
   Home,
   LogOut,
+  MoreHorizontal,
   Search,
+  Share2,
   Settings,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { BrandMark } from '@/components/brand/BrandMark'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useLogout } from '@/features/account/hooks/useLogout'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { to: '/vault', label: 'Vault', icon: Home, end: true },
-  { to: '/vault/storage', label: 'Storage', icon: HardDrive },
-  { to: '/vault/files', label: 'Files', icon: Folder },
-  { to: '/vault/search', label: 'Search', icon: Search },
-  { to: '/vault/trash', label: 'Trash', icon: Archive },
+  { to: '/vault', label: 'Vault', icon: Home, end: true, desktopOnly: false },
+  { to: '/vault/storage', label: 'Storage', icon: HardDrive, desktopOnly: false },
+  { to: '/vault/files', label: 'Files', icon: Folder, desktopOnly: false },
+  { to: '/vault/sharing', label: 'Shared links', icon: Share2, desktopOnly: true },
+  { to: '/vault/search', label: 'Search', icon: Search, desktopOnly: false },
+  { to: '/vault/trash', label: 'Trash', icon: Archive, desktopOnly: false },
 ]
 
 export function WorkspaceRail() {
@@ -49,6 +59,7 @@ export function WorkspaceRail() {
               className={({ isActive }) =>
                 cn(
                   'relative flex min-h-11 items-center justify-center gap-3 rounded-full px-3 text-sm font-semibold text-muted-foreground transition duration-default ease-vault hover:bg-card-muted hover:text-foreground md:rounded-lg lg:justify-start',
+                  item.desktopOnly && 'hidden md:flex',
                   isActive && 'bg-card-muted text-foreground',
                 )
               }
@@ -69,18 +80,44 @@ export function WorkspaceRail() {
             </NavLink>
           )
         })}
-        <NavLink
-          to="/vault/settings"
-          className={({ isActive }) =>
-            cn(
-              'relative flex min-h-11 items-center justify-center gap-3 rounded-full px-3 text-sm font-semibold text-muted-foreground transition duration-default ease-vault hover:bg-card-muted hover:text-foreground md:hidden',
-              isActive && 'bg-card-muted text-foreground',
-            )
-          }
-        >
-          <Settings aria-hidden="true" size={20} />
-          <span className="sr-only">Account settings</span>
-        </NavLink>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              aria-label="More vault options"
+            >
+              <MoreHorizontal aria-hidden="true" size={20} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="end">
+            <DropdownMenuItem asChild>
+              <NavLink to="/vault/sharing">
+                <Share2 aria-hidden="true" size={18} /> Shared links
+              </NavLink>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <NavLink to="/vault/settings">
+                <Settings aria-hidden="true" size={18} /> Account settings
+              </NavLink>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              destructive
+              disabled={logout.isPending}
+              onSelect={() =>
+                logout.mutate(undefined, {
+                  onSettled: () => navigate('/auth/login', { replace: true }),
+                })
+              }
+            >
+              <LogOut aria-hidden="true" size={18} />{' '}
+              {logout.isPending ? 'Signing out' : 'Sign out'}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="hidden border-t border-border pt-3 md:flex md:flex-col md:gap-2">
         <NavLink

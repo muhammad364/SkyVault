@@ -41,6 +41,7 @@ import type {
 } from '@/features/files/lib/fileManager.types'
 import { useFileOperationsStore } from '@/features/files/store/fileOperations.store'
 import { validateTransferFile } from '@/features/files/validators/fileManager.schemas'
+import { ShareLinkDialog } from '@/features/sharing/components/ShareLinkDialog'
 import { formatBytes, formatRelativeDate } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui.store'
@@ -100,6 +101,7 @@ export default function FilesPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [dialog, setDialog] = useState<FileManagerDialogState>(null)
   const [previewItem, setPreviewItem] = useState<FileManagerItem | null>(null)
+  const [shareItem, setShareItem] = useState<FileManagerItem | null>(null)
   const [navigatorOpen, setNavigatorOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)
   const [uploadNotice, setUploadNotice] = useState<string | null>(null)
@@ -483,6 +485,7 @@ export default function FilesPage() {
                       onMove={(target) => setDialog({ type: 'move', items: [target] })}
                       onCopy={(target) => setDialog({ type: 'copy', items: [target] })}
                       onReplace={(target) => setDialog({ type: 'replace', item: target })}
+                      onShare={setShareItem}
                       onDelete={(target) => setDialog({ type: 'delete', items: [target] })}
                     />
                   </div>
@@ -543,6 +546,14 @@ export default function FilesPage() {
         onClose={() => setDialog(null)}
       />
       <FilePreviewDialog item={previewItem} onClose={() => setPreviewItem(null)} />
+      {shareItem ? (
+        <ShareLinkDialog
+          open
+          files={[{ fileId: shareItem.id, fileName: shareItem.name }]}
+          initialFileId={shareItem.id}
+          onClose={() => setShareItem(null)}
+        />
+      ) : null}
     </div>
   )
 }

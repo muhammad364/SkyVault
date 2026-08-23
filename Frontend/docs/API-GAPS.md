@@ -40,3 +40,26 @@ The authentication API exposes JWT issuance through login but no refresh-token e
 - There is no operation-progress/status contract. Upload/replace percentage is browser-to-API transport progress only; after 100% the UI is indeterminate. Preview/download uses response transfer progress when content length is available. Copy/move/delete is always indeterminate.
 - Backend upload, replace, and copy reserve logical quota/provider capacity before provider and metadata work, without a cancellation-compensation contract. Aborting after server processing begins can leave reservation/provider side effects. The owner-approved frontend safety boundary therefore removes upload/replace Cancel at transport completion, never aborts submitted copy/move/delete, and disables automatic Axios timeouts for file/folder writes. A backend transaction/compensation contract would be required to make later cancellation safe.
 - `@radix-ui/react-dropdown-menu` is the sole new dependency and supplies accessible, shadcn-aligned action and breadcrumb overflow menus without inventing product behavior.
+
+## Phase 7
+
+- The Recycle Bin API exposes only single-file and single-folder restore/permanent-delete endpoints. Bulk work therefore calls those real endpoints sequentially, reports partial completion, and can stop queued work only after the current submitted request.
+- The API exposes no operation percentage/status endpoint and no cancellation-compensation contract. Restore and permanent deletion are indeterminate, submitted writes use no automatic timeout, and permanent provider deletion is never aborted from the client.
+- `MessageResponseDto` does not report the restored destination. The frontend explains the backend's documented original-parent/root fallback before submission but never claims which location was used afterward.
+- A deleted folder's descendants are also returned as individual Recycle Bin items even though folder restore/delete processes its complete hierarchy. The frontend collapses selected descendants beneath selected folders to prevent duplicate or hierarchy-damaging requests.
+- Retention is displayed only from each `RecycleBinItemDto.ExpiresAt`. The frontend does not calculate a fixed retention window, disable restore based on the client clock, or reproduce scheduler behavior.
+
+## Phase 8
+
+- The public share API returns a raw file stream and exposes no public metadata DTO, filename, or separate preview-capability response. The anonymous page therefore uses generic file copy, renders only the response-declared Phase 6 safe content types, and offers download because the explicit public download endpoint exists.
+- `GenerateShareLinkResponseDto.ShareUrl` targets `/api/share/{shareToken}` rather than the SPA. By owner decision, the frontend parses that exact API URL in memory and copies `/share/:shareToken`; the client route calls only the existing anonymous preview/download endpoints and requires production SPA fallback for `/share/*`.
+- Owner link listing includes revoked links and exposes no filename. The management page composes `GET /api/share-links` with `GET /api/files` when available and otherwise shows `File name unavailable`; it never substitutes a file GUID.
+- The response has no explicit expired or active field. The frontend presents only `isRevoked`, `createdAt`, and `expiresAt`, using `Not revoked` rather than `Active` and never inferring expiry validity from the client clock.
+- Generated URLs and tokens are transient in-memory workflow data only. They are never written to Zustand, browser persistence, logs, or Phase 5 summaries; unrecognized raw-stream URLs are not copied as a fallback.
+
+## Phase 9
+
+- The search API supports metadata keyword matching plus only `fileType`, `fromDate`, and `toDate`. It exposes no natural-language mode, embeddings, semantic/content search, size filter, folder filter, or separate discovery contract; the frontend does not advertise or emulate them.
+- The endpoint exposes no pagination, page size, total count, or continuation token. The frontend consumes the returned collection as-is and does not invent client paging.
+- `SearchResultDto` exposes no score, highlights, matched fields, snippets, or match context. Backend result order is preserved exactly and the UI does not calculate relevance or fabricate why a file matched.
+- Search mutations do not exist. Result actions reuse the real Phase 6 file endpoints and Phase 8 share-link endpoint, then invalidate the active parameterized reads.

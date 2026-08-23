@@ -1,6 +1,6 @@
 import type { AxiosInstance } from 'axios'
 import { appConfig, ApiConfigurationError } from '@/app/config'
-import { ApiError, normalizeApiError } from '@/api/errors'
+import { ApiError, normalizeApiErrorWithBlobPayload } from '@/api/errors'
 import { clearClientSession } from '@/features/auth/lib/clearClientSession'
 import { isSessionActive } from '@/features/auth/lib/session'
 import { useAuthStore } from '@/store/auth.store'
@@ -21,9 +21,13 @@ export function attachApiInterceptors(client: AxiosInstance) {
 
   client.interceptors.response.use(
     (response) => response,
-    (error: unknown) => {
-      const normalized = normalizeApiError(error)
-      if (normalized instanceof ApiError && normalized.status === 401 && useAuthStore.getState().session) {
+    async (error: unknown) => {
+      const normalized = await normalizeApiErrorWithBlobPayload(error)
+      if (
+        normalized instanceof ApiError &&
+        normalized.status === 401 &&
+        useAuthStore.getState().session
+      ) {
         void clearClientSession()
       }
       return Promise.reject(normalized)

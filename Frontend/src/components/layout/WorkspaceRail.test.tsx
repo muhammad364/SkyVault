@@ -39,7 +39,12 @@ describe('WorkspaceRail', () => {
     expect(rail).toHaveClass('md:sticky', 'md:h-[calc(100dvh-2.5rem)]', 'md:self-start')
     expect(rail).not.toHaveClass('md:min-h-dvh')
     expect(screen.queryByRole('link', { name: 'Admin' })).not.toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: 'Account settings' })).toHaveLength(2)
+    expect(screen.getByRole('link', { name: 'Account settings' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Shared links' })).toHaveAttribute(
+      'href',
+      '/vault/sharing',
+    )
+    expect(screen.getByRole('button', { name: 'More vault options' })).toBeInTheDocument()
     const signOut = screen.getByRole('button', { name: 'Sign out' })
     expect(signOut).toHaveClass('bg-card-muted', 'text-danger')
     expect(signOut).not.toHaveClass('bg-destructive')

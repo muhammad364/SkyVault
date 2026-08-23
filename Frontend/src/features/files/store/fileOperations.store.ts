@@ -1,7 +1,15 @@
 import { create } from 'zustand'
 
 export type FileOperationKind =
-  'upload' | 'replace' | 'preview' | 'download' | 'copy' | 'move' | 'delete'
+  | 'upload'
+  | 'replace'
+  | 'preview'
+  | 'download'
+  | 'copy'
+  | 'move'
+  | 'delete'
+  | 'restore'
+  | 'permanent-delete'
 
 export type FileOperationStatus =
   'queued' | 'transferring' | 'processing' | 'completed' | 'failed' | 'cancelled'

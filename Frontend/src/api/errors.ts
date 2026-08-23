@@ -32,6 +32,10 @@ export type ApiErrorCode =
   | 'subscription_required'
   | 'subscription_unavailable'
   | 'storage_unavailable'
+  | 'share_link_expired'
+  | 'share_link_invalid'
+  | 'share_link_revoked'
+  | 'shared_file_not_found'
   | 'vault_item_not_found'
   | 'user_not_found'
 
@@ -100,6 +104,10 @@ function apiErrorCode(payload: ApiErrorPayload): ApiErrorCode | undefined {
   ) {
     return 'storage_unavailable'
   }
+  if (message === 'share link has expired.') return 'share_link_expired'
+  if (message === 'share link has been revoked.') return 'share_link_revoked'
+  if (message === 'share link is invalid.') return 'share_link_invalid'
+  if (message === 'shared file not found.') return 'shared_file_not_found'
   if (message.includes('file not found') || message.includes('folder not found')) {
     return 'vault_item_not_found'
   }
@@ -175,4 +183,30 @@ export function normalizeApiError(error: unknown): Error {
   }
 
   return new ApiError(500, safeMessage(500))
+}
+
+export async function normalizeApiErrorWithBlobPayload(error: unknown): Promise<Error> {
+  if (
+    axios.isAxiosError(error) &&
+    error.response?.data instanceof Blob &&
+    error.response.data.type.includes('json')
+  ) {
+    try {
+      const blob = error.response.data
+      const payloadText =
+        typeof blob.text === 'function'
+          ? await blob.text()
+          : await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader()
+              reader.onload = () => resolve(String(reader.result ?? ''))
+              reader.onerror = () => reject(reader.error)
+              reader.readAsText(blob)
+            })
+      error.response.data = JSON.parse(payloadText)
+    } catch {
+      // Fall through to status-only safe normalization.
+    }
+  }
+
+  return normalizeApiError(error)
 }

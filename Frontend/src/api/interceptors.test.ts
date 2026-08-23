@@ -16,7 +16,10 @@ describe('authentication interceptors', () => {
     })
     attachApiInterceptors(client)
     useAuthStore.setState({
-      session: { accessToken: 'active-token', expiresAt: new Date(Date.now() + 60_000).toISOString() },
+      session: {
+        accessToken: 'active-token',
+        expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      },
     })
 
     const response = await client.get('/profile')
@@ -40,13 +43,22 @@ describe('authentication interceptors', () => {
 
     const unauthorizedClient = axios.create({
       adapter: async (config: InternalAxiosRequestConfig) => {
-        const response: AxiosResponse = { config, data: { statusCode: 401, message: 'No access.' }, headers: {}, status: 401, statusText: 'Unauthorized' }
+        const response: AxiosResponse = {
+          config,
+          data: { statusCode: 401, message: 'No access.' },
+          headers: {},
+          status: 401,
+          statusText: 'Unauthorized',
+        }
         throw new AxiosError('Unauthorized', 'ERR_BAD_REQUEST', config, undefined, response)
       },
     })
     attachApiInterceptors(unauthorizedClient)
     useAuthStore.setState({
-      session: { accessToken: 'active-token', expiresAt: new Date(Date.now() + 60_000).toISOString() },
+      session: {
+        accessToken: 'active-token',
+        expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      },
     })
 
     await expect(unauthorizedClient.get('/profile')).rejects.toMatchObject({ status: 401 })

@@ -9,11 +9,11 @@ Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 | 2   | Public Landing & Marketing        | DONE        | 2026-08-20  | Quiet Vault refinement accepted for closure by the owner; automated verification passed.                                             |
 | 3   | Authentication & Account          | DONE        | 2026-08-20  | UC-01 through UC-06 implemented; automated verification passed and the owner completed and accepted the end-to-end frontend journey. |
 | 4   | Storage Subscription & Allocation | DONE        | 2026-08-21  | UC-07 through UC-10 plus owner-approved renewal and cancellation implemented and verified.                                           |
-| 5   | Workspace Home                    | IN_PROGRESS | -           | Owner-approved evolving home; Phase 6 file/folder priority and combined storage overview implemented; Phases 7–8 refinement remains. |
+| 5   | Workspace Home                    | IN_PROGRESS | -           | Owner-approved evolving home; Phase 6 file/folder priority, combined storage overview, and working Phase 7-8 summary destinations implemented. |
 | 6   | Folder & File Management          | IN_PROGRESS | -           | UC-11–UC-19 implementation and automated checks complete; owner-rendered review remains pending.                                     |
-| 7   | Recycle Bin                       | NOT_STARTED | -           |                                                                                                                                      |
-| 8   | File Sharing                      | NOT_STARTED | -           |                                                                                                                                      |
-| 9   | Intelligent Search & Discovery    | NOT_STARTED | -           |                                                                                                                                      |
+| 7   | Recycle Bin                       | IN_PROGRESS | -           | UC-20–UC-23 implementation and automated checks complete; owner-rendered review remains pending.                                     |
+| 8   | File Sharing                      | IN_PROGRESS | -           | Owner and public sharing implementation and automated checks complete; owner-rendered review remains pending.                        |
+| 9   | Metadata Search & Discovery       | IN_PROGRESS | -           | Metadata search, command experience, reused file actions, and automated checks complete; owner-rendered review remains pending.       |
 | 10  | Administration                    | NOT_STARTED | -           | Owner-gated.                                                                                                                         |
 | 11  | Hardening & Handover              | NOT_STARTED | -           |                                                                                                                                      |
 
@@ -172,3 +172,40 @@ Statuses: NOT_STARTED | IN_PROGRESS | DONE | REGRESSED | BLOCKED
 - Dependency: `@radix-ui/react-dropdown-menu` is the sole Phase 6 dependency, chosen for shadcn-aligned keyboard/focus behavior in card action menus and breadcrumb overflow.
 - Backend changes: none. Backend files remained read-only.
 - Verification: TypeScript [x] lint [x] production build [x] full Vitest [x] (56 files / 119 tests) endpoint/service/query/store contracts [x] upload cancellation-boundary transition [x] manager/home UI coverage [x] changed-file formatting [x] diff whitespace check [x] light/dark rendered [ ] responsive 360 [ ] 390 [ ] 768 [ ] 1024 [ ] 1440 [ ] no-h-scroll rendered [ ] keyboard browser pass [ ].
+
+## Phase 7 - Recycle Bin
+
+- Status: IN_PROGRESS - implementation and automated verification complete; owner-rendered viewport and interaction review remains pending.
+- Date: 2026-08-23
+- Contract: `RecycleBinController`, `RecycleBinItemDto`, `MessageResponseDto`, `RecycleBinService`, and the cleanup scheduler were re-read before implementation.
+- Endpoints consumed: existing `GET /api/recycle-bin`; `POST /api/recycle-bin/files/{fileId}/restore`; `POST /api/recycle-bin/folders/{folderId}/restore`; `DELETE /api/recycle-bin/files/{fileId}`; `DELETE /api/recycle-bin/folders/{folderId}`.
+- Frontend implementation: protected lazy `/vault/trash`; independent loading/error/empty/success states; API-date retention presentation; local name/type filtering and API-field sorting; 44px selection and action controls; single and bulk restore; typed permanent-deletion confirmation; and a working Phase 5 Trash destination.
+- Hierarchy and operation safety: selected descendants collapse beneath a selected deleted folder because the backend folder endpoints process the full hierarchy. Restore and permanent deletion run sequentially in the workspace operation dock with honest indeterminate progress, completed counts, partial-failure reporting, and Stop queued. Submitted requests are not aborted and use no automatic Axios timeout.
+- Backend changes: none. Backend files remained read-only.
+- Verification: TypeScript [x] lint [x] production build [x] full Vitest [x] (58 files / 122 tests) exact endpoint/signal/timeout contracts [x] hierarchy collapse [x] Phase 5 Trash link [x] changed-file formatting [x] light/dark rendered [ ] responsive 360 [ ] 390 [ ] 768 [ ] 1024 [ ] 1440 [ ] no-h-scroll rendered [ ] keyboard browser pass [ ].
+
+## Phase 8 - File Sharing
+
+- Status: IN_PROGRESS - implementation and automated verification complete; owner-rendered viewport and interaction review remains pending.
+- Date: 2026-08-23
+- Contract: `ShareLinkController`, `PublicShareController`, `GenerateShareLinkRequestDto`, `GenerateShareLinkResponseDto`, and `MessageResponseDto` were re-read before implementation. The internal `ShareLinkDto` was not mirrored because no controller returns it.
+- Endpoints consumed: existing `GET /api/share-links`; `POST /api/share-links`; `PATCH /api/share-links/{shareLinkId}/revoke`; anonymous `GET /api/share/{shareToken}` preview and `GET /api/share/{shareToken}/download`.
+- Owner management: protected lazy `/vault/sharing`; independent link-list and filename-lookup states; exact optional future-expiry request; memory-only generated URLs; explicit `Not revoked`/`Revoked` presentation; copy and revoke flows; and a Share action on owned-file menus. Filename lookup failure uses neutral copy and never exposes a GUID.
+- Public access: anonymous lazy `/share/:shareToken` is a frontend wrapper around only the real public endpoints. The API-provided raw-stream URL is parsed in memory, the frontend route is copied, safe response types reuse the Phase 6 preview whitelist, unsupported content stays download-only, and Blob URLs are revoked.
+- Transfer and error safety: public preview/download is cancellable, begins indeterminate, reports real response-transfer progress when content length exists, and treats cancellation neutrally. JSON API errors returned as Blob responses are decoded before safe normalization so invalid, expired, revoked, shared-file-not-found, offline, and retry states remain distinct without raw backend text.
+- Shell and home: Shared links is available in the desktop rail; the six-destination mobile dock retains its size through a keyboard-accessible More menu containing Shared links, Account settings, and Sign out. The Phase 5 shared-links summary now has a working `/vault/sharing` destination while continuing to hide share URLs.
+- Backend changes/dependencies: none. Backend files remained read-only and no new dependency or 3D surface was added.
+- Verification: TypeScript [x] lint [x] production build [x] full Vitest [x] (60 files / 127 tests) exact endpoint/body/signal/timeout/Blob contracts [x] frontend URL wrapper [x] Blob error decoding [x] secret non-persistence/non-rendering [x] protected/anonymous routes [x] desktop/mobile navigation [x] Phase 5 Shared links destination [x] changed-file formatting [x] light/dark rendered [ ] responsive 360 [ ] 390 [ ] 768 [ ] 1024 [ ] 1440 [ ] no-h-scroll rendered [ ] keyboard browser pass [ ].
+
+## Phase 9 - Metadata Search & Discovery
+
+- Status: IN_PROGRESS - implementation and automated verification complete; owner-rendered viewport and interaction review remains pending.
+- Date: 2026-08-23
+- Contract: `SearchController`, `SearchRequestDto`, `SearchResultDto`, `SearchService`, and the owned-active-files repository read were re-read before implementation.
+- Endpoint consumed: authorized `GET /api/search` with only nullable `query`, `fileType`, `fromDate`, and `toDate`. Every read forwards React Query's `AbortSignal`; parameter changes abandon stale reads silently.
+- Search page: protected lazy `/vault/search`; compact keyword/type/upload-date form; exact URL hydration and serialization; 300 ms debounce; request-free initial guidance; session-only recent submissions; independent loading/error/retry/no-results/success states; and results displayed in untouched server order with every returned DTO field.
+- Discovery and actions: each result links to the returned folder or root and reuses the Phase 6 preview, download, rename, move, copy, replace, move-to-Trash, selection/bulk, operation-dock, and Phase 8 sharing components. Successful vault work invalidates all parameterized search reads.
+- Command experience: the global command opens through `/`, `Ctrl+K`, or `Cmd+K`; shows up to five session recents or a small server-ordered result preview; supports Arrow Up/Down, Enter, Escape, click, and touch; and routes submitted searches to the full page. Recent searches are capped at five, never persisted, and cleared with sign-out.
+- Scope integrity: no content search, natural-language/AI mode, embeddings, semantic claim, size/folder filter, pagination, score, highlight, match context, or client-side re-ranking was added.
+- Backend changes/dependencies: none. Backend files remained read-only and no new dependency or 3D surface was added.
+- Verification: TypeScript [x] lint [x] production build [x] full Vitest [x] (71 files / 144 tests) exact endpoint/query fields/signal [x] service passthrough [x] stable query keys [x] 300 ms debounce/stale cancellation [x] URL hydration [x] request-free initial state [x] session recents/sign-out cleanup [x] server order [x] route registration [x] keyboard command behavior [x] reused file/share actions [x] search invalidation [x] public-share error-state hardening [x] changed-file formatting [x] light/dark rendered [ ] responsive 360 [ ] 390 [ ] 768 [ ] 1024 [ ] 1440 [ ] no-h-scroll rendered [ ] keyboard browser pass [ ].

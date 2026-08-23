@@ -39,6 +39,10 @@ const RenewSubscriptionPage = lazy(
 )
 const WorkspaceHomePage = lazy(() => import('@/features/workspace/pages/WorkspaceHomePage'))
 const FilesPage = lazy(() => import('@/features/files/pages/FilesPage'))
+const RecycleBinPage = lazy(() => import('@/features/recycle-bin/pages/RecycleBinPage'))
+const SharingPage = lazy(() => import('@/features/sharing/pages/SharingPage'))
+const PublicSharePage = lazy(() => import('@/features/sharing/pages/PublicSharePage'))
+const SearchPage = lazy(() => import('@/features/search/pages/SearchPage'))
 
 function withSuspense(element: JSX.Element, fallback: JSX.Element = <PageSkeleton />) {
   return <Suspense fallback={fallback}>{element}</Suspense>
@@ -55,6 +59,11 @@ export const router = createBrowserRouter(
     {
       path: '/design-system',
       element: withSuspense(<DesignSystemPage />),
+      errorElement: <RouteErrorFallback />,
+    },
+    {
+      path: '/share/:shareToken',
+      element: withSuspense(<PublicSharePage />),
       errorElement: <RouteErrorFallback />,
     },
     {
@@ -100,6 +109,9 @@ export const router = createBrowserRouter(
         { path: 'settings', element: withSuspense(<AccountPage />) },
         { path: 'files', element: withSuspense(<FilesPage />) },
         { path: 'files/:folderId', element: withSuspense(<FilesPage />) },
+        { path: 'trash', element: withSuspense(<RecycleBinPage />) },
+        { path: 'sharing', element: withSuspense(<SharingPage />) },
+        { path: 'search', element: withSuspense(<SearchPage />) },
         { path: '*', element: withSuspense(<PhasePendingPage />) },
       ],
     },

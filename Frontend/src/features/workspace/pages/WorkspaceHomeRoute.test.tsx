@@ -26,4 +26,13 @@ describe('WorkspaceHome route', () => {
       vaultRoute?.children?.find((route) => route.path === 'files/:folderId')?.element,
     ).toBeDefined()
   })
+
+  it('registers the protected phase routes and the anonymous public share wrapper', () => {
+    const routes = router.routes as unknown as RouteObject[]
+    const vaultRoute = routes.find((route) => route.path === '/vault')
+    expect(vaultRoute?.children?.find((route) => route.path === 'trash')?.element).toBeDefined()
+    expect(vaultRoute?.children?.find((route) => route.path === 'sharing')?.element).toBeDefined()
+    expect(vaultRoute?.children?.find((route) => route.path === 'search')?.element).toBeDefined()
+    expect(routes.find((route) => route.path === '/share/:shareToken')?.element).toBeDefined()
+  })
 })

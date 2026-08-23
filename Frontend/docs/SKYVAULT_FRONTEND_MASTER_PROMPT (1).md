@@ -84,7 +84,7 @@ Positioning line for all copy and design decisions:
 | M-04 | File Management                          | `features/files`                    |
 | M-05 | Recycle Bin Management                   | `features/recycle-bin`              |
 | M-06 | File Sharing (secure, view-only links)   | `features/sharing`                  |
-| M-07 | Intelligent Search & Discovery           | `features/search`                   |
+| M-07 | Metadata Search & Discovery              | `features/search`                   |
 | M-08 | Administration                           | `features/admin`                    |
 
 **Explicitly out of scope (MVP exclusions — do not build UI for these):** mobile apps, real-time
@@ -505,6 +505,11 @@ is not `DONE`.
    the phase report (§6.3).
 9. **Stop.** Do not roll into the next phase. Wait for owner review.
 
+Owner-approved execution exception (2026-08-23): Phases 7–9 may be implemented sequentially in one
+run only after each phase has passed its complete automated gate and its documentation checkpoint.
+Phases 5–9 remain `IN_PROGRESS` until the owner's rendered review; this exception does not permit
+later-phase contracts to be pulled into an earlier checkpoint or any backend change.
+
 Additionally maintained by you: `/frontend/docs/API-GAPS.md` (anything the UI needs that the API
 does not expose) and `/frontend/docs/ADR-001-react-frontend.md`.
 
@@ -591,19 +596,24 @@ information as returned by the API, empty-bin state, bulk restore/delete.
 _Acceptance:_ no permanent deletion without confirmation; restore conflicts surfaced from the API.
 
 **Phase 8 — M-06 File Sharing**
-Create view-only share link, copy link, list active links, revoke link, expiry/limits as the API
-defines, and the **public share-view page** (unauthenticated, minimal chrome, view-only, plus its
-own invalid/expired/revoked/not-found states).
+Create view-only share link, copy link, list returned links, revoke links explicitly reported as not
+revoked, show expiry only as the API defines it, and provide the **public share-view page**
+(unauthenticated, minimal chrome, view-only, plus its own invalid/expired/revoked/not-found states).
+The owner-approved frontend wrapper parses the returned `/api/share/{shareToken}` URL only in memory
+and copies `/share/:shareToken`; that route calls only the real anonymous preview/download endpoints.
+Because the response has no explicit active/expired field, use `Not revoked` and never infer validity.
 _Acceptance:_ the public page never exposes owner data beyond what the response DTO contains; no
 download affordance unless the API allows it.
 
-**Phase 9 — M-07 Intelligent Search & Discovery**
-The command bar as a hero interaction (⌘K / `/`), keyword and natural-language modes, metadata
-filters (type, date, size, folder) exactly as the API supports, ranked results with match context,
-recent searches, debounced querying, cancellation of stale requests, no-results state with guidance,
-and a full search results page with deep-linkable query params.
-_Acceptance:_ filters map to real query parameters; no client-side re-ranking invented; results are
-keyboard navigable end to end.
+**Phase 9 — M-07 Metadata Search & Discovery**
+The command bar as a primary interaction (`Ctrl/Cmd+K` / `/`), metadata keyword query, free-text
+file type/extension, upload-date `fromDate` and `toDate`, session-recent searches, 300 ms debounced
+querying, cancellation of stale requests, no-results guidance, and a full search page with the four
+real parameters deep-linkable in the URL. Preserve the backend result order and reuse completed file
+actions. The owner-approved implemented scope excludes natural-language/AI modes, embeddings, size
+or folder filters, pagination, scores, highlights, and match context because the API exposes none.
+_Acceptance:_ only real filters map to query parameters; no client-side re-ranking or match facts are
+invented; results and the command dialog are keyboard navigable end to end.
 
 **Phase 10 — M-08 Administration** _(gated — build only when the owner explicitly requests it)_
 Admin shell (quieter, denser, same tokens), user management, plan management, platform monitoring

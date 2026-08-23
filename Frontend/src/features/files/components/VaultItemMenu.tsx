@@ -1,4 +1,14 @@
-import { Copy, Download, Ellipsis, Eye, FolderInput, Pencil, RefreshCw, Trash2 } from 'lucide-react'
+import {
+  Copy,
+  Download,
+  Ellipsis,
+  Eye,
+  FolderInput,
+  Pencil,
+  RefreshCw,
+  Share2,
+  Trash2,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -17,6 +27,7 @@ interface VaultItemMenuProps {
   onMove: (item: FileManagerItem) => void
   onCopy: (item: FileManagerItem) => void
   onReplace: (item: FileManagerItem) => void
+  onShare: (item: FileManagerItem) => void
   onDelete: (item: FileManagerItem) => void
 }
 
@@ -28,6 +39,7 @@ export function VaultItemMenu({
   onMove,
   onCopy,
   onReplace,
+  onShare,
   onDelete,
 }: VaultItemMenuProps) {
   return (
@@ -68,6 +80,9 @@ export function VaultItemMenu({
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => onReplace(item)}>
               <RefreshCw aria-hidden="true" size={18} /> Replace contents
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onShare(item)}>
+              <Share2 aria-hidden="true" size={18} /> Share
             </DropdownMenuItem>
           </>
         ) : null}

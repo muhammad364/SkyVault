@@ -144,6 +144,26 @@ orbs, and gradient blobs remain prohibited.
 - The floating file-operation dock uses glass only at that permitted overlay surface. It reports real
   upload/replace transport percentages, indeterminate backend processing, cancellable preview/download,
   and sequential batch counts. Never fabricate percentages or show Cancel for a submitted server write.
+- Recycle Bin uses compact responsive rows rather than dashboard metrics. Each row keeps a 44px selection
+  target and menu, displays only API-provided deletion/removal dates, and uses typed confirmation before
+  permanent deletion. Folder copy must name its hierarchy effect. Bulk restore/delete is indeterminate
+  in the shared operation dock and offers Stop queued rather than aborting the submitted request.
+- Sharing management uses compact link rows and explicit response facts: `Not revoked` or `Revoked`,
+  creation time, and API-provided expiry. Never derive `Active`, expose identifiers in place of missing
+  names, or render/copy a token outside the focused creation workflow.
+- The anonymous share viewer uses minimal branded chrome, generic file copy, and the shared safe-preview
+  whitelist. Unsupported response types are download-only; preparation and transfer progress stay honest,
+  cancellable, and keyboard reachable.
+- Keep Shared links in the desktop rail. On mobile, preserve six 44px dock destinations and place Shared
+  links, Account settings, and Sign out in the accessible More menu instead of adding another fixed tab.
+- The command search stays compact in the workspace header and opens with `/`, `Ctrl+K`, or `Cmd+K`.
+  Its dialog uses a single keyword field, server-ordered preview, session recents, and visible keyboard
+  selection; Arrow keys, Enter, Escape, click, and touch must remain equivalent.
+- Full search uses a compact metadata-filter card followed by responsive file rows. Keep keyword, free-text
+  type/extension, and upload-date fields only. Preserve backend order and show response metadata without
+  scores, highlights, inferred match copy, or AI language.
+- Search result menus and selection reuse the file-manager actions, confirmations, progress dock, and Share
+  dialog. The returned folder name is a 44px location link to root or the exact returned folder route.
 
 ## Motion and scrolling
 

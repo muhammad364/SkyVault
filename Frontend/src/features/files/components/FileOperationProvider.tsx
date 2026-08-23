@@ -9,11 +9,16 @@ import {
   useFileOperationsStore,
 } from '@/features/files/store/fileOperations.store'
 import { filesService } from '@/features/files/services/files.service'
+import { recycleBinService } from '@/features/recycle-bin/services/recycleBin.service'
 
 export interface VaultItemReference {
   id: string
   type: 'file' | 'folder'
   name: string
+}
+
+export interface RecycleBinOperationItem extends VaultItemReference {
+  type: 'file' | 'folder'
 }
 
 interface FileOperationContextValue {
@@ -24,6 +29,8 @@ interface FileOperationContextValue {
   copyFiles: (items: VaultItemReference[], destinationFolderId: string | null) => void
   moveItems: (items: VaultItemReference[], destinationFolderId: string | null) => void
   deleteItems: (items: VaultItemReference[]) => void
+  restoreRecycleBinItems: (items: RecycleBinOperationItem[]) => void
+  permanentlyDeleteRecycleBinItems: (items: RecycleBinOperationItem[]) => void
 }
 
 const FileOperationContext = createContext<FileOperationContextValue | null>(null)
@@ -325,6 +332,66 @@ export function FileOperationProvider({ children }: { children: React.ReactNode 
     [add, queryClient, update],
   )
 
+  const runRecycleBinSequential = useCallback(
+    (kind: 'restore' | 'permanent-delete', items: RecycleBinOperationItem[]) => {
+      const id = operationId()
+      const action = kind === 'restore' ? 'Restore' : 'Permanently delete'
+      add({
+        id,
+        kind,
+        label: `${action} ${items.length} item${items.length === 1 ? '' : 's'}`,
+        status: 'processing',
+        progress: null,
+        cancellable: false,
+        completedCount: 0,
+        totalCount: items.length,
+        targetIds: items.map((item) => item.id),
+      })
+
+      void (async () => {
+        let completedCount = 0
+        try {
+          for (const item of items) {
+            if (
+              useFileOperationsStore.getState().operations.find((op) => op.id === id)?.stopRequested
+            ) {
+              update(id, {
+                status: 'cancelled',
+                completedCount,
+                error: `${completedCount} of ${items.length} completed before queued work stopped.`,
+              })
+              await invalidateVaultReads(queryClient)
+              return
+            }
+
+            if (kind === 'restore') {
+              if (item.type === 'folder') await recycleBinService.restoreFolder(item.id)
+              else await recycleBinService.restoreFile(item.id)
+            } else if (item.type === 'folder') {
+              await recycleBinService.permanentlyDeleteFolder(item.id)
+            } else {
+              await recycleBinService.permanentlyDeleteFile(item.id)
+            }
+
+            completedCount += 1
+            update(id, { completedCount })
+          }
+
+          update(id, { status: 'completed', completedCount })
+          await invalidateVaultReads(queryClient)
+        } catch (error) {
+          update(id, {
+            status: 'failed',
+            completedCount,
+            error: `${completedCount} of ${items.length} completed. ${fileErrorMessage(error, 'The remaining queued work was stopped.') ?? ''}`,
+          })
+          await invalidateVaultReads(queryClient)
+        }
+      })()
+    },
+    [add, queryClient, update],
+  )
+
   const value = useMemo<FileOperationContextValue>(
     () => ({
       uploadFiles,
@@ -334,8 +401,19 @@ export function FileOperationProvider({ children }: { children: React.ReactNode 
       copyFiles,
       moveItems: (items, destinationFolderId) => runSequential('move', items, destinationFolderId),
       deleteItems: (items) => runSequential('delete', items),
+      restoreRecycleBinItems: (items) => runRecycleBinSequential('restore', items),
+      permanentlyDeleteRecycleBinItems: (items) =>
+        runRecycleBinSequential('permanent-delete', items),
     }),
-    [copyFiles, downloadFile, previewFile, replaceFile, runSequential, uploadFiles],
+    [
+      copyFiles,
+      downloadFile,
+      previewFile,
+      replaceFile,
+      runRecycleBinSequential,
+      runSequential,
+      uploadFiles,
+    ],
   )
 
   return <FileOperationContext.Provider value={value}>{children}</FileOperationContext.Provider>

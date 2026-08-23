@@ -8,5 +8,7 @@ export async function invalidateVaultReads(queryClient: QueryClient) {
     queryClient.invalidateQueries({ queryKey: queryKeys.storageQuota.current() }),
     queryClient.invalidateQueries({ queryKey: queryKeys.auth.profile() }),
     queryClient.invalidateQueries({ queryKey: queryKeys.recycleBin.items() }),
+    queryClient.invalidateQueries({ queryKey: queryKeys.sharing.own() }),
+    queryClient.invalidateQueries({ queryKey: queryKeys.search.all() }),
   ])
 }
