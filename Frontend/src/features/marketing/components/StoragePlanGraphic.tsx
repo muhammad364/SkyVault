@@ -6,9 +6,15 @@ interface StoragePlanGraphicProps {
 
 export function StoragePlanGraphic({ storageSizeGb }: StoragePlanGraphicProps) {
   return (
-    <div className="overflow-hidden rounded-lg bg-card-muted p-5" aria-label={`${storageSizeGb} GB secure storage`}>
+    <div
+      className="overflow-hidden rounded-lg bg-card-muted p-5"
+      aria-label={`${storageSizeGb} GB secure storage`}
+    >
       <div className="flex items-center justify-between gap-4">
-        <div className="relative flex h-24 w-28 shrink-0 items-center justify-center" aria-hidden="true">
+        <div
+          className="relative flex h-24 w-28 shrink-0 items-center justify-center"
+          aria-hidden="true"
+        >
           <span className="absolute bottom-2 h-5 w-24 rounded-full bg-canvas-strong" />
           <span className="absolute bottom-5 h-5 w-20 rounded-full bg-primary opacity-60" />
           <span className="absolute bottom-8 h-5 w-16 rounded-full bg-primary" />

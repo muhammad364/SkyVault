@@ -9,7 +9,11 @@ interface DeferredLandingSectionProps {
   tall?: boolean
 }
 
-export function DeferredLandingSection({ label, children, tall = false }: DeferredLandingSectionProps) {
+export function DeferredLandingSection({
+  label,
+  children,
+  tall = false,
+}: DeferredLandingSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null)
   const isNearViewport = useInView(sectionRef, { once: true, margin: '240px 0px' })
   const reducedMotion = useReducedMotion()
@@ -27,7 +31,9 @@ export function DeferredLandingSection({ label, children, tall = false }: Deferr
             {children}
           </motion.div>
         </Suspense>
-      ) : fallback}
+      ) : (
+        fallback
+      )}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -96,26 +96,29 @@ export function AdminStorageAccountDialog({
           </DialogDescription>
         </DialogHeader>
         <form className="mt-5 flex flex-col gap-4" onSubmit={handleSubmit(submit)} noValidate>
-          <AdminSelect
-            id="account-provider"
-            label="Provider"
-            aria-disabled={Boolean(account)}
-            tabIndex={account ? -1 : undefined}
-            className={account ? 'pointer-events-none opacity-70' : undefined}
-            error={errors.providerId?.message}
-            {...register('providerId')}
-          >
-            <option value="">Choose provider</option>
-            {providers
-              .filter(
-                (provider) => provider.isActive || provider.providerId === account?.providerId,
-              )
-              .map((provider) => (
-                <option key={provider.providerId} value={provider.providerId}>
-                  {provider.name} · {provider.providerType}
-                </option>
-              ))}
-          </AdminSelect>
+          <Controller
+            control={control}
+            name="providerId"
+            render={({ field }) => (
+              <AdminSelect
+                id="account-provider"
+                label="Provider"
+                value={field.value}
+                onValueChange={field.onChange}
+                placeholder="Choose provider"
+                disabled={Boolean(account)}
+                error={errors.providerId?.message}
+                options={providers
+                  .filter(
+                    (provider) => provider.isActive || provider.providerId === account?.providerId,
+                  )
+                  .map((provider) => ({
+                    value: provider.providerId,
+                    label: `${provider.name} · ${provider.providerType}`,
+                  }))}
+              />
+            )}
+          />
           <AdminField
             id="account-name"
             label="Account name"

@@ -15,17 +15,30 @@ import type { MessageResponse } from '@/models/common/MessageResponse'
 
 vi.mock('@/features/account/hooks/useChangePassword')
 vi.mock('@/features/account/hooks/useUpdateProfile')
-vi.mock('@/features/auth/lib/clearClientSession', () => ({ clearClientSession: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/features/auth/lib/clearClientSession', () => ({
+  clearClientSession: vi.fn().mockResolvedValue(undefined),
+}))
 
-type ProfileMutate = (request: UpdateUserProfileRequest, options?: MutateOptions<UserProfileResponse, Error, UpdateUserProfileRequest>) => void
-type PasswordMutate = (request: ChangePasswordRequest, options?: MutateOptions<MessageResponse, Error, ChangePasswordRequest>) => void
+type ProfileMutate = (
+  request: UpdateUserProfileRequest,
+  options?: MutateOptions<UserProfileResponse, Error, UpdateUserProfileRequest>,
+) => void
+type PasswordMutate = (
+  request: ChangePasswordRequest,
+  options?: MutateOptions<MessageResponse, Error, ChangePasswordRequest>,
+) => void
 
 const updateMutate = vi.fn<ProfileMutate>()
 const passwordMutate = vi.fn<PasswordMutate>()
 const mutationContext = { client: new QueryClient(), meta: undefined }
 const profile: UserProfileResponse = {
-  userId: 'user-1', firstName: 'Ava', lastName: 'Khan', email: 'ava@example.com',
-  isEmailVerified: true, allocatedStorageBytes: 0, usedStorageBytes: 0,
+  userId: 'user-1',
+  firstName: 'Ava',
+  lastName: 'Khan',
+  email: 'ava@example.com',
+  isEmailVerified: true,
+  allocatedStorageBytes: 0,
+  usedStorageBytes: 0,
 }
 
 describe('account forms', () => {
@@ -33,8 +46,15 @@ describe('account forms', () => {
     updateMutate.mockReset()
     passwordMutate.mockReset()
     vi.mocked(clearClientSession).mockClear()
-    vi.mocked(useUpdateProfile).mockReturnValue({ mutate: updateMutate, isPending: false, isSuccess: false } as unknown as ReturnType<typeof useUpdateProfile>)
-    vi.mocked(useChangePassword).mockReturnValue({ mutate: passwordMutate, isPending: false } as unknown as ReturnType<typeof useChangePassword>)
+    vi.mocked(useUpdateProfile).mockReturnValue({
+      mutate: updateMutate,
+      isPending: false,
+      isSuccess: false,
+    } as unknown as ReturnType<typeof useUpdateProfile>)
+    vi.mocked(useChangePassword).mockReturnValue({
+      mutate: passwordMutate,
+      isPending: false,
+    } as unknown as ReturnType<typeof useChangePassword>)
   })
 
   afterEach(cleanup)
@@ -72,7 +92,10 @@ describe('account forms', () => {
     await user.type(screen.getByLabelText('Confirm new password'), 'new-password')
     await user.click(screen.getByRole('button', { name: 'Change password' }))
 
-    expect(passwordMutate.mock.calls[0]?.[0]).toEqual({ currentPassword: 'old-password', newPassword: 'new-password' })
+    expect(passwordMutate.mock.calls[0]?.[0]).toEqual({
+      currentPassword: 'old-password',
+      newPassword: 'new-password',
+    })
     expect(passwordMutate.mock.calls[0]?.[0]).not.toHaveProperty('confirmPassword')
     await waitFor(() => expect(clearClientSession).toHaveBeenCalled())
     expect(await screen.findByText('Login after password change')).toBeInTheDocument()

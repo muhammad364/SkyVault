@@ -48,7 +48,6 @@ export default function QuotaVolumeScene({ usagePercentage }: QuotaVolumeScenePr
     <>
       <ambientLight intensity={1.1} />
       <directionalLight position={[3, 4, 5]} intensity={1.7} />
-      <directionalLight position={[-3, -1, 4]} intensity={0.55} />
       <group ref={groupRef} rotation={[0.035, -0.075, 0]}>
         <RoundedBox args={[2.2, 2.7, 0.72]} radius={0.3} smoothness={6}>
           <meshStandardMaterial color={zincDoor} metalness={0.12} roughness={0.34} />

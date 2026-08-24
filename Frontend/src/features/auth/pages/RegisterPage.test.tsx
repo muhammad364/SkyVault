@@ -20,7 +20,11 @@ const registerMutate = vi.fn<RegisterMutate>()
 const mutationContext = { client: new QueryClient(), meta: undefined }
 
 function renderPage() {
-  return render(<MemoryRouter><RegisterPage /></MemoryRouter>)
+  return render(
+    <MemoryRouter>
+      <RegisterPage />
+    </MemoryRouter>,
+  )
 }
 
 async function completeForm() {
@@ -36,7 +40,10 @@ async function completeForm() {
 describe('RegisterPage', () => {
   beforeEach(() => {
     registerMutate.mockReset()
-    vi.mocked(useRegister).mockReturnValue({ mutate: registerMutate, isPending: false } as unknown as ReturnType<typeof useRegister>)
+    vi.mocked(useRegister).mockReturnValue({
+      mutate: registerMutate,
+      isPending: false,
+    } as unknown as ReturnType<typeof useRegister>)
   })
 
   afterEach(cleanup)
@@ -47,18 +54,28 @@ describe('RegisterPage', () => {
 
     await waitFor(() => expect(registerMutate).toHaveBeenCalled())
     expect(registerMutate.mock.calls[0]?.[0]).toEqual({
-      firstName: 'Ava', lastName: 'Khan', email: 'ava@example.com', password: 'long-enough',
+      firstName: 'Ava',
+      lastName: 'Khan',
+      email: 'ava@example.com',
+      password: 'long-enough',
     })
     expect(registerMutate.mock.calls[0]?.[0]).not.toHaveProperty('confirmPassword')
   })
 
   it('maps duplicate registration to the email field without exposing server text', async () => {
     registerMutate.mockImplementation((_request, options) => {
-      options?.onError?.(new ApiError(409, 'Safe response', undefined, undefined, 'email_already_registered'), _request, undefined, mutationContext)
+      options?.onError?.(
+        new ApiError(409, 'Safe response', undefined, undefined, 'email_already_registered'),
+        _request,
+        undefined,
+        mutationContext,
+      )
     })
     renderPage()
     await completeForm()
 
-    expect(await screen.findByText('An account already uses this email address.')).toBeInTheDocument()
+    expect(
+      await screen.findByText('An account already uses this email address.'),
+    ).toBeInTheDocument()
   })
 })

@@ -21,11 +21,31 @@ class IntersectionObserverMock implements IntersectionObserver {
 
   disconnect() {}
   observe() {}
-  takeRecords() { return [] }
+  takeRecords() {
+    return []
+  }
   unobserve() {}
 }
 
 Object.defineProperty(globalThis, 'IntersectionObserver', {
   writable: true,
   value: IntersectionObserverMock,
+})
+
+class ResizeObserverMock implements ResizeObserver {
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+}
+
+Object.defineProperty(globalThis, 'ResizeObserver', {
+  writable: true,
+  value: ResizeObserverMock,
+})
+
+Object.defineProperties(HTMLElement.prototype, {
+  hasPointerCapture: { value: () => false },
+  setPointerCapture: { value: () => undefined },
+  releasePointerCapture: { value: () => undefined },
+  scrollIntoView: { value: () => undefined },
 })

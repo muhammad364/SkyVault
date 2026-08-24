@@ -14,8 +14,22 @@ describe('PublicPlansPreview', () => {
   it('renders only plan facts returned by the public plans endpoint', () => {
     mockedUsePublicStoragePlans.mockReturnValue({
       data: [
-        { storagePlanId: 'plan-1', name: 'Basic', storageSizeGb: 4, price: 20, billingCycle: 12, isActive: true },
-        { storagePlanId: 'plan-2', name: 'Student', storageSizeGb: 2, price: 10, billingCycle: 1, isActive: true },
+        {
+          storagePlanId: 'plan-1',
+          name: 'Basic',
+          storageSizeGb: 4,
+          price: 20,
+          billingCycle: 12,
+          isActive: true,
+        },
+        {
+          storagePlanId: 'plan-2',
+          name: 'Student',
+          storageSizeGb: 2,
+          price: 10,
+          billingCycle: 1,
+          isActive: true,
+        },
       ],
       isPending: false,
       isError: false,
@@ -36,7 +50,11 @@ describe('PublicPlansPreview', () => {
     expect(screen.getByText('PKR 10')).toBeInTheDocument()
     expect(screen.getByText('Billed every 12 months')).toBeInTheDocument()
     expect(screen.getByText('Billed every month')).toBeInTheDocument()
-    expect(screen.getAllByText('Private storage, intelligent search, and a calm workspace are included.')).toHaveLength(2)
+    expect(
+      screen.getAllByText(
+        'Private storage, intelligent search, and a calm workspace are included.',
+      ),
+    ).toHaveLength(2)
     expect(screen.getByLabelText('4 GB secure storage')).toBeInTheDocument()
     expect(screen.getByLabelText('2 GB secure storage')).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: 'Sign in to choose' })).toHaveLength(2)
@@ -57,7 +75,9 @@ describe('PublicPlansPreview', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('alert')).toHaveTextContent("We couldn't load the available storage plans right now.")
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      "We couldn't load the available storage plans right now.",
+    )
     expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument()
   })
 })

@@ -2,6 +2,7 @@ import { ListChecks, Search } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Button } from '@/components/ui/button'
+import { DatePicker } from '@/components/ui/date-picker'
 import { AdminAuditDetailDialog } from '@/features/admin/components/AdminAuditDetailDialog'
 import { AdminField } from '@/features/admin/components/AdminField'
 import { AdminPageHeader } from '@/features/admin/components/AdminPageHeader'
@@ -80,20 +81,30 @@ export default function AdminAuditPage() {
           value={action}
           onChange={(event) => setAction(event.target.value)}
         />
-        <AdminField
-          id="audit-from"
-          label="Performed from"
-          type="datetime-local"
-          value={from}
-          onChange={(event) => setFrom(event.target.value)}
-        />
-        <AdminField
-          id="audit-to"
-          label="Performed to"
-          type="datetime-local"
-          value={to}
-          onChange={(event) => setTo(event.target.value)}
-        />
+        <div className="grid min-w-0 gap-2 text-sm font-semibold text-foreground">
+          <span id="audit-from-label">Performed from</span>
+          <DatePicker
+            id="audit-from"
+            aria-labelledby="audit-from-label"
+            kind="datetime-local"
+            defaultTime="00:00"
+            max={to || undefined}
+            value={from}
+            onChange={setFrom}
+          />
+        </div>
+        <div className="grid min-w-0 gap-2 text-sm font-semibold text-foreground">
+          <span id="audit-to-label">Performed to</span>
+          <DatePicker
+            id="audit-to"
+            aria-labelledby="audit-to-label"
+            kind="datetime-local"
+            defaultTime="23:59"
+            min={from || undefined}
+            value={to}
+            onChange={setTo}
+          />
+        </div>
         <div className="flex flex-wrap gap-2 md:col-span-2 xl:col-span-4">
           <Button type="submit">
             <Search aria-hidden="true" size={17} /> Apply filters

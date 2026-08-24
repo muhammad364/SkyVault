@@ -677,9 +677,31 @@ All/Active/Inactive filtering is presentation-only, and each returned plan expos
 confirmed Activate or Deactivate action so a deactivated plan is always recoverable.
 
 **Phase 11 — Hardening & Handover** _(only after 0–9 are `DONE`)_
-Accessibility audit pass, contrast verification in both themes, bundle/code-split review, empty/error
-state coverage matrix, `README.md` (setup, env vars, scripts, structure), and a
-`docs/UI-GUIDE.md` documenting the design system as built.
+Phases 5–10 closed on 2026-08-24 from the owner's completed rendered review plus fresh strict
+TypeScript, zero-warning lint, production build, complete Vitest, backend Release compilation, and
+focused August-revision evidence. Phase 11 hardens the established implementation without changing
+its API contracts or reversing owner-approved behavior.
+
+Use shared Quiet Vault Select and date/date-time controls built with the approved
+`@radix-ui/react-select`, `@radix-ui/react-popover`, and `react-day-picker` dependencies. They replace
+native application selects/dates while preserving exact wire values, and provide keyboard/typeahead
+navigation, accessible labels, clear actions, min/max constraints, truncation, internal scrolling,
+and collision-aware mobile placement. Dropdown menus, popovers, dialogs, sheets, command surfaces,
+filters, and long-value layouts must remain viewport-capped and horizontally contained.
+
+Owned-file preview is a protected lazy `/vault/preview/:fileId` page rather than a small dialog. Normal
+navigation keeps the workspace rail and hides the ordinary workspace header; its compact toolbar
+provides a safe return destination, contained filename or neutral fallback, Download, and explicit
+browser Fullscreen entry/exit when supported. Memory-only navigation state provides the immediate
+filename/return path and the existing owned-files read supplies deep-link metadata fallback. A
+dedicated abortable preview hook owns honest preparation/response progress, neutral cancellation,
+Retry, safe errors, and complete Blob URL cleanup. Owned and public preview share one response-declared
+safe-content renderer; unsupported formats stay download-only and preview never enters the operation dock.
+
+Complete the accessibility/containment audit, reduce the quota scene to no more than two lights,
+review lazy routes and production chunks, document the loading/empty/error/cancelled/unauthorized/offline
+coverage matrix, and provide `Frontend/README.md`, `docs/HANDOVER.md`, and the built design/API records.
+Phase 11 remains `IN_PROGRESS` until the owner reviews the newly hardened light/dark and five-viewport UI.
 
 ### 4.3 Definition of Done (applies to every phase)
 

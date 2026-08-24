@@ -13,7 +13,9 @@ describe('ErrorPage', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('heading', { name: 'Something went wrong on our side.' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Something went wrong on our side.' }),
+    ).toBeInTheDocument()
     expect(screen.getByText('Trace trace-123')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /try again/i }))
     expect(onRetry).toHaveBeenCalledOnce()

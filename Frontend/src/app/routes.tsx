@@ -38,6 +38,7 @@ const RenewSubscriptionPage = lazy(
 )
 const WorkspaceHomePage = lazy(() => import('@/features/workspace/pages/WorkspaceHomePage'))
 const FilesPage = lazy(() => import('@/features/files/pages/FilesPage'))
+const FilePreviewPage = lazy(() => import('@/features/files/pages/FilePreviewPage'))
 const RecycleBinPage = lazy(() => import('@/features/recycle-bin/pages/RecycleBinPage'))
 const SharingPage = lazy(() => import('@/features/sharing/pages/SharingPage'))
 const PublicSharePage = lazy(() => import('@/features/sharing/pages/PublicSharePage'))
@@ -117,6 +118,7 @@ export const router = createBrowserRouter(
         { path: 'settings', element: withSuspense(<AccountPage />) },
         { path: 'files', element: withSuspense(<FilesPage />) },
         { path: 'files/:folderId', element: withSuspense(<FilesPage />) },
+        { path: 'preview/:fileId', element: withSuspense(<FilePreviewPage />) },
         { path: 'trash', element: withSuspense(<RecycleBinPage />) },
         { path: 'sharing', element: withSuspense(<SharingPage />) },
         { path: 'search', element: withSuspense(<SearchPage />) },

@@ -1,6 +1,7 @@
-import { forwardRef, type InputHTMLAttributes, type SelectHTMLAttributes } from 'react'
+import { forwardRef, type InputHTMLAttributes } from 'react'
 import { AlertCircle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Select, type SelectOption } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 
 interface AdminFieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -45,32 +46,43 @@ export const AdminField = forwardRef<HTMLInputElement, AdminFieldProps>(function
   )
 })
 
-interface AdminSelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+interface AdminSelectProps {
+  id: string
   label: string
+  value: string
+  onValueChange: (value: string) => void
+  options: SelectOption[]
+  placeholder?: string
   error?: string
+  disabled?: boolean
+  className?: string
 }
 
-export function AdminSelect({ label, error, id, className, children, ...props }: AdminSelectProps) {
+export function AdminSelect({
+  label,
+  value,
+  onValueChange,
+  options,
+  error,
+  id,
+  className,
+  disabled,
+  placeholder,
+}: AdminSelectProps) {
   const messageId = error ? `${id}-message` : undefined
   return (
-    <label
-      className="flex min-w-0 flex-col gap-2 text-sm font-semibold text-foreground"
-      htmlFor={id}
-    >
-      {label}
-      <select
+    <div className="flex min-w-0 flex-col gap-2 text-sm font-semibold text-foreground">
+      <span id={`${id}-label`}>{label}</span>
+      <Select
         id={id}
-        aria-invalid={Boolean(error)}
-        aria-describedby={messageId}
-        className={cn(
-          'min-h-11 w-full min-w-0 rounded-md border border-border bg-card px-3 text-base text-foreground shadow-rest sm:text-sm',
-          error && 'border-danger',
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </select>
+        aria-labelledby={`${id}-label`}
+        value={value}
+        onValueChange={onValueChange}
+        options={options}
+        placeholder={placeholder}
+        disabled={disabled}
+        className={cn(error && 'border-danger', className)}
+      />
       {error ? (
         <span
           id={messageId}
@@ -80,6 +92,6 @@ export function AdminSelect({ label, error, id, className, children, ...props }:
           <AlertCircle aria-hidden="true" size={14} /> {error}
         </span>
       ) : null}
-    </label>
+    </div>
   )
 }

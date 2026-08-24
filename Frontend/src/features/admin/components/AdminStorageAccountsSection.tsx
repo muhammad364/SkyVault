@@ -1,6 +1,7 @@
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { Select } from '@/components/ui/select'
 import { AdminConfirmDialog } from '@/features/admin/components/AdminConfirmDialog'
 import {
   AdminSectionError,
@@ -45,21 +46,18 @@ export function AdminStorageAccountsSection() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <label htmlFor="storage-account-filter">
-            <span className="sr-only">Filter storage account status</span>
-            <select
-              id="storage-account-filter"
-              className="min-h-11 rounded-md border border-border bg-card px-3 text-base text-foreground sm:text-sm"
-              value={filter === null ? 'all' : String(filter)}
-              onChange={(event) =>
-                setFilter(event.target.value === 'all' ? null : event.target.value === 'true')
-              }
-            >
-              <option value="all">All statuses</option>
-              <option value="true">Active</option>
-              <option value="false">Inactive</option>
-            </select>
-          </label>
+          <Select
+            id="storage-account-filter"
+            aria-label="Filter storage account status"
+            value={filter === null ? 'all' : String(filter)}
+            onValueChange={(value) => setFilter(value === 'all' ? null : value === 'true')}
+            className="w-40"
+            options={[
+              { value: 'all', label: 'All statuses' },
+              { value: 'true', label: 'Active' },
+              { value: 'false', label: 'Inactive' },
+            ]}
+          />
           <Button
             type="button"
             disabled={!providers.data?.some((provider) => provider.isActive)}

@@ -18,9 +18,6 @@ vi.mock('@/features/files/store/fileOperations.store', () => ({
 vi.mock('@/features/files/components/FileManagerDialogs', () => ({
   FileManagerDialogs: () => null,
 }))
-vi.mock('@/features/files/components/FilePreviewDialog', () => ({
-  FilePreviewDialog: () => null,
-}))
 vi.mock('@/features/sharing/components/ShareLinkDialog', () => ({ ShareLinkDialog: () => null }))
 vi.mock('@/features/search/components/SearchResultsList', () => ({
   SearchResultsList: ({ results }: { results: Array<{ fileId: string; fileName: string }> }) => (
@@ -80,8 +77,8 @@ describe('SearchPage', () => {
 
     expect(screen.getByLabelText('Search words')).toHaveValue('report')
     expect(screen.getByLabelText('File type or extension')).toHaveValue('pdf')
-    expect(screen.getByLabelText('Uploaded from')).toHaveValue('2026-01-01')
-    expect(screen.getByLabelText('Uploaded to')).toHaveValue('2026-12-31')
+    expect(screen.getByLabelText('Uploaded from')).toHaveAttribute('data-value', '2026-01-01')
+    expect(screen.getByLabelText('Uploaded to')).toHaveAttribute('data-value', '2026-12-31')
     expect(useSearchResults).toHaveBeenCalledWith(
       {
         query: 'report',

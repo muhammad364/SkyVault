@@ -4,6 +4,7 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useFileOperations } from '@/features/files/components/FileOperationProvider'
 import { useFileOperationsStore } from '@/features/files/store/fileOperations.store'
@@ -151,31 +152,27 @@ export default function RecycleBinPage() {
                 onChange={(event) => setFilter(event.target.value)}
               />
             </label>
-            <label className="flex min-h-11 items-center rounded-sm border border-border bg-card px-3 text-sm font-medium text-foreground">
-              <span className="sr-only">Item type</span>
-              <select
-                className="min-h-10 bg-transparent outline-none"
-                value={itemType}
-                onChange={(event) => setItemType(event.target.value as ItemTypeFilter)}
-              >
-                <option value="All">All items</option>
-                <option value="File">Files</option>
-                <option value="Folder">Folders</option>
-              </select>
-            </label>
-            <label className="flex min-h-11 items-center rounded-sm border border-border bg-card px-3 text-sm font-medium text-foreground">
-              <span className="sr-only">Sort deleted items</span>
-              <select
-                className="min-h-10 bg-transparent outline-none"
-                value={sortMode}
-                onChange={(event) => setSortMode(event.target.value as SortMode)}
-              >
-                <option value="deleted-desc">Recently deleted</option>
-                <option value="deleted-asc">Oldest deleted</option>
-                <option value="expires-asc">Removal date</option>
-                <option value="name-asc">Name A–Z</option>
-              </select>
-            </label>
+            <Select
+              aria-label="Item type"
+              value={itemType}
+              onValueChange={(value) => setItemType(value as ItemTypeFilter)}
+              options={[
+                { value: 'All', label: 'All items' },
+                { value: 'File', label: 'Files' },
+                { value: 'Folder', label: 'Folders' },
+              ]}
+            />
+            <Select
+              aria-label="Sort deleted items"
+              value={sortMode}
+              onValueChange={(value) => setSortMode(value as SortMode)}
+              options={[
+                { value: 'deleted-desc', label: 'Recently deleted' },
+                { value: 'deleted-asc', label: 'Oldest deleted' },
+                { value: 'expires-asc', label: 'Removal date' },
+                { value: 'name-asc', label: 'Name A–Z' },
+              ]}
+            />
           </div>
 
           {selectedItems.length > 0 ? (

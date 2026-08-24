@@ -20,7 +20,9 @@ describe('GlobalErrorBoundary', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('heading', { name: "We couldn't keep this screen open." })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: "We couldn't keep this screen open." }),
+    ).toBeInTheDocument()
     consoleError.mockRestore()
   })
 })

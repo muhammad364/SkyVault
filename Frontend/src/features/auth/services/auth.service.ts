@@ -7,12 +7,15 @@ import type { ResetPasswordRequest } from '@/models/auth/ResetPasswordRequest'
 import type { VerifyEmailRequest } from '@/models/auth/VerifyEmailRequest'
 
 export const authService = {
-  register: (request: RegisterUserRequest, signal?: AbortSignal) => authApi.register(request, signal),
+  register: (request: RegisterUserRequest, signal?: AbortSignal) =>
+    authApi.register(request, signal),
   login: (request: LoginRequest, signal?: AbortSignal) => authApi.login(request, signal),
-  verifyEmail: (request: VerifyEmailRequest, signal?: AbortSignal) => authApi.verifyEmail(request, signal),
+  verifyEmail: (request: VerifyEmailRequest, signal?: AbortSignal) =>
+    authApi.verifyEmail(request, signal),
   resendVerification: (request: ResendVerificationRequest, signal?: AbortSignal) =>
     authApi.resendVerification(request, signal),
   forgotPassword: (request: ForgotPasswordRequest, signal?: AbortSignal) =>
     authApi.forgotPassword(request, signal),
-  resetPassword: (request: ResetPasswordRequest, signal?: AbortSignal) => authApi.resetPassword(request, signal),
+  resetPassword: (request: ResetPasswordRequest, signal?: AbortSignal) =>
+    authApi.resetPassword(request, signal),
 }

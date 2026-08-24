@@ -1,12 +1,14 @@
 import { Moon, Sun } from 'lucide-react'
-import { type ReactNode } from 'react'
+import { type ReactNode, useState } from 'react'
 import { BrandSignature } from '@/components/brand/BrandSignature'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUiStore } from '@/store/ui.store'
 
@@ -47,6 +49,8 @@ function ThemePreview({ theme, children }: { theme: 'light' | 'dark'; children: 
 function DesignSystemPage() {
   const themePreference = useUiStore((state) => state.themePreference)
   const setThemePreference = useUiStore((state) => state.setThemePreference)
+  const [showcaseStatus, setShowcaseStatus] = useState('all')
+  const [showcaseDate, setShowcaseDate] = useState('')
 
   return (
     <main className="min-h-dvh bg-canvas p-3 md:p-5">
@@ -144,6 +148,31 @@ function DesignSystemPage() {
                 />
                 <span className="text-sm text-danger">Check this detail and try again.</span>
               </label>
+            </div>
+            <div className="grid min-w-0 gap-4 md:grid-cols-2">
+              <div className="grid min-w-0 gap-2 text-sm font-medium text-foreground">
+                <span id="design-system-select-label">Status filter</span>
+                <Select
+                  id="design-system-select"
+                  aria-labelledby="design-system-select-label"
+                  value={showcaseStatus}
+                  onValueChange={setShowcaseStatus}
+                  options={[
+                    { value: 'all', label: 'All statuses' },
+                    { value: 'active', label: 'Active' },
+                    { value: 'inactive', label: 'Inactive' },
+                  ]}
+                />
+              </div>
+              <div className="grid min-w-0 gap-2 text-sm font-medium text-foreground">
+                <span id="design-system-date-label">Date filter</span>
+                <DatePicker
+                  id="design-system-date"
+                  aria-labelledby="design-system-date-label"
+                  value={showcaseDate}
+                  onChange={setShowcaseDate}
+                />
+              </div>
             </div>
           </Card>
         </ShowcaseSection>

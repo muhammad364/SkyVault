@@ -11,7 +11,12 @@ import { emailSchema, type EmailValues } from '@/features/auth/validators/auth.s
 
 export default function ForgotPasswordPage() {
   const forgotPassword = useForgotPassword()
-  const { register, handleSubmit, setError, formState: { errors } } = useForm<EmailValues>({
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<EmailValues>({
     resolver: zodResolver(emailSchema),
     defaultValues: { email: '' },
   })
@@ -20,7 +25,9 @@ export default function ForgotPasswordPage() {
     forgotPassword.mutate(values, {
       onError: (error) => {
         if (!applyApiFieldErrors(error, setError, ['email'])) {
-          setError('root', { message: "We couldn't request a reset email right now. Please try again." })
+          setError('root', {
+            message: "We couldn't request a reset email right now. Please try again.",
+          })
         }
       },
     })
@@ -31,15 +38,32 @@ export default function ForgotPasswordPage() {
       eyebrow="Password recovery"
       title="Find your way back."
       description="Enter your email and we will send instructions when the account can receive them."
-      footer={<div className="flex justify-center text-sm"><AuthBackLink /></div>}
+      footer={
+        <div className="flex justify-center text-sm">
+          <AuthBackLink />
+        </div>
+      }
     >
       {forgotPassword.isSuccess ? (
-        <FormNotice tone="success">If that account can receive password email, a message is on its way.</FormNotice>
+        <FormNotice tone="success">
+          If that account can receive password email, a message is on its way.
+        </FormNotice>
       ) : (
         <form className="flex flex-col gap-5" onSubmit={handleSubmit(submit)} noValidate>
-          <AuthFormField id="recovery-email" type="email" label="Email address" autoComplete="email" error={errors.email?.message} {...register('email')} />
+          <AuthFormField
+            id="recovery-email"
+            type="email"
+            label="Email address"
+            autoComplete="email"
+            error={errors.email?.message}
+            {...register('email')}
+          />
           {errors.root?.message ? <FormNotice>{errors.root.message}</FormNotice> : null}
-          <AuthSubmitButton pending={forgotPassword.isPending} idleLabel="Send reset instructions" pendingLabel="Sending instructions" />
+          <AuthSubmitButton
+            pending={forgotPassword.isPending}
+            idleLabel="Send reset instructions"
+            pendingLabel="Sending instructions"
+          />
         </form>
       )}
     </AuthCard>

@@ -13,7 +13,12 @@ interface ResendVerificationFormProps {
 
 export function ResendVerificationForm({ defaultEmail = '' }: ResendVerificationFormProps) {
   const resend = useResendVerification()
-  const { register, handleSubmit, setError, formState: { errors } } = useForm<EmailValues>({
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<EmailValues>({
     resolver: zodResolver(emailSchema),
     defaultValues: { email: defaultEmail },
   })
@@ -22,14 +27,20 @@ export function ResendVerificationForm({ defaultEmail = '' }: ResendVerification
     resend.mutate(values, {
       onError: (error) => {
         if (!applyApiFieldErrors(error, setError, ['email'])) {
-          setError('root', { message: "We couldn't request another email right now. Please try again." })
+          setError('root', {
+            message: "We couldn't request another email right now. Please try again.",
+          })
         }
       },
     })
   }
 
   if (resend.isSuccess) {
-    return <FormNotice tone="success">If that account can receive verification email, a message is on its way.</FormNotice>
+    return (
+      <FormNotice tone="success">
+        If that account can receive verification email, a message is on its way.
+      </FormNotice>
+    )
   }
 
   return (
@@ -43,7 +54,11 @@ export function ResendVerificationForm({ defaultEmail = '' }: ResendVerification
         {...register('email')}
       />
       {errors.root?.message ? <FormNotice>{errors.root.message}</FormNotice> : null}
-      <AuthSubmitButton pending={resend.isPending} idleLabel="Send another email" pendingLabel="Sending email" />
+      <AuthSubmitButton
+        pending={resend.isPending}
+        idleLabel="Send another email"
+        pendingLabel="Sending email"
+      />
     </form>
   )
 }

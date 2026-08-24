@@ -10,30 +10,44 @@ import { applyApiFieldErrors } from '@/features/auth/lib/applyApiFieldErrors'
 import { authErrorMessage } from '@/features/auth/lib/authErrorMessage'
 import { useUrlToken } from '@/features/auth/lib/useUrlToken'
 import { useResetPassword } from '@/features/auth/hooks/useResetPassword'
-import { resetPasswordSchema, type ResetPasswordValues } from '@/features/auth/validators/auth.schemas'
+import {
+  resetPasswordSchema,
+  type ResetPasswordValues,
+} from '@/features/auth/validators/auth.schemas'
 
 export default function ResetPasswordPage() {
   const token = useUrlToken()
   const resetPassword = useResetPassword()
   const navigate = useNavigate()
-  const { register, handleSubmit, setError, formState: { errors } } = useForm<ResetPasswordValues>({
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: { newPassword: '', confirmPassword: '' },
   })
 
   const submit = (values: ResetPasswordValues) => {
     if (!token) return
-    resetPassword.mutate({ token, newPassword: values.newPassword }, {
-      onSuccess: () => navigate('/auth/login', {
-        replace: true,
-        state: { notice: 'Your password has been updated. Sign in with your new password.' },
-      }),
-      onError: (error) => {
-        if (!applyApiFieldErrors(error, setError, ['newPassword'])) {
-          setError('root', { message: authErrorMessage(error, "We couldn't update your password.") })
-        }
+    resetPassword.mutate(
+      { token, newPassword: values.newPassword },
+      {
+        onSuccess: () =>
+          navigate('/auth/login', {
+            replace: true,
+            state: { notice: 'Your password has been updated. Sign in with your new password.' },
+          }),
+        onError: (error) => {
+          if (!applyApiFieldErrors(error, setError, ['newPassword'])) {
+            setError('root', {
+              message: authErrorMessage(error, "We couldn't update your password."),
+            })
+          }
+        },
       },
-    })
+    )
   }
 
   return (
@@ -41,21 +55,42 @@ export default function ResetPasswordPage() {
       eyebrow="Password reset"
       title="Choose a new key."
       description="Create a new password for your SkyVault account."
-      footer={(
+      footer={
         <div className="flex flex-col items-center gap-3 text-sm">
           <AuthBackLink />
-          <Link className="font-semibold text-primary hover:underline" to="/auth/forgot-password">Request another reset email</Link>
+          <Link className="font-semibold text-primary hover:underline" to="/auth/forgot-password">
+            Request another reset email
+          </Link>
         </div>
-      )}
+      }
     >
       {!token ? (
-        <FormNotice>This reset link does not contain a token. Request a new reset email.</FormNotice>
+        <FormNotice>
+          This reset link does not contain a token. Request a new reset email.
+        </FormNotice>
       ) : (
         <form className="flex flex-col gap-5" onSubmit={handleSubmit(submit)} noValidate>
-          <PasswordField id="new-password" label="New password" autoComplete="new-password" hint="Use 8 to 100 characters." error={errors.newPassword?.message} {...register('newPassword')} />
-          <PasswordField id="confirm-new-password" label="Confirm new password" autoComplete="new-password" error={errors.confirmPassword?.message} {...register('confirmPassword')} />
+          <PasswordField
+            id="new-password"
+            label="New password"
+            autoComplete="new-password"
+            hint="Use 8 to 100 characters."
+            error={errors.newPassword?.message}
+            {...register('newPassword')}
+          />
+          <PasswordField
+            id="confirm-new-password"
+            label="Confirm new password"
+            autoComplete="new-password"
+            error={errors.confirmPassword?.message}
+            {...register('confirmPassword')}
+          />
           {errors.root?.message ? <FormNotice>{errors.root.message}</FormNotice> : null}
-          <AuthSubmitButton pending={resetPassword.isPending} idleLabel="Update password" pendingLabel="Updating password" />
+          <AuthSubmitButton
+            pending={resetPassword.isPending}
+            idleLabel="Update password"
+            pendingLabel="Updating password"
+          />
         </form>
       )}
     </AuthCard>

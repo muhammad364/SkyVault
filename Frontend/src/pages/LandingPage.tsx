@@ -11,7 +11,9 @@ const MarketingHighlights = lazy(() =>
   })),
 )
 const HowItWorks = lazy(() =>
-  import('@/features/marketing/components/HowItWorks').then((module) => ({ default: module.HowItWorks })),
+  import('@/features/marketing/components/HowItWorks').then((module) => ({
+    default: module.HowItWorks,
+  })),
 )
 const PublicPlansPreview = lazy(() =>
   import('@/features/marketing/components/PublicPlansPreview').then((module) => ({

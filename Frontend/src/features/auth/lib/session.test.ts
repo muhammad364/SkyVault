@@ -19,8 +19,23 @@ describe('authentication session', () => {
   })
 
   it('fails closed for malformed roles and expired sessions', () => {
-    expect(createAuthSession({ token: 'malformed', expiresAt: new Date(Date.now() + 60_000).toISOString() }).role).toBeUndefined()
-    expect(createAuthSession({ token: token({ role: 'Owner' }), expiresAt: new Date(Date.now() + 60_000).toISOString() }).role).toBeUndefined()
-    expect(isSessionActive({ accessToken: 'expired', expiresAt: new Date(Date.now() - 1).toISOString() })).toBe(false)
+    expect(
+      createAuthSession({
+        token: 'malformed',
+        expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      }).role,
+    ).toBeUndefined()
+    expect(
+      createAuthSession({
+        token: token({ role: 'Owner' }),
+        expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      }).role,
+    ).toBeUndefined()
+    expect(
+      isSessionActive({
+        accessToken: 'expired',
+        expiresAt: new Date(Date.now() - 1).toISOString(),
+      }),
+    ).toBe(false)
   })
 })

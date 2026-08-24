@@ -1,6 +1,7 @@
 import { RotateCcw, Search } from 'lucide-react'
 import type { FormEvent } from 'react'
 import { Button } from '@/components/ui/button'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Input } from '@/components/ui/input'
 import type { SearchRequest } from '@/models/search/SearchRequest'
 
@@ -55,26 +56,26 @@ export function SearchFilters({
             onChange={(event) => onChange({ ...value, fileType: event.target.value || null })}
           />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-foreground" htmlFor="from-date">
-          Uploaded from
-          <Input
+        <div className="grid min-w-0 gap-2 text-sm font-semibold text-foreground">
+          <span id="from-date-label">Uploaded from</span>
+          <DatePicker
             id="from-date"
-            type="date"
+            aria-labelledby="from-date-label"
             max={value.toDate ?? undefined}
             value={value.fromDate ?? ''}
-            onChange={(event) => onChange({ ...value, fromDate: event.target.value || null })}
+            onChange={(next) => onChange({ ...value, fromDate: next || null })}
           />
-        </label>
-        <label className="grid gap-2 text-sm font-semibold text-foreground" htmlFor="to-date">
-          Uploaded to
-          <Input
+        </div>
+        <div className="grid min-w-0 gap-2 text-sm font-semibold text-foreground">
+          <span id="to-date-label">Uploaded to</span>
+          <DatePicker
             id="to-date"
-            type="date"
+            aria-labelledby="to-date-label"
             min={value.fromDate ?? undefined}
             value={value.toDate ?? ''}
-            onChange={(event) => onChange({ ...value, toDate: event.target.value || null })}
+            onChange={(next) => onChange({ ...value, toDate: next || null })}
           />
-        </label>
+        </div>
       </div>
       {validationError ? (
         <p className="rounded-md bg-danger-soft p-3 text-sm text-danger" role="alert">

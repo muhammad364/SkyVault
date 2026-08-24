@@ -29,18 +29,25 @@ afterEach(cleanup)
 describe('ThreeScene eligibility', () => {
   it('renders the static fallback on mobile without mounting a Canvas', () => {
     const { container } = render(
-      <ThreeScene label="Authentication key and vault dial" fallbackSrc="/brand/auth-key-fallback.svg">
+      <ThreeScene
+        label="Authentication key and vault dial"
+        fallbackSrc="/brand/auth-key-fallback.svg"
+      >
         <span>WebGL scene</span>
       </ThreeScene>,
     )
 
-    expect(screen.getByRole('img', { name: 'Authentication key and vault dial' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('img', { name: 'Authentication key and vault dial' }),
+    ).toBeInTheDocument()
     expect(container.querySelector('canvas')).not.toBeInTheDocument()
     expect(screen.queryByText('WebGL scene')).not.toBeInTheDocument()
   })
 
   it('renders the fallback for reduced motion on a desktop viewport', () => {
-    setMediaMatch((query) => query.includes('min-width') || query.includes('prefers-reduced-motion'))
+    setMediaMatch(
+      (query) => query.includes('min-width') || query.includes('prefers-reduced-motion'),
+    )
     const { container } = render(
       <ThreeScene label="Reduced-motion key" fallbackSrc="/brand/auth-key-fallback.svg">
         <span>WebGL scene</span>

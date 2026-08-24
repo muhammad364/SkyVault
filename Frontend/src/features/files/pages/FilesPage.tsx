@@ -26,11 +26,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyFolderVisual } from '@/features/files/components/EmptyFolderVisual'
 import { FileBreadcrumbs } from '@/features/files/components/FileBreadcrumbs'
 import { FileManagerDialogs } from '@/features/files/components/FileManagerDialogs'
-import { FilePreviewDialog } from '@/features/files/components/FilePreviewDialog'
 import { FolderNavigator } from '@/features/files/components/FolderNavigator'
 import { useFileOperations } from '@/features/files/components/FileOperationProvider'
 import { VaultItemMenu } from '@/features/files/components/VaultItemMenu'
@@ -100,7 +100,6 @@ export default function FilesPage() {
   const [sortMode, setSortMode] = useState<SortMode>('name-asc')
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [dialog, setDialog] = useState<FileManagerDialogState>(null)
-  const [previewItem, setPreviewItem] = useState<FileManagerItem | null>(null)
   const [shareItem, setShareItem] = useState<FileManagerItem | null>(null)
   const [navigatorOpen, setNavigatorOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)
@@ -149,16 +148,6 @@ export default function FilesPage() {
     return sortItems(matching, sortMode)
   }, [allItems, filter, sortMode])
 
-  useEffect(() => {
-    const previewId = searchParams.get('preview')
-    if (!previewId || allItems.length === 0) return
-    const file = allItems.find((item) => item.type === 'file' && item.id === previewId)
-    const next = new URLSearchParams(searchParams)
-    next.delete('preview')
-    setSearchParams(next, { replace: true })
-    if (file) setPreviewItem(file)
-  }, [allItems, searchParams, setSearchParams])
-
   const selectedItems = allItems.filter((item) => selected.has(itemKey(item)))
   const selectedHasFolders = selectedItems.some((item) => item.type === 'folder')
   const activeTargetIds = new Set(
@@ -185,6 +174,16 @@ export default function FilesPage() {
   const openDialog = (next: FileManagerDialogState) => {
     setDialog(next)
     setSelected(new Set())
+  }
+
+  const openPreview = (item: FileManagerItem) => {
+    if (item.type !== 'file') return
+    navigate(`/vault/preview/${item.id}`, {
+      state: {
+        fileName: item.name,
+        returnTo: currentFolderId ? `/vault/files/${currentFolderId}` : '/vault/files',
+      },
+    })
   }
 
   if (contents.isPending) return <FilesPageSkeleton />
@@ -302,20 +301,21 @@ export default function FilesPage() {
                 onChange={(event) => setFilter(event.target.value)}
               />
             </label>
-            <label className="flex min-h-11 items-center gap-2 rounded-sm border border-border bg-card px-3 text-sm font-medium text-foreground">
+            <div className="flex min-w-0 items-center gap-2 text-sm font-medium text-foreground">
               <ArrowDownAZ aria-hidden="true" size={18} />
-              <span className="sr-only">Sort items</span>
-              <select
-                className="min-h-10 bg-transparent outline-none"
+              <Select
+                aria-label="Sort items"
                 value={sortMode}
-                onChange={(event) => setSortMode(event.target.value as SortMode)}
-              >
-                <option value="name-asc">Name A–Z</option>
-                <option value="name-desc">Name Z–A</option>
-                <option value="updated-desc">Newest updated</option>
-                <option value="updated-asc">Oldest updated</option>
-              </select>
-            </label>
+                onValueChange={(value) => setSortMode(value as SortMode)}
+                className="min-w-44"
+                options={[
+                  { value: 'name-asc', label: 'Name A–Z' },
+                  { value: 'name-desc', label: 'Name Z–A' },
+                  { value: 'updated-desc', label: 'Newest updated' },
+                  { value: 'updated-asc', label: 'Oldest updated' },
+                ]}
+              />
+            </div>
             <div className="flex rounded-full bg-card-muted p-1" aria-label="File view">
               <Button
                 variant={fileViewMode === 'grid' ? 'primary' : 'ghost'}
@@ -449,7 +449,7 @@ export default function FilesPage() {
                     onClick={() =>
                       item.type === 'folder'
                         ? navigate(`/vault/files/${item.id}`)
-                        : setPreviewItem(item)
+                        : openPreview(item)
                     }
                   >
                     <span
@@ -482,7 +482,7 @@ export default function FilesPage() {
                   <div className={cn(fileViewMode === 'grid' && 'absolute right-2 top-2')}>
                     <VaultItemMenu
                       item={item}
-                      onPreview={setPreviewItem}
+                      onPreview={openPreview}
                       onDownload={(target) => void operations.downloadFile(target.id, target.name)}
                       onRename={(target) => setDialog({ type: 'rename', item: target })}
                       onMove={(target) => setDialog({ type: 'move', items: [target] })}
@@ -548,7 +548,6 @@ export default function FilesPage() {
         currentFolderId={currentFolderId}
         onClose={() => setDialog(null)}
       />
-      <FilePreviewDialog item={previewItem} onClose={() => setPreviewItem(null)} />
       {shareItem ? (
         <ShareLinkDialog
           open

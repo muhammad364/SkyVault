@@ -13,14 +13,26 @@ afterEach(cleanup)
 
 describe('generic authentication recovery', () => {
   it('uses a generic forgot-password success message', () => {
-    vi.mocked(useForgotPassword).mockReturnValue({ isSuccess: true } as ReturnType<typeof useForgotPassword>)
-    render(<MemoryRouter><ForgotPasswordPage /></MemoryRouter>)
-    expect(screen.getByText('If that account can receive password email, a message is on its way.')).toBeInTheDocument()
+    vi.mocked(useForgotPassword).mockReturnValue({ isSuccess: true } as ReturnType<
+      typeof useForgotPassword
+    >)
+    render(
+      <MemoryRouter>
+        <ForgotPasswordPage />
+      </MemoryRouter>,
+    )
+    expect(
+      screen.getByText('If that account can receive password email, a message is on its way.'),
+    ).toBeInTheDocument()
   })
 
   it('uses a generic resend-verification success message', () => {
-    vi.mocked(useResendVerification).mockReturnValue({ isSuccess: true } as ReturnType<typeof useResendVerification>)
+    vi.mocked(useResendVerification).mockReturnValue({ isSuccess: true } as ReturnType<
+      typeof useResendVerification
+    >)
     render(<ResendVerificationForm />)
-    expect(screen.getByText('If that account can receive verification email, a message is on its way.')).toBeInTheDocument()
+    expect(
+      screen.getByText('If that account can receive verification email, a message is on its way.'),
+    ).toBeInTheDocument()
   })
 })

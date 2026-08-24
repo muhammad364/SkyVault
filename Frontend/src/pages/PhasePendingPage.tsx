@@ -12,7 +12,10 @@ export function PhasePendingPage() {
       />
       <aside className="grid grid-cols-2 gap-4" aria-label="Upcoming vault areas">
         {icons.map((Icon, index) => (
-          <div key={index} className="flex min-h-32 items-center justify-center rounded-lg bg-card p-6 shadow-rest">
+          <div
+            key={index}
+            className="flex min-h-32 items-center justify-center rounded-lg bg-card p-6 shadow-rest"
+          >
             <Icon aria-hidden="true" size={24} className="text-primary" />
           </div>
         ))}

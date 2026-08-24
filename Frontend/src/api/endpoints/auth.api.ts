@@ -16,23 +16,43 @@ const BASE = '/api/auth'
 
 export const authApi = {
   register: (body: RegisterUserRequest, signal?: AbortSignal) =>
-    apiClient.post<RegisterUserResponse>(`${BASE}/register`, body, { signal }).then((response) => response.data),
+    apiClient
+      .post<RegisterUserResponse>(`${BASE}/register`, body, { signal })
+      .then((response) => response.data),
   login: (body: LoginRequest, signal?: AbortSignal) =>
-    apiClient.post<LoginResponse>(`${BASE}/login`, body, { signal }).then((response) => response.data),
+    apiClient
+      .post<LoginResponse>(`${BASE}/login`, body, { signal })
+      .then((response) => response.data),
   verifyEmail: (body: VerifyEmailRequest, signal?: AbortSignal) =>
-    apiClient.post<MessageResponse>(`${BASE}/verify-email`, body, { signal }).then((response) => response.data),
+    apiClient
+      .post<MessageResponse>(`${BASE}/verify-email`, body, { signal })
+      .then((response) => response.data),
   resendVerification: (body: ResendVerificationRequest, signal?: AbortSignal) =>
-    apiClient.post<MessageResponse>(`${BASE}/resend-verification`, body, { signal }).then((response) => response.data),
+    apiClient
+      .post<MessageResponse>(`${BASE}/resend-verification`, body, { signal })
+      .then((response) => response.data),
   forgotPassword: (body: ForgotPasswordRequest, signal?: AbortSignal) =>
-    apiClient.post<MessageResponse>(`${BASE}/forgot-password`, body, { signal }).then((response) => response.data),
+    apiClient
+      .post<MessageResponse>(`${BASE}/forgot-password`, body, { signal })
+      .then((response) => response.data),
   resetPassword: (body: ResetPasswordRequest, signal?: AbortSignal) =>
-    apiClient.post<MessageResponse>(`${BASE}/reset-password`, body, { signal }).then((response) => response.data),
+    apiClient
+      .post<MessageResponse>(`${BASE}/reset-password`, body, { signal })
+      .then((response) => response.data),
   getProfile: (signal?: AbortSignal) =>
-    apiClient.get<UserProfileResponse>(`${BASE}/profile`, { signal }).then((response) => response.data),
+    apiClient
+      .get<UserProfileResponse>(`${BASE}/profile`, { signal })
+      .then((response) => response.data),
   updateProfile: (body: UpdateUserProfileRequest, signal?: AbortSignal) =>
-    apiClient.put<UserProfileResponse>(`${BASE}/profile`, body, { signal }).then((response) => response.data),
+    apiClient
+      .put<UserProfileResponse>(`${BASE}/profile`, body, { signal })
+      .then((response) => response.data),
   changePassword: (body: ChangePasswordRequest, signal?: AbortSignal) =>
-    apiClient.post<MessageResponse>(`${BASE}/change-password`, body, { signal }).then((response) => response.data),
+    apiClient
+      .post<MessageResponse>(`${BASE}/change-password`, body, { signal })
+      .then((response) => response.data),
   logout: (signal?: AbortSignal) =>
-    apiClient.post<MessageResponse>(`${BASE}/logout`, undefined, { signal }).then((response) => response.data),
+    apiClient
+      .post<MessageResponse>(`${BASE}/logout`, undefined, { signal })
+      .then((response) => response.data),
 }

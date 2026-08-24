@@ -1,12 +1,11 @@
 import { Copy, FolderInput, History, Search, Sparkles, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { FileManagerDialogs } from '@/features/files/components/FileManagerDialogs'
-import { FilePreviewDialog } from '@/features/files/components/FilePreviewDialog'
 import { useFileOperations } from '@/features/files/components/FileOperationProvider'
 import type {
   FileManagerDialogState,
@@ -52,6 +51,7 @@ function SearchResultsSkeleton() {
 
 export default function SearchPage() {
   const [params, setParams] = useSearchParams()
+  const navigate = useNavigate()
   const parameterString = params.toString()
   const urlRequest = useMemo(
     () => searchRequestFromParams(new URLSearchParams(parameterString)),
@@ -60,7 +60,6 @@ export default function SearchPage() {
   const [draft, setDraft] = useState(urlRequest)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [dialog, setDialog] = useState<FileManagerDialogState>(null)
-  const [previewItem, setPreviewItem] = useState<FileManagerItem | null>(null)
   const [shareItem, setShareItem] = useState<FileManagerItem | null>(null)
   const operations = useFileOperations()
   const activeOperations = useFileOperationsStore((state) => state.operations)
@@ -80,6 +79,15 @@ export default function SearchPage() {
     hasSearchCriteria(debouncedRequest) && !validationError,
   )
   const requestIsSettling = JSON.stringify(request) !== JSON.stringify(debouncedRequest)
+
+  const openPreview = (item: FileManagerItem) => {
+    navigate(`/vault/preview/${item.id}`, {
+      state: {
+        fileName: item.name,
+        returnTo: `/vault/search${parameterString ? `?${parameterString}` : ''}`,
+      },
+    })
+  }
 
   useEffect(() => setSelected(new Set()), [resultsQuery.data])
 
@@ -233,7 +241,7 @@ export default function SearchPage() {
                   return next
                 })
               }
-              onPreview={setPreviewItem}
+              onPreview={openPreview}
               onDownload={(item) => void operations.downloadFile(item.id, item.name)}
               onRename={(item) => setDialog({ type: 'rename', item })}
               onMove={(item) => setDialog({ type: 'move', items: [item] })}
@@ -247,7 +255,6 @@ export default function SearchPage() {
       )}
 
       <FileManagerDialogs state={dialog} currentFolderId={null} onClose={() => setDialog(null)} />
-      <FilePreviewDialog item={previewItem} onClose={() => setPreviewItem(null)} />
       {shareItem ? (
         <ShareLinkDialog
           open

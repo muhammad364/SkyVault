@@ -16,7 +16,10 @@ vi.mock('@/features/auth/hooks/useResetPassword')
 vi.mock('@/features/auth/hooks/useResendVerification')
 vi.mock('@/features/auth/hooks/useVerifyEmail')
 
-type ResetMutate = (request: ResetPasswordRequest, options?: MutateOptions<MessageResponse, Error, ResetPasswordRequest>) => void
+type ResetMutate = (
+  request: ResetPasswordRequest,
+  options?: MutateOptions<MessageResponse, Error, ResetPasswordRequest>,
+) => void
 type VerifyMutateAsync = (request: VerifyEmailRequest) => Promise<MessageResponse>
 
 const resetMutate = vi.fn<ResetMutate>()
@@ -24,7 +27,12 @@ const verifyMutateAsync = vi.fn<VerifyMutateAsync>()
 
 function LocationProbe() {
   const location = useLocation()
-  return <output aria-label="current location">{location.pathname}{location.search}</output>
+  return (
+    <output aria-label="current location">
+      {location.pathname}
+      {location.search}
+    </output>
+  )
 }
 
 describe('verification and reset token handling', () => {
@@ -32,9 +40,21 @@ describe('verification and reset token handling', () => {
     resetMutate.mockReset()
     verifyMutateAsync.mockReset()
     verifyMutateAsync.mockImplementation(() => new Promise(() => undefined))
-    vi.mocked(useResetPassword).mockReturnValue({ mutate: resetMutate, isPending: false } as unknown as ReturnType<typeof useResetPassword>)
-    vi.mocked(useResendVerification).mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false } as unknown as ReturnType<typeof useResendVerification>)
-    vi.mocked(useVerifyEmail).mockReturnValue({ mutateAsync: verifyMutateAsync, isPending: false, isSuccess: false, error: null } as unknown as ReturnType<typeof useVerifyEmail>)
+    vi.mocked(useResetPassword).mockReturnValue({
+      mutate: resetMutate,
+      isPending: false,
+    } as unknown as ReturnType<typeof useResetPassword>)
+    vi.mocked(useResendVerification).mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isSuccess: false,
+    } as unknown as ReturnType<typeof useResendVerification>)
+    vi.mocked(useVerifyEmail).mockReturnValue({
+      mutateAsync: verifyMutateAsync,
+      isPending: false,
+      isSuccess: false,
+      error: null,
+    } as unknown as ReturnType<typeof useVerifyEmail>)
   })
 
   afterEach(cleanup)
@@ -47,8 +67,12 @@ describe('verification and reset token handling', () => {
       </MemoryRouter>,
     )
 
-    await waitFor(() => expect(verifyMutateAsync).toHaveBeenCalledWith({ token: 'verification-secret' }))
-    await waitFor(() => expect(screen.getByLabelText('current location')).toHaveTextContent('/auth/verify-email'))
+    await waitFor(() =>
+      expect(verifyMutateAsync).toHaveBeenCalledWith({ token: 'verification-secret' }),
+    )
+    await waitFor(() =>
+      expect(screen.getByLabelText('current location')).toHaveTextContent('/auth/verify-email'),
+    )
     expect(screen.getByLabelText('current location')).not.toHaveTextContent('verification-secret')
     expect(verifyMutateAsync).toHaveBeenCalledTimes(1)
   })
@@ -62,22 +86,35 @@ describe('verification and reset token handling', () => {
       </MemoryRouter>,
     )
 
-    await waitFor(() => expect(screen.getByLabelText('current location')).not.toHaveTextContent('reset-secret'))
+    await waitFor(() =>
+      expect(screen.getByLabelText('current location')).not.toHaveTextContent('reset-secret'),
+    )
     expect(resetMutate).not.toHaveBeenCalled()
     await user.type(screen.getByLabelText('New password'), 'new-password')
     await user.type(screen.getByLabelText('Confirm new password'), 'new-password')
     await user.click(screen.getByRole('button', { name: 'Update password' }))
 
     await waitFor(() => expect(resetMutate).toHaveBeenCalled())
-    expect(resetMutate.mock.calls[0]?.[0]).toEqual({ token: 'reset-secret', newPassword: 'new-password' })
+    expect(resetMutate.mock.calls[0]?.[0]).toEqual({
+      token: 'reset-secret',
+      newPassword: 'new-password',
+    })
     expect(resetMutate.mock.calls[0]?.[0]).not.toHaveProperty('confirmPassword')
   })
 
   it('renders real recovery states when tokens are missing', () => {
-    const { unmount } = render(<MemoryRouter initialEntries={['/auth/verify-email']}><VerifyEmailPage /></MemoryRouter>)
+    const { unmount } = render(
+      <MemoryRouter initialEntries={['/auth/verify-email']}>
+        <VerifyEmailPage />
+      </MemoryRouter>,
+    )
     expect(screen.getByText(/does not contain a token/i)).toBeInTheDocument()
     unmount()
-    render(<MemoryRouter initialEntries={['/auth/reset-password']}><ResetPasswordPage /></MemoryRouter>)
+    render(
+      <MemoryRouter initialEntries={['/auth/reset-password']}>
+        <ResetPasswordPage />
+      </MemoryRouter>,
+    )
     expect(screen.getByText(/reset link does not contain a token/i)).toBeInTheDocument()
   })
 })

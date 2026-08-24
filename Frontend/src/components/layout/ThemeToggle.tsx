@@ -14,7 +14,10 @@ export function ThemeToggle({ className }: { className?: string }) {
   const setPreference = useUiStore((state) => state.setThemePreference)
 
   return (
-    <div className={cn('inline-flex items-center gap-1 rounded-full bg-card-muted p-1', className)} aria-label="Theme">
+    <div
+      className={cn('inline-flex items-center gap-1 rounded-full bg-card-muted p-1', className)}
+      aria-label="Theme"
+    >
       {options.map((option) => {
         const Icon = option.icon
         const isActive = preference === option.value

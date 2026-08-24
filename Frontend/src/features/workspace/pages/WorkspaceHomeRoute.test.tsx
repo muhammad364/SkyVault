@@ -25,6 +25,9 @@ describe('WorkspaceHome route', () => {
     expect(
       vaultRoute?.children?.find((route) => route.path === 'files/:folderId')?.element,
     ).toBeDefined()
+    expect(
+      vaultRoute?.children?.find((route) => route.path === 'preview/:fileId')?.element,
+    ).toBeDefined()
   })
 
   it('registers the protected phase routes and the anonymous public share wrapper', () => {

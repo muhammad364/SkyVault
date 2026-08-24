@@ -1,7 +1,14 @@
 import { z } from 'zod'
 
-const name = z.string().trim().min(1, 'This name is required.').max(100, 'Use no more than 100 characters.')
-const password = z.string().min(8, 'Use at least 8 characters.').max(100, 'Use no more than 100 characters.')
+const name = z
+  .string()
+  .trim()
+  .min(1, 'This name is required.')
+  .max(100, 'Use no more than 100 characters.')
+const password = z
+  .string()
+  .min(8, 'Use at least 8 characters.')
+  .max(100, 'Use no more than 100 characters.')
 
 export const profileSchema = z.object({
   firstName: name,

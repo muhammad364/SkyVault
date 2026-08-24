@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 import { AdminPageHeader } from '@/features/admin/components/AdminPageHeader'
 import {
   AdminSectionError,
@@ -68,20 +69,18 @@ export default function AdminSubscriptionsPage() {
             onChange={(event) => setQuery(event.target.value)}
           />
         </label>
-        <label htmlFor="subscription-status-filter">
-          <span className="sr-only">Filter subscription status</span>
-          <select
-            id="subscription-status-filter"
-            className="min-h-11 w-full rounded-md border border-border bg-card px-3 text-base text-foreground sm:text-sm"
-            value={status}
-            onChange={(event) => setStatus(event.target.value)}
-          >
-            <option value="all">All statuses</option>
-            <option value={SubscriptionStatus.Active}>Active</option>
-            <option value={SubscriptionStatus.Expired}>Expired</option>
-            <option value={SubscriptionStatus.Cancelled}>Cancelled</option>
-          </select>
-        </label>
+        <Select
+          id="subscription-status-filter"
+          aria-label="Filter subscription status"
+          value={status}
+          onValueChange={setStatus}
+          options={[
+            { value: 'all', label: 'All statuses' },
+            { value: String(SubscriptionStatus.Active), label: 'Active' },
+            { value: String(SubscriptionStatus.Expired), label: 'Expired' },
+            { value: String(SubscriptionStatus.Cancelled), label: 'Cancelled' },
+          ]}
+        />
       </section>
       {subscriptions.isPending ? (
         <AdminSectionSkeleton rows={5} />

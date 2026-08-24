@@ -24,7 +24,6 @@ export interface RecycleBinOperationItem extends VaultItemReference {
 interface FileOperationContextValue {
   uploadFiles: (files: File[], destinationFolderId: string | null) => void
   replaceFile: (fileId: string, currentName: string, file: File) => void
-  previewFile: (fileId: string, fileName: string) => Promise<Blob | null>
   downloadFile: (fileId: string, fileName: string) => Promise<void>
   copyFiles: (items: VaultItemReference[], destinationFolderId: string | null) => void
   moveItems: (items: VaultItemReference[], destinationFolderId: string | null) => void
@@ -153,13 +152,13 @@ export function FileOperationProvider({ children }: { children: React.ReactNode 
   )
 
   const transferBlob = useCallback(
-    async (kind: 'preview' | 'download', fileId: string, fileName: string) => {
+    async (fileId: string, fileName: string) => {
       const id = operationId()
       const controller = new AbortController()
       add({
         id,
-        kind,
-        label: `${kind === 'preview' ? 'Preview' : 'Download'} ${fileName}`,
+        kind: 'download',
+        label: `Download ${fileName}`,
         status: 'processing',
         progress: null,
         cancellable: true,
@@ -167,8 +166,7 @@ export function FileOperationProvider({ children }: { children: React.ReactNode 
       })
       setController(id, controller)
       try {
-        const request = kind === 'preview' ? filesService.preview : filesService.download
-        const blob = await request(fileId, {
+        const blob = await filesService.download(fileId, {
           signal: controller.signal,
           onDownloadProgress: ({ loaded, total }) => {
             if (!total) return
@@ -199,14 +197,9 @@ export function FileOperationProvider({ children }: { children: React.ReactNode 
     [add, setController, update],
   )
 
-  const previewFile = useCallback(
-    (fileId: string, fileName: string) => transferBlob('preview', fileId, fileName),
-    [transferBlob],
-  )
-
   const downloadFile = useCallback(
     async (fileId: string, fileName: string) => {
-      const blob = await transferBlob('download', fileId, fileName)
+      const blob = await transferBlob(fileId, fileName)
       if (!blob) return
       const url = URL.createObjectURL(blob)
       const anchor = document.createElement('a')
@@ -396,7 +389,6 @@ export function FileOperationProvider({ children }: { children: React.ReactNode 
     () => ({
       uploadFiles,
       replaceFile,
-      previewFile,
       downloadFile,
       copyFiles,
       moveItems: (items, destinationFolderId) => runSequential('move', items, destinationFolderId),
@@ -405,15 +397,7 @@ export function FileOperationProvider({ children }: { children: React.ReactNode 
       permanentlyDeleteRecycleBinItems: (items) =>
         runRecycleBinSequential('permanent-delete', items),
     }),
-    [
-      copyFiles,
-      downloadFile,
-      previewFile,
-      replaceFile,
-      runRecycleBinSequential,
-      runSequential,
-      uploadFiles,
-    ],
+    [copyFiles, downloadFile, replaceFile, runRecycleBinSequential, runSequential, uploadFiles],
   )
 
   return <FileOperationContext.Provider value={value}>{children}</FileOperationContext.Provider>

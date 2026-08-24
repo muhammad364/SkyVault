@@ -90,6 +90,7 @@ describe('Phase 10 endpoint contracts', () => {
       billingCycle: 1,
       isActive: true,
     }
+    await storagePlansApi.getAllPlansForAdmin(controller.signal)
     await storagePlansApi.create(create, controller.signal)
     await storagePlansApi.update('plan-id', create, controller.signal)
     await storagePlansApi.activate('plan-id', controller.signal)
@@ -98,6 +99,9 @@ describe('Phase 10 endpoint contracts', () => {
     await subscriptionsApi.getById('subscription-id', controller.signal)
     await subscriptionsApi.getByUserId('user-id', controller.signal)
 
+    expect(apiClient.get).toHaveBeenCalledWith('/api/storage-plans/admin', {
+      signal: controller.signal,
+    })
     expect(apiClient.post).toHaveBeenCalledWith('/api/storage-plans', create, {
       signal: controller.signal,
       timeout: 0,

@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, Copy, Link2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
+import { DatePicker } from '@/components/ui/date-picker'
 import {
   Dialog,
   DialogContent,
@@ -13,6 +14,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 import { useGenerateShareLink } from '@/features/sharing/hooks/useSharingMutations'
 import { publicShareUrl } from '@/features/sharing/lib/publicShareUrl'
 import { sharingErrorMessage } from '@/features/sharing/lib/sharingErrorMessage'
@@ -38,6 +40,13 @@ const shareLinkSchema = z
 
 type ShareLinkValues = z.infer<typeof shareLinkSchema>
 
+function localDateValue(date: Date) {
+  const year = String(date.getFullYear()).padStart(4, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export function ShareLinkDialog({
   open,
   files,
@@ -53,7 +62,7 @@ export function ShareLinkDialog({
   const [generatedUrl, setGeneratedUrl] = useState<string | null>(null)
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
   const {
-    register,
+    control,
     handleSubmit,
     reset,
     setError,
@@ -156,33 +165,49 @@ export function ShareLinkDialog({
             onSubmit={handleSubmit(submit)}
             noValidate
           >
-            <label
-              className="grid min-w-0 gap-2 text-sm font-semibold text-foreground"
-              htmlFor="share-file-id"
-            >
-              File
-              <select
-                id="share-file-id"
-                className="block min-h-11 w-full min-w-0 max-w-full truncate rounded-sm border border-border bg-card px-3 text-base text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                {...register('fileId')}
-              >
-                {files.map((file) => (
-                  <option key={file.fileId} value={file.fileId}>
-                    {file.fileName}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <div className="grid min-w-0 gap-2 text-sm font-semibold text-foreground">
+              <span id="share-file-label">File</span>
+              <Controller
+                control={control}
+                name="fileId"
+                render={({ field }) => (
+                  <Select
+                    id="share-file-id"
+                    aria-labelledby="share-file-label"
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    options={files.map((file) => ({
+                      value: file.fileId,
+                      label: file.fileName,
+                    }))}
+                    placeholder="Choose a file"
+                  />
+                )}
+              />
+            </div>
             {errors.fileId?.message ? (
               <p className="text-sm text-danger">{errors.fileId.message}</p>
             ) : null}
-            <label
-              className="grid min-w-0 gap-2 text-sm font-semibold text-foreground"
-              htmlFor="share-expiry"
-            >
-              Expiration <span className="font-normal text-muted-foreground">Optional</span>
-              <Input id="share-expiry" type="datetime-local" {...register('expiresAt')} />
-            </label>
+            <div className="grid min-w-0 gap-2 text-sm font-semibold text-foreground">
+              <span id="share-expiry-label">
+                Expiration <span className="font-normal text-muted-foreground">Optional</span>
+              </span>
+              <Controller
+                control={control}
+                name="expiresAt"
+                render={({ field }) => (
+                  <DatePicker
+                    id="share-expiry"
+                    aria-labelledby="share-expiry-label"
+                    kind="datetime-local"
+                    defaultTime="23:59"
+                    min={localDateValue(new Date())}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            </div>
             {errors.expiresAt?.message ? (
               <p className="text-sm text-danger">{errors.expiresAt.message}</p>
             ) : null}

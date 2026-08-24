@@ -4,6 +4,38 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    // These groups keep optional 3D/charts and control libraries out of unrelated route entry work.
+    chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined
+          if (
+            id.includes('/three/') ||
+            id.includes('@react-three') ||
+            id.includes('three-stdlib') ||
+            id.includes('@pmndrs')
+          )
+            return 'three-vendor'
+          if (id.includes('/recharts/') || id.includes('/d3-')) return 'charts-vendor'
+          if (id.includes('@radix-ui')) return 'radix-vendor'
+          if (id.includes('react-day-picker') || id.includes('date-fns')) return 'calendar-vendor'
+          if (id.includes('framer-motion') || id.includes('motion-dom')) return 'motion-vendor'
+          if (id.includes('@tanstack') || id.includes('/axios/') || id.includes('/zustand/'))
+            return 'data-vendor'
+          if (
+            id.includes('/react/') ||
+            id.includes('/react-dom/') ||
+            id.includes('/react-router') ||
+            id.includes('/scheduler/')
+          )
+            return 'react-vendor'
+          return undefined
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

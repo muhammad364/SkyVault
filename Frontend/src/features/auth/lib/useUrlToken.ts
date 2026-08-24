@@ -7,7 +7,8 @@ export function useUrlToken() {
   const [token] = useState(() => new URLSearchParams(location.search).get('token')?.trim() || null)
 
   useEffect(() => {
-    if (token && location.search) navigate(location.pathname, { replace: true, state: location.state })
+    if (token && location.search)
+      navigate(location.pathname, { replace: true, state: location.state })
   }, [location.pathname, location.search, location.state, navigate, token])
 
   return token

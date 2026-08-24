@@ -30,9 +30,6 @@ vi.mock('@/features/files/components/FileManagerDialogs', () => ({
   FileManagerDialogs: ({ state }: { state: { type: string } | null }) =>
     state ? <div>Dialog {state.type}</div> : null,
 }))
-vi.mock('@/features/files/components/FilePreviewDialog', () => ({
-  FilePreviewDialog: () => null,
-}))
 
 const rootContents = {
   currentFolderId: null,

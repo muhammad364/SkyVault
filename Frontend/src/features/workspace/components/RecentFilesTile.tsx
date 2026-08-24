@@ -6,9 +6,13 @@ import { useUserFiles } from '@/features/files/hooks/useUserFiles'
 import { selectRecentFiles } from '@/features/workspace/lib/workspacePresentation'
 import { formatBytes, formatRelativeDate } from '@/lib/formatters'
 
-function fileDestination(folderId: string, fileId: string) {
+function fileDestination(fileId: string) {
+  return `/vault/preview/${fileId}`
+}
+
+function fileReturnDestination(folderId: string) {
   const root = !folderId || folderId === '00000000-0000-0000-0000-000000000000'
-  return `${root ? '/vault/files' : `/vault/files/${folderId}`}?preview=${fileId}`
+  return root ? '/vault/files' : `/vault/files/${folderId}`
 }
 
 export function RecentFilesTile() {
@@ -75,7 +79,11 @@ export function RecentFilesTile() {
             <li key={file.fileId} className="min-w-0 overflow-hidden">
               <Link
                 className="flex min-h-12 w-full min-w-0 items-center gap-3 overflow-hidden rounded-md bg-card-muted p-3 hover:shadow-rest"
-                to={fileDestination(file.folderId, file.fileId)}
+                to={fileDestination(file.fileId)}
+                state={{
+                  fileName: file.fileName,
+                  returnTo: fileReturnDestination(file.folderId),
+                }}
               >
                 <span className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md bg-brand-soft text-brand">
                   <FileText aria-hidden="true" size={20} />

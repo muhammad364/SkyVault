@@ -2,6 +2,7 @@ import { PackageOpen, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Button } from '@/components/ui/button'
+import { Select } from '@/components/ui/select'
 import { AdminConfirmDialog } from '@/features/admin/components/AdminConfirmDialog'
 import { AdminPageHeader } from '@/features/admin/components/AdminPageHeader'
 import { AdminPlanDialog } from '@/features/admin/components/AdminPlanDialog'
@@ -70,18 +71,20 @@ export default function AdminPlansPage() {
       ) : (
         <>
           <div className="flex flex-col gap-2 rounded-lg bg-card p-3 shadow-rest sm:flex-row sm:items-center sm:justify-between">
-            <label className="flex min-w-0 items-center gap-3 text-sm font-semibold text-foreground">
-              Status
-              <select
-                className="min-h-11 min-w-0 rounded-sm border border-border bg-card px-3 text-base text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            <div className="flex min-w-0 items-center gap-3 text-sm font-semibold text-foreground">
+              <span id="plan-status-label">Status</span>
+              <Select
+                aria-labelledby="plan-status-label"
                 value={statusFilter}
-                onChange={(event) => setStatusFilter(event.target.value as PlanStatusFilter)}
-              >
-                <option value="all">All plans</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
-            </label>
+                onValueChange={(value) => setStatusFilter(value as PlanStatusFilter)}
+                className="min-w-40"
+                options={[
+                  { value: 'all', label: 'All plans' },
+                  { value: 'active', label: 'Active' },
+                  { value: 'inactive', label: 'Inactive' },
+                ]}
+              />
+            </div>
             <p className="text-sm text-muted-foreground" aria-live="polite">
               Showing {visiblePlans.length} of {plans.data.length}
             </p>

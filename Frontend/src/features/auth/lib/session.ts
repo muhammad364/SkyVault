@@ -1,7 +1,10 @@
 import type { LoginResponse } from '@/models/auth/LoginResponse'
 import type { AuthSession, UserRole } from '@/store/auth.store'
 
-const roleClaimKeys = ['role', 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] as const
+const roleClaimKeys = [
+  'role',
+  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role',
+] as const
 
 function decodePayload(token: string): Record<string, unknown> | null {
   const payload = token.split('.')[1]

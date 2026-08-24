@@ -1,4 +1,5 @@
-export type ErrorStatus = 400 | 401 | 403 | 404 | 408 | 413 | 429 | 500 | 503 | 'offline' | 'generic'
+export type ErrorStatus =
+  400 | 401 | 403 | 404 | 408 | 413 | 429 | 500 | 503 | 'offline' | 'generic'
 
 export interface ErrorContent {
   eyebrow: string

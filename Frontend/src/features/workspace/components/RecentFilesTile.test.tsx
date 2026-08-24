@@ -82,4 +82,22 @@ describe('RecentFilesTile', () => {
     expect(screen.queryByText('File 1')).not.toBeInTheDocument()
     expect(screen.queryByText('File 0')).not.toBeInTheDocument()
   })
+
+  it('contains a long filename and routes it to the full preview page', () => {
+    const longName = `${'Research notes and supporting evidence '.repeat(20)}.pdf`
+    vi.mocked(useUserFiles).mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: [{ ...file(0), fileName: longName }],
+    } as ReturnType<typeof useUserFiles>)
+    render(
+      <MemoryRouter>
+        <RecentFilesTile />
+      </MemoryRouter>,
+    )
+
+    const name = screen.getByTitle(longName)
+    expect(name).toHaveClass('truncate')
+    expect(name.closest('a')).toHaveAttribute('href', '/vault/preview/file-0')
+  })
 })

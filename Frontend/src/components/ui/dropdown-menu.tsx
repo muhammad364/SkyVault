@@ -11,14 +11,18 @@ export const DropdownMenuSub = DropdownMenuPrimitive.Sub
 export const DropdownMenuContent = forwardRef<
   ElementRef<typeof DropdownMenuPrimitive.Content>,
   ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(function DropdownMenuContent({ className, sideOffset = 6, ...props }, ref) {
+>(function DropdownMenuContent(
+  { className, sideOffset = 6, collisionPadding = 12, ...props },
+  ref,
+) {
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
         ref={ref}
         sideOffset={sideOffset}
+        collisionPadding={collisionPadding}
         className={cn(
-          'z-50 min-w-48 rounded-md border border-border bg-card p-1.5 text-foreground shadow-float outline-none',
+          'z-50 max-h-[min(24rem,calc(100dvh-1.5rem))] min-w-48 max-w-[calc(100vw-1.5rem)] overflow-x-hidden overflow-y-auto rounded-md border border-border bg-card p-1.5 text-foreground shadow-float outline-none',
           className,
         )}
         {...props}
@@ -35,7 +39,7 @@ export const DropdownMenuItem = forwardRef<
     <DropdownMenuPrimitive.Item
       ref={ref}
       className={cn(
-        'flex min-h-11 cursor-default select-none items-center gap-3 rounded-sm px-3 text-sm font-medium outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-card-muted data-[disabled]:opacity-50',
+        'flex min-h-11 min-w-0 max-w-full cursor-default select-none items-center gap-3 rounded-sm px-3 text-sm font-medium outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-card-muted data-[disabled]:opacity-50 [&>svg]:shrink-0',
         destructive ? 'text-danger' : 'text-foreground',
         className,
       )}
@@ -52,7 +56,7 @@ export const DropdownMenuCheckboxItem = forwardRef<
     <DropdownMenuPrimitive.CheckboxItem
       ref={ref}
       className={cn(
-        'relative flex min-h-11 cursor-default select-none items-center rounded-sm py-2 pl-9 pr-3 text-sm outline-none data-[highlighted]:bg-card-muted',
+        'relative flex min-h-11 min-w-0 cursor-default select-none items-center rounded-sm py-2 pl-9 pr-3 text-sm outline-none data-[highlighted]:bg-card-muted',
         className,
       )}
       {...props}

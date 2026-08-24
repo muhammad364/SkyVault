@@ -156,8 +156,8 @@ orbs, and gradient blobs remain prohibited.
   real backend effect, including hierarchy deletion and the absence of version history.
 - The floating file-operation dock uses glass only at that permitted overlay surface. It reports real
   upload/replace transport percentages, indeterminate backend processing, cancellable downloads, and
-  sequential batch counts. Preview preparation belongs inside the preview dialog and never creates a
-  dock entry. Long labels truncate, the dock is capped to the viewport with no horizontal scroll, and
+  sequential batch counts. Preview preparation belongs inside the protected full-page preview route and
+  never creates a dock entry. Long labels truncate, the dock is capped to the viewport with no horizontal scroll, and
   progress remains fully visible. Completed/cancelled entries auto-dismiss after three seconds; failed
   entries remain visible for retry or explicit dismissal. Never fabricate percentages or show Cancel
   for a submitted server write.
@@ -172,7 +172,7 @@ orbs, and gradient blobs remain prohibited.
 - Sharing management uses compact link rows and explicit response facts: `Not revoked` or `Revoked`,
   creation time, and API-provided expiry. Never derive `Active`, expose identifiers in place of missing
   names, or render/copy a token outside the focused creation workflow.
-- The Share dialog is always `min-w-0`, viewport-capped, and horizontally clipped. Its native file select,
+- The Share dialog is always `min-w-0`, viewport-capped, and horizontally clipped. Its Quiet Vault Select,
   generated-link field, form, and labels remain within the card at 360px; long selected filenames and URLs
   truncate rather than forcing a left-to-right scrollbar.
 - The anonymous share viewer uses minimal branded chrome, generic file copy, and the shared safe-preview
@@ -188,6 +188,30 @@ orbs, and gradient blobs remain prohibited.
   scores, highlights, inferred match copy, or AI language.
 - Search result menus and selection reuse the file-manager actions, confirmations, progress dock, and Share
   dialog. The returned folder name is a 44px location link to root or the exact returned folder route.
+
+## Shared controls and owned preview
+
+- Application selects use the shared Radix Select treatment: a minimum 44px trigger, visible focus,
+  keyboard navigation and typeahead, contained/truncated values, scrollable content, collision padding,
+  and a viewport-aware portal. Files, Recycle Bin, Sharing, Search, and Administration must not fall back
+  to unstyled native selects.
+- Date and date-time values use the shared Radix Popover plus React DayPicker control. Calendars are themed,
+  keyboard navigable, viewport-capped, and internally scrollable, with accessible labels, Clear and Done
+  actions, exact min/max constraints, and a styled local time input when required. Search continues emitting
+  `YYYY-MM-DD`; sharing expiry and audit filters preserve local date-time input until their existing submit
+  logic converts it to ISO.
+- Dropdown menus, popovers, dialogs, sheets, command surfaces, and filter cards use collision padding,
+  `max-height`/`max-width` caps based on the dynamic viewport, safe-area-aware spacing, internal scrolling,
+  `min-w-0`, and truncation or word breaking. Pinned actions remain reachable without making the page scroll
+  horizontally.
+- Owned preview uses protected lazy `/vault/preview/:fileId`. Keep the workspace rail visible and hide the
+  ordinary workspace header. The compact toolbar provides safe Back, a contained response/navigation name
+  or neutral fallback, Download, and browser Fullscreen when supported. Fullscreen failure is announced
+  safely and does not block preview.
+- Preview preparation and response transfer belong to the page: start indeterminate, expose real percentage
+  only when reported, remain cancellable, and provide neutral Cancelled, Retry, and safe error states. Revoke
+  every Blob URL. Owned and public preview share the same response-type renderer for common raster images
+  excluding SVG, PDF, plain text, audio, and video; unsupported content is download-only.
 
 ## Administration
 

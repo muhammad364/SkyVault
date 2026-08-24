@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 import { AdminPageHeader } from '@/features/admin/components/AdminPageHeader'
 import {
   AdminSectionError,
@@ -60,19 +61,17 @@ export default function AdminUsersPage() {
             placeholder="Filter name or email"
           />
         </label>
-        <label className="min-w-0" htmlFor="user-status-filter">
-          <span className="sr-only">Filter users by account status</span>
-          <select
-            id="user-status-filter"
-            className="min-h-11 w-full rounded-md border border-border bg-card px-3 text-base text-foreground sm:text-sm"
-            value={status}
-            onChange={(event) => setStatus(event.target.value as typeof status)}
-          >
-            <option value="all">All statuses</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </label>
+        <Select
+          id="user-status-filter"
+          aria-label="Filter users by account status"
+          value={status}
+          onValueChange={(value) => setStatus(value as typeof status)}
+          options={[
+            { value: 'all', label: 'All statuses' },
+            { value: 'active', label: 'Active' },
+            { value: 'inactive', label: 'Inactive' },
+          ]}
+        />
       </section>
 
       {users.isPending ? (

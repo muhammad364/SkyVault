@@ -1,8 +1,20 @@
 import { z } from 'zod'
 
-const email = z.string().trim().min(1, 'Enter your email address.').email('Enter a valid email address.').max(255)
-const password = z.string().min(8, 'Use at least 8 characters.').max(100, 'Use no more than 100 characters.')
-const name = z.string().trim().min(1, 'This name is required.').max(100, 'Use no more than 100 characters.')
+const email = z
+  .string()
+  .trim()
+  .min(1, 'Enter your email address.')
+  .email('Enter a valid email address.')
+  .max(255)
+const password = z
+  .string()
+  .min(8, 'Use at least 8 characters.')
+  .max(100, 'Use no more than 100 characters.')
+const name = z
+  .string()
+  .trim()
+  .min(1, 'This name is required.')
+  .max(100, 'Use no more than 100 characters.')
 
 export const loginSchema = z.object({
   email,

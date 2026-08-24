@@ -116,3 +116,20 @@ The authentication API exposes JWT issuance through login but no refresh-token e
 - No additional operational-settings controller exists beyond email configurations. Provider keys,
   connection strings, scheduler controls, feature flags, arbitrary platform settings, and fabricated admin
   controls remain absent.
+
+## Phase 11
+
+- Phase 11 adds no endpoint, DTO, query parameter, or backend behavior. Shared Select/date controls preserve
+  the exact existing wire values and filters; their collision handling and formatting are presentation only.
+- Owned-file preview continues to call the existing authenticated preview/download endpoints. The stream has
+  no owned-preview metadata response, so `/vault/preview/:fileId` accepts a memory-only display name/return
+  path and falls back to the existing `GET /api/files` collection for deep-link metadata. Metadata failure
+  does not block preview and a file GUID is never substituted as display copy. A dedicated metadata endpoint
+  could reduce deep-link collection cost but is not required for correctness.
+- The browser Fullscreen API is a client capability, not a backend contract. Unsupported or rejected
+  Fullscreen leaves the normal page viewer usable.
+- Client-side chunk splitting changes only delivery. Production hosting must provide SPA fallback for
+  `/vault/*`, `/admin/*`, and `/share/*`; every upstream request-body layer must allow the documented 101 MiB
+  multipart envelope for the exact 100 MiB file contract.
+- The backend project has no automated test project. Phase 11 records Release compilation and direct
+  controller/service contract inspection rather than claiming backend unit coverage.
