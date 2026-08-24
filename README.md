@@ -1,337 +1,205 @@
-# ☁️ SkyVault
+# SkyVault
 
-> **A Secure, Scalable and Intelligent Cloud Storage Platform**
+> A secure, role-aware cloud-storage workspace built with React, ASP.NET Core, PostgreSQL, and Google Drive.
 
-SkyVault is a modern cloud storage platform that enables users to securely store, organize, search and share their files through an intuitive web application.
+SkyVault is a full-stack storage platform for subscribing to storage, organising files and folders, sharing read-only files, recovering deleted content, and administering the underlying storage operation. The web client is a production-oriented React application; the API is a modular ASP.NET Core 9 service that remains the authority for data, authorization, quotas, and storage-provider work.
 
-Unlike traditional cloud storage services, SkyVault introduces a **logical storage allocation model**, where users purchase storage plans from the platform while the underlying storage infrastructure remains abstracted. For the MVP, Google Drive serves as the storage backend, allowing the architecture to remain provider-independent and easily extendable to AWS S3, Azure Blob Storage, Google Cloud Storage, MinIO, or other object storage providers in the future.
+## What is implemented
 
-The project is being developed as part of a complete Software Engineering lifecycle, beginning with formal requirements engineering and progressing through architecture, database design, backend development, frontend development, testing and deployment.
+### Personal workspace
 
----
+- Account registration, email verification, sign-in/out, password recovery, profile updates, and password changes.
+- JWT-based authentication, user/admin role separation, ownership checks, and protected routes.
+- Storage-plan catalogue, subscriptions, renewal/cancellation, additional-storage purchases, quota reporting, and quota enforcement.
+- Root and nested folders, uploads, replacement, rename, move, copy, download, preview, and move-to-Trash deletion.
+- Exact **100 MiB** upload and replacement limit, with real browser transfer progress and safe cancellation boundaries.
+- A Recycle Bin with API-provided expiry information, restore, permanent deletion, sequential bulk work, and 30-day backend retention cleanup.
+- Read-only public share links with optional expiry, revocation, anonymous preview/download, and no client-side persistence of share tokens or generated URLs.
+- Metadata search by keyword, extension/type, and upload-date range. Results preserve backend order and reuse real file actions.
+- A responsive workspace home that composes real profile, file, folder, quota, subscription, sharing, and recycle-bin data.
 
-## 🚀 Project Vision
+### Administration
 
-SkyVault aims to provide an affordable, secure and intelligent cloud storage solution that combines familiar file management capabilities with a scalable architecture and future-ready AI enhancements.
+- Dedicated administrator sign-in mode and an isolated administration shell.
+- User status management, storage allocation visibility, and subscription monitoring.
+- All-status storage-plan management, including local Active/Inactive filtering and plan activation/deactivation.
+- Storage-provider and storage-account management, SMTP configuration, audit-log browsing, and API-backed operational summaries.
 
-The platform focuses on:
+### Platform behavior
 
-- Secure file storage
-- Logical storage management
-- Subscription-based storage allocation
-- Intelligent file discovery
-- Provider-independent architecture
-- Clean and maintainable system design
+- PostgreSQL stores application metadata; Google Drive stores physical file content through a provider abstraction.
+- Background workers process queued email delivery, subscription-expiry checks, and Recycle Bin cleanup.
+- The UI has typed API chains, cancellation-aware reads, safe normalized errors, responsive layouts, light/dark themes, keyboard-accessible controls, and lazy-loaded routes.
 
----
+## Architecture
 
-# ✨ Key Features
-
-### 👤 User Management
-
-- User Registration
-- Email Verification
-- JWT Authentication
-- Password Recovery
-- Profile Management
-
-### 💾 Storage Management
-
-- Subscription-based Storage Plans
-- Additional Storage Purchase
-- Logical Storage Allocation
-- Storage Usage Monitoring
-- Storage Quota Enforcement
-
-### 📁 File & Folder Management
-
-- Hierarchical Folder Structure
-- File Upload
-- File Download
-- File Preview
-- Rename & Move
-- File Replacement
-- Folder Management
-- Recycle Bin
-
-### 🔗 Secure File Sharing
-
-- Secure View-only Links
-- Link Expiration
-- Link Revocation
-
-### 🔍 Intelligent Search
-
-- Keyword Search
-- Natural Language Search
-- Metadata-based Search
-- Ranked Search Results
-
-### 🛠 Administration
-
-- User Management
-- Storage Plan Management
-- Platform Monitoring
-- Storage Monitoring
-- Operational Analytics
-
----
-
-# 🏗 System Architecture
-
-SkyVault follows a **Layered Architecture** with clear separation of concerns.
-
-```
-                Angular Frontend
-                       │
-                       ▼
-          ASP.NET Core Web API (.NET 9)
-                       │
-        ┌──────────────┼──────────────┐
-        ▼              ▼              ▼
-  Service Layer   Repository Layer   Infrastructure
-        │              │              │
-        ▼              ▼              ▼
-   Business Logic   Entity Framework   Google Drive API
-                       │
-                       ▼
-                  PostgreSQL
+```text
+React + Vite frontend (localhost:5173)
+              |
+              | HTTPS REST / JSON + Blob streams
+              v
+ASP.NET Core 9 Web API (https://localhost:7181)
+              |
+              +-- Controllers -> Services -> Repositories -> EF Core
+              |                                      |
+              |                                      v
+              |                                  PostgreSQL
+              |
+              +-- Physical storage provider abstraction -> Google Drive API
+              +-- Hosted workers -> email, subscriptions, Recycle Bin cleanup
 ```
 
-The storage provider is abstracted behind an interface, allowing the application to switch storage providers with minimal code changes.
+The frontend follows a typed flow for every API interaction:
 
----
+```text
+DTO model -> endpoint function -> feature service -> React Query hook -> UI
+```
 
-# 🧩 Technology Stack
+The backend is a modular monolith rather than a set of independently deployed microservices. Controllers expose REST-style resource routes, while domain services and repositories keep business logic and persistence separate.
 
-## Frontend
+## Technology stack
 
-- Angular
-- TypeScript
-- HTML5
-- CSS3
+| Area                | Implementation                                                                   |
+| ------------------- | -------------------------------------------------------------------------------- |
+| Frontend            | React 18, TypeScript, Vite, React Router                                         |
+| UI                  | Tailwind CSS, Radix UI, React Day Picker, Lucide, Framer Motion                  |
+| Client state/data   | TanStack React Query, Axios, Zustand, React Hook Form, Zod                       |
+| Visualisation       | React Three Fiber/Three.js and Recharts, both lazy-loaded where used             |
+| Frontend testing    | Vitest, Testing Library, jsdom                                                   |
+| Backend             | ASP.NET Core Web API on .NET 9, C#                                               |
+| Persistence         | Entity Framework Core, Npgsql, PostgreSQL                                        |
+| Authentication      | JWT Bearer authentication, ASP.NET Identity password hashing, role authorization |
+| Storage             | Google Drive API behind `IPhysicalStorageProvider`                               |
+| Supporting services | MailKit, Swagger/OpenAPI, AutoMapper, Data Protection, hosted background workers |
 
-## Backend
+## Repository layout
 
-- ASP.NET Core Web API (.NET 9)
-- C#
-- Entity Framework Core
+```text
+Skyvault/
+├── Frontend/                 # React application, UI system, tests, frontend handover docs
+│   ├── src/
+│   └── docs/
+├── Backend/                  # ASP.NET Core API
+│   ├── Controllers/          # REST endpoints
+│   ├── DTOs/                 # Request/response contracts
+│   ├── Services/             # Domain and infrastructure logic
+│   ├── Repository/           # Persistence boundary
+│   ├── Data/                 # EF Core DbContext and seeding
+│   └── Scripts/skyvault_db.sql
+├── docs/                     # SRS and backend implementation guide
+└── README.md
+```
 
-## Database
+## Run locally
 
+### Prerequisites
+
+- .NET SDK 9
+- Node.js 20+ with Corepack/pnpm
 - PostgreSQL
+- A Google Cloud OAuth client and an authorized Google Drive refresh token for the configured storage account
 
-## Authentication
+### 1. Prepare the database
 
-- JWT Authentication
-- Password Hashing
-- Email Verification
+Create a PostgreSQL database, then apply the supplied schema:
 
-## Cloud Storage
-
-- Google Drive API (MVP)
-
-Future support:
-
-- AWS S3
-- Azure Blob Storage
-- Google Cloud Storage
-- MinIO
-
----
-
-# 📂 Project Structure
-
-```
-SkyVault
-│
-├── Controllers
-├── Services
-├── Repositories
-├── Interfaces
-├── Models
-├── DTOs
-├── Data
-├── Migrations
-├── Middleware
-├── Helpers
-├── Configuration
-└── Program.cs
+```bash
+psql -U postgres -d skyvaultdb -f Backend/Scripts/skyvault_db.sql
 ```
 
-The project follows the Repository-Service pattern to keep business logic independent from persistence and infrastructure.
+### 2. Configure backend secrets
 
----
+The API project already has a .NET User Secrets identifier. Keep connection strings, JWT signing material, and Google credentials outside source control in real environments.
 
-# 🗄 Database Design
-
-The application stores only **metadata** inside PostgreSQL.
-
-Examples include:
-
-- Users
-- Storage Plans
-- Subscriptions
-- Additional Storage Purchases
-- Files
-- Folders
-- Share Links
-- Audit Logs
-- Storage Providers
-- Storage Accounts
-
-Actual file contents are stored in Google Drive.
-
----
-
-# 🔒 Security
-
-SkyVault has been designed with security as a core principle.
-
-Security measures include:
-
-- JWT Authentication
-- Password Hashing
-- Email Verification
-- Ownership Validation
-- Role-based Authorization
-- Secure Share Tokens
-- Audit Logging
-- Input Validation
-
----
-
-# 📦 Storage Model
-
-SkyVault separates **logical storage** from **physical storage**.
-
-```
-User
-      │
-      ▼
-Logical Storage Allocation
-      │
-      ▼
-Storage Account
-      │
-      ▼
-Google Drive
+```bash
+dotnet user-secrets set --project Backend/SkyVault.csproj "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=skyvaultdb;Username=postgres;Password=replace-me"
+dotnet user-secrets set --project Backend/SkyVault.csproj "JwtSettings:SecretKey" "replace-with-a-long-random-key"
+dotnet user-secrets set --project Backend/SkyVault.csproj "GoogleDrive:ClientId" "your-google-oauth-client-id"
+dotnet user-secrets set --project Backend/SkyVault.csproj "GoogleDrive:ClientSecret" "your-google-oauth-client-secret"
+dotnet user-secrets set --project Backend/SkyVault.csproj "GoogleDrive:Accounts:0:RefreshToken" "your-google-refresh-token"
 ```
 
-Users never interact directly with the cloud provider.
+Also ensure `GoogleDrive:Accounts:0:AccountName` matches the storage account configured in the database. For production, use environment variables or a managed secret store instead of User Secrets.
 
-The platform manages:
+### 3. Start the API
 
-- Storage allocation
-- Capacity monitoring
-- Provider abstraction
-- Future provider migration
+```bash
+dotnet restore Backend/SkyVault.csproj
+dotnet run --project Backend/SkyVault.csproj --launch-profile https
+```
 
----
+The local HTTPS API runs at `https://localhost:7181`; Swagger is available at `https://localhost:7181/swagger` in Development. The launch profile uses the local .NET development certificate and redirects HTTP to HTTPS.
 
-# 🎯 MVP Scope
+### 4. Start the frontend
 
-The Minimum Viable Product includes:
+Create `Frontend/.env` from `Frontend/.env.example` and set:
 
-- User Authentication
-- Storage Subscriptions
-- File Upload & Download
-- Folder Management
-- Recycle Bin
-- Secure File Sharing
-- Intelligent Metadata Search
-- Administration Dashboard
-- Google Drive Integration
+```dotenv
+VITE_API_BASE_URL=https://localhost:7181
+VITE_RECOMMENDED_STORAGE_PLAN_ID=
+```
 
-Future enhancements such as AI assistants, OCR, semantic search, file versioning, collaboration and multi-cloud distribution are intentionally excluded from the MVP.
+Then run:
 
----
+```bash
+cd Frontend
+corepack enable
+corepack pnpm install
+corepack pnpm dev
+```
 
-# 🛣 Roadmap
+Vite runs at `http://localhost:5173`. The backend CORS policy explicitly allows this origin and `http://127.0.0.1:5173` during local development.
 
-- [x] Requirements Engineering
-- [x] Software Requirements Specification (SRS)
-- [x] Development Planning
-- [x] System Design
-- [x] Database Design
-- [ ] Repository Layer
-- [ ] Service Layer
-- [ ] Authentication Module
-- [ ] Storage Module
-- [ ] File Management Module
-- [ ] Folder Management Module
-- [ ] Sharing Module
-- [ ] Search Module
-- [ ] Administration Module
-- [ ] Frontend Development
-- [ ] Testing
-- [ ] Deployment
+## Quality checks
 
----
+Frontend commands, from `Frontend/`:
 
-# 📖 Engineering Principles
+```bash
+corepack pnpm lint
+corepack pnpm test
+corepack pnpm build
+corepack pnpm format:check
+```
 
-This project is being developed following modern software engineering practices.
+Backend compilation:
 
-- Clean Architecture principles
-- SOLID Principles
-- Repository Pattern
-- Dependency Injection
-- Separation of Concerns
-- RESTful API Design
-- Database Normalization
-- Scalable Cloud Architecture
-- Provider Independence
-- Security by Design
+```bash
+dotnet build Backend/SkyVault.csproj --configuration Release
+```
 
----
+The frontend handover recorded **88 Vitest files / 184 tests** passing, strict TypeScript, zero-warning ESLint, production build, formatting, and backend Release compilation. The backend has no separate unit-test project, so Release compilation and source-contract inspection are recorded honestly rather than presented as backend unit-test coverage.
 
-# 📚 Documentation
+## Deployment notes
 
-Project documentation includes:
+- Serve the frontend build over HTTPS and configure SPA fallback to `index.html` for `/vault/*`, `/admin/*`, and `/share/*`.
+- Set `VITE_API_BASE_URL` to the production API origin when building the frontend.
+- Update the backend CORS allowlist with the exact production frontend origin.
+- Every reverse proxy, CDN, ingress, IIS, or Nginx layer must permit at least a **101 MiB** multipart request envelope for the product’s exact 100 MiB file limit.
+- Do not log or persist access tokens, share URLs/tokens, payment fields, SMTP passwords, Google OAuth credentials, or file contents.
+- Rotate any development credentials that may have been committed before publishing a public repository.
 
-- Software Requirements Specification (IEEE 29148)
-- System Design Document
-- Database Design
-- API Documentation
-- Backend Implementation Guide
-- ER Diagrams
-- Sequence Diagrams
-- Deployment Diagrams
+## Current scope and boundaries
 
----
+SkyVault intentionally does **not** claim AI/semantic search, embeddings, natural-language search, file version history, resumable uploads, folder copy, server-side bulk-operation endpoints, or invented progress/status APIs. Where the backend exposes no contract, the frontend stays explicit about that limitation rather than fabricating behavior.
 
-# 🤝 Contributing
+The implementation records Phase 0-10 as complete. Phase 11’s implementation and automated verification are complete; the remaining recorded gate is owner review of its final hardened UI surfaces.
 
-Contributions, suggestions and feedback are welcome.
+## Documentation
 
-If you'd like to contribute:
+- [Software Requirements Specification](docs/SkyVault_SRS.docx)
+- [Backend Implementation Guide](docs/SkyVault_Backend_Implementation_Guide.md)
+- [Frontend README](Frontend/README.md)
+- [Frontend Phase Ledger](Frontend/docs/PHASE-LEDGER.md)
+- [Frontend API Gaps](Frontend/docs/API-GAPS.md)
+- [Frontend Handover](Frontend/docs/HANDOVER.md)
+- [Frontend State Coverage](Frontend/docs/STATE-COVERAGE.md)
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push your branch
-5. Open a Pull Request
-
----
-
-# 👨‍💻 Author
+## Author
 
 **Muhammad Haroon Khalid**
 
-BS Software Engineering  
-COMSATS University Islamabad
+BS Software Engineering, COMSATS University Islamabad
 
----
+## License
 
-# 📄 License
-
-This project is developed for educational and research purposes. Licensing may be updated in future releases.
-
----
-
-## ⭐ Project Status
-
-**Currently under active development.**
-
-SkyVault is progressing through the Software Development Life Cycle (SDLC), with the backend architecture and core modules currently being implemented.
+This project is currently provided for educational and portfolio purposes. Add an explicit license before redistributing or accepting external contributions.

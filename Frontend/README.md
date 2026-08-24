@@ -21,7 +21,7 @@ corepack pnpm dev
 Create a local `.env` file when needed. Do not commit secrets.
 
 ```dotenv
-VITE_API_BASE_URL=https://localhost:7047
+VITE_API_BASE_URL=https://localhost:7181
 VITE_RECOMMENDED_STORAGE_PLAN_ID=
 ```
 
