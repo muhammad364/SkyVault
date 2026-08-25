@@ -18,9 +18,9 @@ public class StorageProviderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<StorageProviderResponseDto>> Create([FromBody] CreateStorageProviderRequestDto request,CancellationToken cancellationToken)
+    public async Task<ActionResult<StorageProviderResponseDto>> Create([FromBody] CreateStorageProviderRequestDto request, CancellationToken cancellationToken)
     {
-        var response =await _storageProviderService.CreateAsync(request, cancellationToken);
+        var response = await _storageProviderService.CreateAsync(request, cancellationToken);
 
         return Ok(response);
     }

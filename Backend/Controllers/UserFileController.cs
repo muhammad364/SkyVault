@@ -26,104 +26,66 @@ public class UserFileController : ControllerBase
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(FileUploadLimits.MaxMultipartRequestSizeBytes)]
     [RequestFormLimits(MultipartBodyLengthLimit = FileUploadLimits.MaxMultipartRequestSizeBytes)]
-    public async Task<ActionResult<FileResponseDto>> Upload(
-        [FromForm] UploadFileRequestDto request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<FileResponseDto>> Upload([FromForm] UploadFileRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
-        var response = await _userFileService.UploadAsync(
-            request,
-            userId,
-            cancellationToken);
+        var response = await _userFileService.UploadAsync(request, userId, cancellationToken);
 
-        return StatusCode(
-            StatusCodes.Status201Created,
-            response);
+        return StatusCode(StatusCodes.Status201Created, response);
     }
 
 
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<FileResponseDto>>> GetUserFiles(
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<FileResponseDto>>> GetUserFiles(CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
-        var response = await _userFileService.GetUserFilesAsync(
-            userId,
-            cancellationToken);
+        var response = await _userFileService.GetUserFilesAsync(userId, cancellationToken);
 
         return Ok(response);
     }
 
 
     [HttpGet("{fileId:guid}/download")]
-    public async Task<IActionResult> Download(
-        Guid fileId,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> Download(Guid fileId, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
-        var result = await _userFileService.DownloadAsync(
-            fileId,
-            userId,
-            cancellationToken);
+        var result = await _userFileService.DownloadAsync(fileId, userId, cancellationToken);
 
-        return File(
-            result.Stream,
-            result.ContentType,
-            result.FileName,
-            enableRangeProcessing: true);
+        return File(result.Stream, result.ContentType, result.FileName, enableRangeProcessing: true);
     }
 
  
     [HttpGet("{fileId:guid}/preview")]
-    public async Task<IActionResult> Preview(
-        Guid fileId,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> Preview(Guid fileId, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
-        var result = await _userFileService.PreviewAsync(
-            fileId,
-            userId,
-            cancellationToken);
+        var result = await _userFileService.PreviewAsync(fileId, userId, cancellationToken);
 
         return File(result.Stream, result.ContentType);
     }
 
     [HttpPut("{fileId:guid}/rename")]
-    public async Task<ActionResult<MessageResponseDto>> Rename(
-        Guid fileId,
-        [FromBody] RenameFileRequestDto request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<MessageResponseDto>> Rename(Guid fileId, [FromBody] RenameFileRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
-        var response = await _userFileService.RenameAsync(
-            fileId,
-            request,
-            userId,
-            cancellationToken);
+        var response = await _userFileService.RenameAsync(fileId, request, userId, cancellationToken);
 
         return Ok(response);
     }
 
 
     [HttpPut("{fileId:guid}/move")]
-    public async Task<ActionResult<MessageResponseDto>> Move(
-        Guid fileId,
-        [FromBody] MoveFileRequestDto request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<MessageResponseDto>> Move(Guid fileId, [FromBody] MoveFileRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
-        var response = await _userFileService.MoveAsync(
-            fileId,
-            request,
-            userId,
-            cancellationToken);
+        var response = await _userFileService.MoveAsync(fileId, request, userId, cancellationToken);
 
         return Ok(response);
     }
@@ -133,61 +95,42 @@ public class UserFileController : ControllerBase
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(FileUploadLimits.MaxMultipartRequestSizeBytes)]
     [RequestFormLimits(MultipartBodyLengthLimit = FileUploadLimits.MaxMultipartRequestSizeBytes)]
-    public async Task<ActionResult<MessageResponseDto>> Replace(
-        Guid fileId,
-        [FromForm] ReplaceFileRequestDto request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<MessageResponseDto>> Replace(Guid fileId, [FromForm] ReplaceFileRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
-        var response = await _userFileService.ReplaceAsync(
-            fileId,
-            request,
-            userId,
-            cancellationToken);
+        var response = await _userFileService.ReplaceAsync(fileId, request, userId, cancellationToken);
 
         return Ok(response);
     }
 
     [HttpPost("copy")]
-    public async Task<ActionResult<IEnumerable<FileResponseDto>>> Copy(
-        [FromBody] CopyFileRequestDto request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<FileResponseDto>>> Copy([FromBody] CopyFileRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
-        var response = await _userFileService.CopyAsync(
-            request,
-            userId,
-            cancellationToken);
+        var response = await _userFileService.CopyAsync(request, userId, cancellationToken);
 
         return Ok(response);
     }
 
     [HttpDelete("{fileId:guid}")]
-    public async Task<ActionResult<MessageResponseDto>> Delete(
-        Guid fileId,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<MessageResponseDto>> Delete(Guid fileId, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
-        var response = await _userFileService.DeleteAsync(
-            fileId,
-            userId,
-            cancellationToken);
+        var response = await _userFileService.DeleteAsync(fileId, userId, cancellationToken);
 
         return Ok(response);
     }
 
     private Guid GetAuthenticatedUserId()
     {
-        var userIdClaim =
-            User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (!Guid.TryParse(userIdClaim, out var userId))
         {
-            throw new UnauthorizedAccessException(
-                "Authenticated user information is missing or invalid.");
+            throw new UnauthorizedAccessException("Authenticated user information is missing or invalid.");
         }
 
         return userId;

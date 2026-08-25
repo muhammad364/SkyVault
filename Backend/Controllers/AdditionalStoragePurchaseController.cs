@@ -19,8 +19,7 @@ public class AdditionalStoragePurchaseController : ControllerBase
     }
 
     [HttpPost("quote")]
-    public async Task<ActionResult<AdditionalStorageQuoteResponseDto>> GetQuote(
-        [FromBody] AdditionalStorageQuoteRequestDto request, CancellationToken cancellationToken)
+    public async Task<ActionResult<AdditionalStorageQuoteResponseDto>> GetQuote([FromBody] AdditionalStorageQuoteRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
@@ -30,8 +29,7 @@ public class AdditionalStoragePurchaseController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<PurchaseAdditionalStorageResponseDto>> Purchase(
-        [FromBody] PurchaseAdditionalStorageRequestDto request, CancellationToken cancellationToken)
+    public async Task<ActionResult<PurchaseAdditionalStorageResponseDto>> Purchase([FromBody] PurchaseAdditionalStorageRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
@@ -41,7 +39,7 @@ public class AdditionalStoragePurchaseController : ControllerBase
     }
 
     [HttpGet("me")]
-    public async Task<ActionResult<IEnumerable<PurchaseAdditionalStorageResponseDto>>> GetMyPurchases( CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<PurchaseAdditionalStorageResponseDto>>> GetMyPurchases(CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
@@ -52,7 +50,7 @@ public class AdditionalStoragePurchaseController : ControllerBase
 
     private Guid GetAuthenticatedUserId()
     {
-        var userId =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrWhiteSpace(userId))
         {

@@ -28,7 +28,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("users/{userId:guid}")]
-    public async Task<IActionResult> GetUserById(Guid userId,CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserById(Guid userId, CancellationToken cancellationToken)
     {
         var user = await _adminService.GetUserByIdAsync(userId, cancellationToken);
 
@@ -36,7 +36,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPut("users/{userId:guid}/activate")]
-    public async Task<IActionResult> ActivateUser(Guid userId,CancellationToken cancellationToken)
+    public async Task<IActionResult> ActivateUser(Guid userId, CancellationToken cancellationToken)
     {
         var user = await _adminService.ActivateUserAsync(userId, cancellationToken);
 
@@ -44,7 +44,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPut("users/{userId:guid}/deactivate")]
-    public async Task<IActionResult> DeactivateUser(Guid userId,CancellationToken cancellationToken)
+    public async Task<IActionResult> DeactivateUser(Guid userId, CancellationToken cancellationToken)
     {
         var user = await _adminService.DeactivateUserAsync(userId, cancellationToken);
 
@@ -60,9 +60,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("users/{userId:guid}/storage")]
-    public async Task<IActionResult> GetUserStorageAllocation(
-        Guid userId,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserStorageAllocation(Guid userId, CancellationToken cancellationToken)
     {
         var allocation = await _adminService.GetUserStorageAllocationAsync(userId, cancellationToken);
 
@@ -78,31 +76,15 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("audit-logs")]
-    public async Task<IActionResult> GetAuditLogs(
-        [FromQuery] Guid? administratorId,
-        [FromQuery] string? action,
-        [FromQuery] DateTime? performedFrom,
-        [FromQuery] DateTime? performedTo,
-        [FromQuery] int skip = 0,
-        [FromQuery] int take = 100,
-        CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAuditLogs([FromQuery] Guid? administratorId, [FromQuery] string? action, [FromQuery] DateTime? performedFrom, [FromQuery] DateTime? performedTo, [FromQuery] int skip = 0, [FromQuery] int take = 100, CancellationToken cancellationToken = default)
     {
-        var auditLogs = await _auditLogService.GetAllAsync(
-            administratorId,
-            action,
-            performedFrom,
-            performedTo,
-            skip,
-            take,
-            cancellationToken);
+        var auditLogs = await _auditLogService.GetAllAsync(administratorId, action, performedFrom, performedTo, skip, take, cancellationToken);
 
         return Ok(auditLogs);
     }
 
     [HttpGet("audit-logs/{auditLogId:guid}")]
-    public async Task<IActionResult> GetAuditLog(
-        Guid auditLogId,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAuditLog(Guid auditLogId, CancellationToken cancellationToken)
     {
         var auditLog = await _auditLogService.GetByIdAsync(auditLogId, cancellationToken);
         return auditLog is null ? NotFound("Audit log was not found.") : Ok(auditLog);

@@ -19,8 +19,7 @@ public class SubscriptionController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public async Task<ActionResult<SubscriptionResponseDto>> Subscribe(
-        [FromBody] SubscribeRequestDto request, CancellationToken cancellationToken)
+    public async Task<ActionResult<SubscriptionResponseDto>> Subscribe([FromBody] SubscribeRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
@@ -47,8 +46,7 @@ public class SubscriptionController : ControllerBase
 
     [HttpPost("renew")]
     [Authorize]
-    public async Task<ActionResult<SubscriptionResponseDto>> Renew(
-        [FromBody] RenewSubscriptionRequestDto request, CancellationToken cancellationToken)
+    public async Task<ActionResult<SubscriptionResponseDto>> Renew([FromBody] RenewSubscriptionRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 

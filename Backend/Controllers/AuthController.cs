@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<RegisterUserResponseDto>> Register(RegisterUserRequestDto requestDto, CancellationToken cancellationToken = default)
     {
         var response = await _authService.RegisterUserAsync(requestDto, cancellationToken);
-        return Ok(response);   
+        return Ok(response);
     }
 
     [HttpPost("login")]

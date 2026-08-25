@@ -31,7 +31,7 @@ public class FolderController : ControllerBase
     }
 
     [HttpGet("root")]
-    public async Task<ActionResult<FolderContentsResponseDto>> GetRootFolder( CancellationToken cancellationToken)
+    public async Task<ActionResult<FolderContentsResponseDto>> GetRootFolder(CancellationToken cancellationToken)
     {
         var userId = GetAuthenticatedUserId();
 
