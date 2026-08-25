@@ -38,7 +38,7 @@ public class PaymentService : IPaymentService
 
     private static string NormalizeCardNumber(string cardNumber)
     {
-        return cardNumber.Replace(" ", string.Empty) .Replace("-", string.Empty);
+        return cardNumber.Replace(" ", string.Empty).Replace("-", string.Empty);
     }
 
     private static void ValidateCardNumber(string cardNumber)
@@ -50,7 +50,7 @@ public class PaymentService : IPaymentService
 
         if (!cardNumber.All(char.IsDigit))
         {
-            throw new ArgumentException( "Card number must contain digits only.", nameof(cardNumber));
+            throw new ArgumentException("Card number must contain digits only.", nameof(cardNumber));
         }
 
         if (!PassesLuhnCheck(cardNumber))
@@ -74,7 +74,7 @@ public class PaymentService : IPaymentService
             throw new ArgumentException("Expiry month must be between 1 and 12.", nameof(expiryMonth));
         }
 
-        var expiryDate = new DateTime(expiryYear, expiryMonth, DateTime.DaysInMonth( expiryYear, expiryMonth), 23, 59, 59, DateTimeKind.Utc);
+        var expiryDate = new DateTime(expiryYear, expiryMonth, DateTime.DaysInMonth(expiryYear, expiryMonth), 23, 59, 59, DateTimeKind.Utc);
 
         if (expiryDate < DateTime.UtcNow)
         {

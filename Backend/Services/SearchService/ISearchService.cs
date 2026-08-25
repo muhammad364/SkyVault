@@ -5,8 +5,5 @@ namespace SkyVault.Services.SearchService;
 
 public interface ISearchService
 {
-    Task<IEnumerable<SearchResultDto>> SearchAsync(
-        SearchRequestDto request,
-        Guid userId,
-        CancellationToken cancellationToken = default);
+    Task<IEnumerable<SearchResultDto>> SearchAsync(SearchRequestDto request, Guid userId, CancellationToken cancellationToken = default);
 }

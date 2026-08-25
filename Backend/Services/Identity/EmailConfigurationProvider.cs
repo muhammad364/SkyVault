@@ -8,9 +8,7 @@ public class EmailConfigurationProvider : IEmailConfigurationProvider
     private readonly IEmailConfigurationRepository _emailConfigurationRepository;
     private readonly IDataProtector _dataProtector;
 
-    public EmailConfigurationProvider(
-        IEmailConfigurationRepository emailConfigurationRepository,
-        IDataProtectionProvider dataProtectionProvider)
+    public EmailConfigurationProvider(IEmailConfigurationRepository emailConfigurationRepository, IDataProtectionProvider dataProtectionProvider)
     {
         _emailConfigurationRepository = emailConfigurationRepository;
         _dataProtector = dataProtectionProvider.CreateProtector("SkyVault.EmailConfiguration");

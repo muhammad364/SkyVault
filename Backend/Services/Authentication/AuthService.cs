@@ -24,9 +24,7 @@ public class AuthService : IAuthService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<AuthService> _logger;
 
-    public AuthService(
-        IUserRepository userRepo, IMapper mapper, IPasswordHashService passhashServ, IJwtTokenService token, IEmailJobScheduler emailJobScheduler, IUnitOfWork unitOfWork, ILogger<AuthService> logger
-    )
+    public AuthService(IUserRepository userRepo, IMapper mapper, IPasswordHashService passhashServ, IJwtTokenService token, IEmailJobScheduler emailJobScheduler, IUnitOfWork unitOfWork, ILogger<AuthService> logger)
     {
         _userRepository = userRepo;
         _emailJobScheduler = emailJobScheduler;
@@ -104,7 +102,7 @@ public class AuthService : IAuthService
         Token = accessToken,
         ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtTokenService.GetAccessTokenExpiryInMinutes())
         };
-    }    
+    }
     public async Task<MessageResponseDto> VerifyEmailAsync(VerifyEmailRequestDto request, CancellationToken cancellationToken = default)
     {
         var principal = _jwtTokenService.ValidateToken(request.Token, "EmailVerification");
@@ -168,7 +166,7 @@ public class AuthService : IAuthService
         };
     }
     
-    public async Task<MessageResponseDto> ResetPasswordAsync (ResetPasswordRequestDto resetPasswordRequestDto, CancellationToken cancellationToken= default)
+    public async Task<MessageResponseDto> ResetPasswordAsync (ResetPasswordRequestDto resetPasswordRequestDto, CancellationToken cancellationToken = default)
     {
         var principal = _jwtTokenService.ValidateToken(resetPasswordRequestDto.Token, "PasswordReset");
 
@@ -195,7 +193,7 @@ public class AuthService : IAuthService
         };
     }
     
-    public async Task<UserProfileResponseDto> GetUserProfileAsync (Guid userId, CancellationToken cancellationToken= default)
+    public async Task<UserProfileResponseDto> GetUserProfileAsync (Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
 
@@ -255,9 +253,6 @@ public class AuthService : IAuthService
 
     public Task<MessageResponseDto> LogoutAsync (CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(new MessageResponseDto
-        {
-            Message = "Logged out successfully"
-        });
+        return Task.FromResult(new MessageResponseDto { Message = "Logged out successfully" });
     }
 }

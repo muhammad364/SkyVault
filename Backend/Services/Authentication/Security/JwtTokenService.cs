@@ -38,19 +38,11 @@ public class JwtTokenService : IJwtTokenService
             new Claim("Purpose", purpose)
         };
 
-        var securityKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
 
-        var signingCredentials = new SigningCredentials(
-            securityKey,
-            SecurityAlgorithms.HmacSha256);
+        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        var token = new JwtSecurityToken(
-            issuer: _jwtSettings.Issuer,
-            audience: _jwtSettings.Audience,
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(expiryInMinutes),
-            signingCredentials: signingCredentials);
+        var token = new JwtSecurityToken(issuer: _jwtSettings.Issuer, audience: _jwtSettings.Audience, claims: claims, expires: DateTime.UtcNow.AddMinutes(expiryInMinutes), signingCredentials: signingCredentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }

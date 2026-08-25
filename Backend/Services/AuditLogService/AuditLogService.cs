@@ -13,11 +13,7 @@ public class AuditLogService : IAuditLogService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
 
-    public AuditLogService(
-        IAuditLogRepository auditLogRepository,
-        IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor,
-        IMapper mapper)
+    public AuditLogService(IAuditLogRepository auditLogRepository, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, IMapper mapper)
     {
         _auditLogRepository = auditLogRepository;
         _unitOfWork = unitOfWork;
@@ -25,12 +21,7 @@ public class AuditLogService : IAuditLogService
         _mapper = mapper;
     }
 
-    public async Task RecordAsync(
-        string action,
-        string entityName,
-        Guid entityId,
-        string? details = null,
-        CancellationToken cancellationToken = default)
+    public async Task RecordAsync(string action, string entityName, Guid entityId, string? details = null, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(action))
         {
@@ -45,8 +36,7 @@ public class AuditLogService : IAuditLogService
         var principal = _httpContextAccessor.HttpContext?.User;
         var administratorIdValue = principal?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        if (principal?.IsInRole("Admin") != true ||
-            !Guid.TryParse(administratorIdValue, out var administratorId))
+        if (principal?.IsInRole("Admin") != true || !Guid.TryParse(administratorIdValue, out var administratorId))
         {
             throw new UnauthorizedAccessException("An authenticated administrator is required to create an audit log.");
         }
@@ -66,31 +56,15 @@ public class AuditLogService : IAuditLogService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<AuditLogDto?> GetByIdAsync(
-        Guid auditLogId,
-        CancellationToken cancellationToken = default)
+    public async Task<AuditLogDto?> GetByIdAsync(Guid auditLogId, CancellationToken cancellationToken = default)
     {
         var auditLog = await _auditLogRepository.GetByIdAsync(auditLogId, cancellationToken);
         return auditLog is null ? null : _mapper.Map<AuditLogDto>(auditLog);
     }
 
-    public async Task<IEnumerable<AuditLogDto>> GetAllAsync(
-        Guid? administratorId = null,
-        string? action = null,
-        DateTime? performedFrom = null,
-        DateTime? performedTo = null,
-        int skip = 0,
-        int take = 100,
-        CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<AuditLogDto>> GetAllAsync(Guid? administratorId = null, string? action = null, DateTime? performedFrom = null, DateTime? performedTo = null, int skip = 0, int take = 100, CancellationToken cancellationToken = default)
     {
-        var auditLogs = await _auditLogRepository.GetAllAsync(
-            administratorId,
-            action,
-            performedFrom,
-            performedTo,
-            skip,
-            take,
-            cancellationToken);
+        var auditLogs = await _auditLogRepository.GetAllAsync(administratorId, action, performedFrom, performedTo, skip, take, cancellationToken);
 
         return _mapper.Map<IEnumerable<AuditLogDto>>(auditLogs);
     }

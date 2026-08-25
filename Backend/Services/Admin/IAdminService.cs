@@ -8,18 +8,18 @@ public interface IAdminService
 
     Task<IEnumerable<AdminUserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default);
 
-    Task<AdminUserDto> GetUserByIdAsync(Guid userId,CancellationToken cancellationToken = default);
+    Task<AdminUserDto> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
-    Task<AdminUserDto> ActivateUserAsync(Guid userId,CancellationToken cancellationToken = default);
+    Task<AdminUserDto> ActivateUserAsync(Guid userId, CancellationToken cancellationToken = default);
 
-    Task<AdminUserDto> DeactivateUserAsync(Guid userId,CancellationToken cancellationToken = default);
+    Task<AdminUserDto> DeactivateUserAsync(Guid userId, CancellationToken cancellationToken = default);
 
 
     //Storage Monitoring
 
     Task<StorageOverviewDto> GetStorageOverviewAsync(CancellationToken cancellationToken = default);
 
-    Task<UserStorageAllocationDto> GetUserStorageAllocationAsync(Guid userId,CancellationToken cancellationToken = default);
+    Task<UserStorageAllocationDto> GetUserStorageAllocationAsync(Guid userId, CancellationToken cancellationToken = default);
 
 
     // Dashboard Statistics

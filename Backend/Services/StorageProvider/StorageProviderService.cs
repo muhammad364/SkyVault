@@ -15,11 +15,7 @@ public class StorageProviderService : IStorageProviderService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditLogService _auditLogService;
 
-    public StorageProviderService(
-        IStorageProviderRepository storageProviderRepository,
-        IMapper mapper,
-        IUnitOfWork unitOfWork,
-        IAuditLogService auditLogService)
+    public StorageProviderService(IStorageProviderRepository storageProviderRepository, IMapper mapper, IUnitOfWork unitOfWork, IAuditLogService auditLogService)
     {
         _storageProviderRepository = storageProviderRepository;
         _mapper = mapper;
@@ -89,7 +85,7 @@ public class StorageProviderService : IStorageProviderService
 
     public async Task<StorageProviderResponseDto> UpdateAsync(Guid providerId, UpdateStorageProviderRequestDto request, CancellationToken cancellationToken = default)
     {
-        var storageProvider = await _storageProviderRepository.GetByIdAsync(providerId,cancellationToken);
+        var storageProvider = await _storageProviderRepository.GetByIdAsync(providerId, cancellationToken);
 
         if (storageProvider is null)
         {
@@ -141,7 +137,7 @@ public class StorageProviderService : IStorageProviderService
         return _mapper.Map<StorageProviderResponseDto>(storageProvider);
     }
 
-    public async Task<StorageProviderResponseDto> DeactivateAsync(Guid providerId,CancellationToken cancellationToken = default)
+    public async Task<StorageProviderResponseDto> DeactivateAsync(Guid providerId, CancellationToken cancellationToken = default)
     {
         var storageProvider = await _storageProviderRepository.GetByIdAsync(providerId, cancellationToken);
 

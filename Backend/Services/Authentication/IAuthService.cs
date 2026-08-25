@@ -16,13 +16,13 @@ public interface IAuthService
 
     Task<MessageResponseDto> ForgotPasswordAsync (ForgotPasswordRequestDto forgotPasswordRequestDto, CancellationToken cancellationToken = default);
 
-    Task<MessageResponseDto> ResetPasswordAsync (ResetPasswordRequestDto resetPasswordRequestDto, CancellationToken cancellationToken= default);
+    Task<MessageResponseDto> ResetPasswordAsync (ResetPasswordRequestDto resetPasswordRequestDto, CancellationToken cancellationToken = default);
 
-    Task<UserProfileResponseDto> GetUserProfileAsync (Guid userId, CancellationToken cancellationToken= default);
+    Task<UserProfileResponseDto> GetUserProfileAsync (Guid userId, CancellationToken cancellationToken = default);
 
     Task<UserProfileResponseDto> UpdateUserProfileAsync (Guid userId, UpdateUserProfileRequestDto updateUserProfileRequestDto, CancellationToken cancellationToken = default);
 
     Task<MessageResponseDto> ChangePasswordAsync (Guid userId, ChangePasswordRequestDto changePasswordRequestDto, CancellationToken cancellationToken = default);
 
-    Task<MessageResponseDto> LogoutAsync (CancellationToken cancellationToken = default); 
+    Task<MessageResponseDto> LogoutAsync (CancellationToken cancellationToken = default);
 }

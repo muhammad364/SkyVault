@@ -17,10 +17,7 @@ public class StorageAccountService : IStorageAccountService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditLogService _auditLogService;
 
-    public StorageAccountService(
-        IStorageAccountRepository storageAccountRepository,
-        IStorageProviderRepository storageProviderRepository,
-        IMapper mapper, IUnitOfWork unitOfWork, IAuditLogService auditLogService)
+    public StorageAccountService(IStorageAccountRepository storageAccountRepository, IStorageProviderRepository storageProviderRepository, IMapper mapper, IUnitOfWork unitOfWork, IAuditLogService auditLogService)
     {
         _storageAccountRepository = storageAccountRepository;
         _storageProviderRepository = storageProviderRepository;
@@ -70,7 +67,7 @@ public class StorageAccountService : IStorageAccountService
 
         storageAccount.Createdat = DateTime.UtcNow;
 
-        await _storageAccountRepository.AddAsync(storageAccount,cancellationToken);
+        await _storageAccountRepository.AddAsync(storageAccount, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         await _auditLogService.RecordAsync("StorageAccountCreated", "StorageAccount", storageAccount.Storageaccountid, "Administrator created a storage account.", cancellationToken);
@@ -82,7 +79,7 @@ public class StorageAccountService : IStorageAccountService
 
     public async Task<StorageAccountResponseDto?> GetByIdAsync(Guid storageAccountId, CancellationToken cancellationToken = default)
     {
-        var storageAccount = await _storageAccountRepository.GetByIdAsync(storageAccountId,cancellationToken);
+        var storageAccount = await _storageAccountRepository.GetByIdAsync(storageAccountId, cancellationToken);
 
         if (storageAccount is null)
         {
@@ -184,7 +181,7 @@ public class StorageAccountService : IStorageAccountService
 
         storageAccount.Isactive = false;
 
-        _storageAccountRepository.Update( storageAccount);
+        _storageAccountRepository.Update(storageAccount);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         await _auditLogService.RecordAsync("StorageAccountDeactivated", "StorageAccount", storageAccount.Storageaccountid, "Administrator deactivated a storage account.", cancellationToken);
@@ -192,14 +189,14 @@ public class StorageAccountService : IStorageAccountService
         return _mapper.Map<StorageAccountResponseDto>(storageAccount);
     }
 
-    public async Task ReserveCapacityForAccountAsync(Guid storageAccountId,long requestedBytes,CancellationToken cancellationToken = default)
+    public async Task ReserveCapacityForAccountAsync(Guid storageAccountId, long requestedBytes, CancellationToken cancellationToken = default)
     {
         if (requestedBytes <= 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(requestedBytes),"Requested storage capacity must be greater than zero.");
+            throw new ArgumentOutOfRangeException(nameof(requestedBytes), "Requested storage capacity must be greater than zero.");
         }
 
-        var storageAccount = await _storageAccountRepository.GetByIdAsync(storageAccountId,cancellationToken);
+        var storageAccount = await _storageAccountRepository.GetByIdAsync(storageAccountId, cancellationToken);
 
         if (storageAccount is null)
         {
@@ -216,7 +213,7 @@ public class StorageAccountService : IStorageAccountService
             throw new InvalidOperationException("The storage provider associated with the account is inactive.");
         }
 
-        var reserved = await _storageAccountRepository.TryReserveCapacityAsync(storageAccountId,requestedBytes,cancellationToken);
+        var reserved = await _storageAccountRepository.TryReserveCapacityAsync(storageAccountId, requestedBytes, cancellationToken);
 
         if (!reserved)
         {

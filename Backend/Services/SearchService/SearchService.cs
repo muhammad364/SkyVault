@@ -17,10 +17,7 @@ public class SearchService : ISearchService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<SearchResultDto>> SearchAsync(
-        SearchRequestDto request,
-        Guid userId,
-        CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<SearchResultDto>> SearchAsync(SearchRequestDto request, Guid userId, CancellationToken cancellationToken = default)
     {
         if (request == null)
         {
@@ -56,19 +53,7 @@ public class SearchService : ISearchService
 
         var queryTerms = BuildQueryTerms(request.Query);
 
-        var filteredFiles = files
-            .Where(file => MatchesFileType(file, request.FileType))
-            .Where(file => MatchesDateRange(file, request.FromDate, request.ToDate))
-            .Where(file => MatchesQuery(file, queryTerms))
-            .Select(file => new
-            {
-                File = file,
-                Score = CalculateMatchScore(file, queryTerms)
-            })
-            .OrderByDescending(x => x.Score)
-            .ThenBy(x => x.File.Filename)
-            .Select(x => x.File)
-            .ToList();
+        var filteredFiles = files.Where(file => MatchesFileType(file, request.FileType)).Where(file => MatchesDateRange(file, request.FromDate, request.ToDate)).Where(file => MatchesQuery(file, queryTerms)).Select(file => new { File = file, Score = CalculateMatchScore(file, queryTerms) }).OrderByDescending(x => x.Score).ThenBy(x => x.File.Filename).Select(x => x.File).ToList();
 
         return _mapper.Map<IEnumerable<SearchResultDto>>(filteredFiles);
     }
@@ -80,12 +65,7 @@ public class SearchService : ISearchService
             return Array.Empty<string>();
         }
 
-        return query
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Where(term => !string.IsNullOrWhiteSpace(term))
-            .Select(term => term.ToLowerInvariant())
-            .Distinct()
-            .ToArray();
+        return query.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Where(term => !string.IsNullOrWhiteSpace(term)).Select(term => term.ToLowerInvariant()).Distinct().ToArray();
     }
 
     private static bool MatchesFileType(Userfile file, string? fileType)
@@ -139,11 +119,7 @@ public class SearchService : ISearchService
             return true;
         }
 
-        var searchableText = string.Join(' ',
-            file.Filename,
-            file.Mimetype,
-            file.Folder != null ? file.Folder.Name : string.Empty,
-            file.Extension);
+        var searchableText = string.Join(' ', file.Filename, file.Mimetype, file.Folder != null ? file.Folder.Name : string.Empty, file.Extension);
 
         return queryTerms.All(term => searchableText.Contains(term, StringComparison.OrdinalIgnoreCase));
     }

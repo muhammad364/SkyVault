@@ -22,7 +22,7 @@ public class FolderService : IFolderService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<FolderResponseDto> CreateFolderAsync(CreateFolderRequestDto request,Guid userId,CancellationToken cancellationToken = default)
+    public async Task<FolderResponseDto> CreateFolderAsync(CreateFolderRequestDto request, Guid userId, CancellationToken cancellationToken = default)
     {
         if (request.ParentFolderId.HasValue)
         {
@@ -140,23 +140,14 @@ public class FolderService : IFolderService
 
         var deletedAt = DateTime.UtcNow;
 
-        var allFolders = await _folderRepository.GetByUserIdAsync(
-            userId,
-            cancellationToken);
+        var allFolders = await _folderRepository.GetByUserIdAsync(userId, cancellationToken);
 
-        var foldersByParentId = allFolders
-            .Where(f => f.Parentfolderid.HasValue)
-            .GroupBy(f => f.Parentfolderid)
-            .ToDictionary(group => group.Key!.Value, group => group.ToList());
+        var foldersByParentId = allFolders.Where(f => f.Parentfolderid.HasValue).GroupBy(f => f.Parentfolderid).ToDictionary(group => group.Key!.Value, group => group.ToList());
 
         var foldersToDelete = GetFolderTree(folder, foldersByParentId);
-        var folderIds = foldersToDelete
-            .Select(f => f.Folderid)
-            .ToHashSet();
+        var folderIds = foldersToDelete.Select(f => f.Folderid).ToHashSet();
 
-        var userFiles = await _userFileRepository.GetByUserIdAsync(
-            userId,
-            cancellationToken);
+        var userFiles = await _userFileRepository.GetByUserIdAsync(userId, cancellationToken);
 
         foreach (var folderToDelete in foldersToDelete)
         {
@@ -178,9 +169,7 @@ public class FolderService : IFolderService
             _folderRepository.Update(folderToDelete);
         }
 
-        foreach (var userFile in userFiles.Where(
-                     f => f.Folderid.HasValue &&
-                          folderIds.Contains(f.Folderid.Value)))
+        foreach (var userFile in userFiles.Where(f => f.Folderid.HasValue && folderIds.Contains(f.Folderid.Value)))
         {
             userFile.Isdeleted = true;
             userFile.Deletedat = deletedAt;
@@ -197,9 +186,7 @@ public class FolderService : IFolderService
         };
     }
 
-    private static List<Folder> GetFolderTree(
-        Folder rootFolder,
-        IReadOnlyDictionary<Guid, List<Folder>> foldersByParentId)
+    private static List<Folder> GetFolderTree(Folder rootFolder, IReadOnlyDictionary<Guid, List<Folder>> foldersByParentId)
     {
         var folders = new List<Folder>();
         var foldersToVisit = new Stack<Folder>();
@@ -211,9 +198,7 @@ public class FolderService : IFolderService
             var currentFolder = foldersToVisit.Pop();
             folders.Add(currentFolder);
 
-            if (!foldersByParentId.TryGetValue(
-                    currentFolder.Folderid,
-                    out var childFolders))
+            if (!foldersByParentId.TryGetValue(currentFolder.Folderid, out var childFolders))
             {
                 continue;
             }
@@ -242,8 +227,7 @@ public class FolderService : IFolderService
         {
             destinationFolder = await _folderRepository.GetByIdAsync(request.DestinationFolderId.Value, cancellationToken);
 
-            if (destinationFolder == null || destinationFolder.Ownerid != userId ||
-                destinationFolder.Isdeleted)
+            if (destinationFolder == null || destinationFolder.Ownerid != userId || destinationFolder.Isdeleted)
             {
                 throw new KeyNotFoundException("Destination folder not found.");
             }
@@ -261,13 +245,10 @@ public class FolderService : IFolderService
             {
                 if (current.Parentfolderid == sourceFolder.Folderid)
                 {
-                    throw new InvalidOperationException(
-                        "A folder cannot be moved into one of its descendants.");
+                    throw new InvalidOperationException("A folder cannot be moved into one of its descendants.");
                 }
     
-                var parent = await _folderRepository.GetByIdAsync(
-                    current.Parentfolderid.Value,
-                    cancellationToken);
+                var parent = await _folderRepository.GetByIdAsync(current.Parentfolderid.Value, cancellationToken);
     
                 if (parent == null)
                 {

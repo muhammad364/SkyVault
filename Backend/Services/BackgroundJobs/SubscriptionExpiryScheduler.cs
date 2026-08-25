@@ -10,10 +10,7 @@ public class SubscriptionExpiryScheduler : BackgroundService
     private readonly ILogger<SubscriptionExpiryScheduler> _logger;
     private readonly BackgroundTaskSchedulerOptions _options;
 
-    public SubscriptionExpiryScheduler(
-        IServiceScopeFactory scopeFactory,
-        IOptions<BackgroundTaskSchedulerOptions> options,
-        ILogger<SubscriptionExpiryScheduler> logger)
+    public SubscriptionExpiryScheduler(IServiceScopeFactory scopeFactory, IOptions<BackgroundTaskSchedulerOptions> options, ILogger<SubscriptionExpiryScheduler> logger)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;

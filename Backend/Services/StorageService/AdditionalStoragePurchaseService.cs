@@ -31,16 +31,7 @@ public class AdditionalStoragePurchaseService : IAdditionalStoragePurchaseServic
 
     private readonly IUnitOfWork _unitOfWork;
 
-    public AdditionalStoragePurchaseService(
-        IAdditionalStoragePurchaseRepository purchaseRepository,
-        ISubscriptionRepository subscriptionRepository,
-        IStorageQuotaService storageQuotaService,
-        IStoragePlanRepository storagePlanRepository,
-        IPaymentService paymentService,
-        IMapper mapper,
-        IEmailJobScheduler emailJobScheduler,
-        IUserRepository userRepository,
-        IUnitOfWork unitOfWork)
+    public AdditionalStoragePurchaseService(IAdditionalStoragePurchaseRepository purchaseRepository, ISubscriptionRepository subscriptionRepository, IStorageQuotaService storageQuotaService, IStoragePlanRepository storagePlanRepository, IPaymentService paymentService, IMapper mapper, IEmailJobScheduler emailJobScheduler, IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _purchaseRepository = purchaseRepository;
         _subscriptionRepository = subscriptionRepository;
@@ -53,9 +44,7 @@ public class AdditionalStoragePurchaseService : IAdditionalStoragePurchaseServic
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<AdditionalStorageQuoteResponseDto> GetQuoteAsync(
-        Guid userId, AdditionalStorageQuoteRequestDto request,
-        CancellationToken cancellationToken = default)
+    public async Task<AdditionalStorageQuoteResponseDto> GetQuoteAsync(Guid userId, AdditionalStorageQuoteRequestDto request, CancellationToken cancellationToken = default)
     {
         var activeSubscription = await GetActiveSubscriptionAsync(userId, cancellationToken);
 
@@ -80,9 +69,9 @@ public class AdditionalStoragePurchaseService : IAdditionalStoragePurchaseServic
 
         var basePricePerGb = (storagePlan.Price / storagePlan.Storagesizegb) * 2;
 
-        var pricePerGb =Math.Round(basePricePerGb * (historicalPurchases.Count() + 1), 2, MidpointRounding.AwayFromZero);
+        var pricePerGb = Math.Round(basePricePerGb * (historicalPurchases.Count() + 1), 2, MidpointRounding.AwayFromZero);
 
-        var totalPrice =Math.Round(pricePerGb * request.StorageAmountGb, 2, MidpointRounding.AwayFromZero);
+        var totalPrice = Math.Round(pricePerGb * request.StorageAmountGb, 2, MidpointRounding.AwayFromZero);
 
         return new AdditionalStorageQuoteResponseDto
         {
@@ -92,15 +81,9 @@ public class AdditionalStoragePurchaseService : IAdditionalStoragePurchaseServic
         };
     }
 
-    public async Task<PurchaseAdditionalStorageResponseDto> PurchaseAsync(
-        Guid userId,
-        PurchaseAdditionalStorageRequestDto request,
-        CancellationToken cancellationToken = default)
+    public async Task<PurchaseAdditionalStorageResponseDto> PurchaseAsync(Guid userId, PurchaseAdditionalStorageRequestDto request, CancellationToken cancellationToken = default)
     {
-        var quote = await GetQuoteAsync(userId, new AdditionalStorageQuoteRequestDto
-            {
-                StorageAmountGb = request.StorageAmountGb
-            }, cancellationToken);
+        var quote = await GetQuoteAsync(userId, new AdditionalStorageQuoteRequestDto { StorageAmountGb = request.StorageAmountGb }, cancellationToken);
 
         // The server determines the actual amount.
         // Any amount supplied by the client is ignored.
@@ -113,7 +96,7 @@ public class AdditionalStoragePurchaseService : IAdditionalStoragePurchaseServic
             throw new InvalidOperationException(paymentResult.Message);
         }
 
-        var purchase =_mapper.Map<Additionalstoragepurchase>(request);
+        var purchase = _mapper.Map<Additionalstoragepurchase>(request);
 
         purchase.Userid = userId;
         purchase.Price = quote.TotalPrice;
@@ -129,26 +112,20 @@ public class AdditionalStoragePurchaseService : IAdditionalStoragePurchaseServic
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
         if (user is not null)
         {
-            await _emailJobScheduler.QueueSubscriptionSuccessEmailAsync(
-                user.Email,
-                $"Additional {purchase.Storageamountgb} GB",
-                purchase.Price,
-                cancellationToken);
+            await _emailJobScheduler.QueueSubscriptionSuccessEmailAsync(user.Email, $"Additional {purchase.Storageamountgb} GB", purchase.Price, cancellationToken);
         }
 
         return _mapper.Map<PurchaseAdditionalStorageResponseDto>(purchase);
     }
 
-    public async Task<IEnumerable<PurchaseAdditionalStorageResponseDto>>GetCurrentUserPurchasesAsync(
-        Guid userId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<PurchaseAdditionalStorageResponseDto>>GetCurrentUserPurchasesAsync(Guid userId, CancellationToken cancellationToken = default)
         {
         var purchases = await _purchaseRepository.GetByUserIdAsync(userId, cancellationToken);
 
         return _mapper.Map<IEnumerable<PurchaseAdditionalStorageResponseDto>>(purchases);
     }
 
-    public async Task ActivatePurchasesAsync(
-        Guid userId, CancellationToken cancellationToken = default)
+    public async Task ActivatePurchasesAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var purchases = await _purchaseRepository.GetByUserIdAsync(userId, cancellationToken);
 

@@ -6,10 +6,7 @@ public class QueuedBackgroundWorker : BackgroundService
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<QueuedBackgroundWorker> _logger;
 
-    public QueuedBackgroundWorker(
-        IBackgroundTaskQueue backgroundTaskQueue,
-        IServiceScopeFactory scopeFactory,
-        ILogger<QueuedBackgroundWorker> logger)
+    public QueuedBackgroundWorker(IBackgroundTaskQueue backgroundTaskQueue, IServiceScopeFactory scopeFactory, ILogger<QueuedBackgroundWorker> logger)
     {
         _backgroundTaskQueue = backgroundTaskQueue;
         _scopeFactory = scopeFactory;

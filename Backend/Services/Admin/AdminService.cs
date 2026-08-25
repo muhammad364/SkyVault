@@ -17,14 +17,7 @@ public class AdminService : IAdminService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditLogService _auditLogService;
 
-    public AdminService(
-        IUserRepository userRepository,
-        IStoragePlanRepository storagePlanRepository,
-        ISubscriptionRepository subscriptionRepository,
-        IStorageAccountRepository storageAccountRepository,
-        IUnitOfWork unitOfWork,
-        IMapper mapper,
-        IAuditLogService auditLogService)
+    public AdminService(IUserRepository userRepository, IStoragePlanRepository storagePlanRepository, ISubscriptionRepository subscriptionRepository, IStorageAccountRepository storageAccountRepository, IUnitOfWork unitOfWork, IMapper mapper, IAuditLogService auditLogService)
     {
         _userRepository = userRepository;
         _storagePlanRepository = storagePlanRepository;
@@ -43,7 +36,7 @@ public class AdminService : IAdminService
         return _mapper.Map<IEnumerable<AdminUserDto>>(users);
     }
 
-    public async Task<AdminUserDto> GetUserByIdAsync(Guid userId,CancellationToken cancellationToken = default)
+    public async Task<AdminUserDto> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
 
@@ -53,7 +46,7 @@ public class AdminService : IAdminService
         return _mapper.Map<AdminUserDto>(user);
     }
 
-    public async Task<AdminUserDto> ActivateUserAsync(Guid userId,CancellationToken cancellationToken = default)
+    public async Task<AdminUserDto> ActivateUserAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
 
@@ -67,18 +60,13 @@ public class AdminService : IAdminService
             _userRepository.Update(user);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            await _auditLogService.RecordAsync(
-                "UserActivated",
-                "User",
-                user.Userid,
-                "Administrator activated a user account.",
-                cancellationToken);
+            await _auditLogService.RecordAsync("UserActivated", "User", user.Userid, "Administrator activated a user account.", cancellationToken);
         }
 
         return _mapper.Map<AdminUserDto>(user);
     }
 
-    public async Task<AdminUserDto> DeactivateUserAsync(Guid userId,CancellationToken cancellationToken = default)
+    public async Task<AdminUserDto> DeactivateUserAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
 
@@ -92,12 +80,7 @@ public class AdminService : IAdminService
             _userRepository.Update(user);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            await _auditLogService.RecordAsync(
-                "UserDeactivated",
-                "User",
-                user.Userid,
-                "Administrator deactivated a user account.",
-                cancellationToken);
+            await _auditLogService.RecordAsync("UserDeactivated", "User", user.Userid, "Administrator deactivated a user account.", cancellationToken);
         }
 
         return _mapper.Map<AdminUserDto>(user);
@@ -133,7 +116,7 @@ public class AdminService : IAdminService
         };
     }
 
-    public async Task<UserStorageAllocationDto> GetUserStorageAllocationAsync(Guid userId,CancellationToken cancellationToken = default)
+    public async Task<UserStorageAllocationDto> GetUserStorageAllocationAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
 

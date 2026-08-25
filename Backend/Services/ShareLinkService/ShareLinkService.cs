@@ -20,12 +20,7 @@ public class ShareLinkService : IShareLinkService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public ShareLinkService(
-        IShareLinkRepository shareLinkRepository,
-        IUserFileRepository userFileRepository,
-        IUserFileService userFileService,
-        IUnitOfWork unitOfWork,
-        IMapper mapper)
+    public ShareLinkService(IShareLinkRepository shareLinkRepository, IUserFileRepository userFileRepository, IUserFileService userFileService, IUnitOfWork unitOfWork, IMapper mapper)
     {
         _shareLinkRepository = shareLinkRepository;
         _userFileRepository = userFileRepository;
@@ -34,7 +29,7 @@ public class ShareLinkService : IShareLinkService
         _mapper = mapper;
     }
 
-    public async Task<ShareLinkDto> GenerateAsync(GenerateShareLinkRequestDto request,Guid ownerId,CancellationToken cancellationToken = default)
+    public async Task<ShareLinkDto> GenerateAsync(GenerateShareLinkRequestDto request, Guid ownerId, CancellationToken cancellationToken = default)
     {
         if (request is null)
         {
@@ -51,7 +46,7 @@ public class ShareLinkService : IShareLinkService
             throw new InvalidOperationException("Expiration date must be in the future.");
         }
 
-        var file = await _userFileRepository.GetByIdAsync(request.FileId,cancellationToken);
+        var file = await _userFileRepository.GetByIdAsync(request.FileId, cancellationToken);
 
         if (file is null || file.Ownerid != ownerId || file.Isdeleted)
         {
@@ -78,25 +73,23 @@ public class ShareLinkService : IShareLinkService
         return _mapper.Map<ShareLinkDto>(shareLink);
     }
 
-    public async Task<IEnumerable<ShareLinkDto>> GetOwnerLinksAsync(Guid ownerId,CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<ShareLinkDto>> GetOwnerLinksAsync(Guid ownerId, CancellationToken cancellationToken = default)
     {
-        var shareLinks = await _shareLinkRepository.GetByOwnerIdAsync(ownerId,cancellationToken);
+        var shareLinks = await _shareLinkRepository.GetByOwnerIdAsync(ownerId, cancellationToken);
 
         var orderedLinks = shareLinks.OrderByDescending(link => link.Createdat);
 
         return _mapper.Map<IEnumerable<ShareLinkDto>>(orderedLinks);
     }
 
-    public async Task<MessageResponseDto> RevokeAsync(Guid shareLinkId,Guid ownerId,CancellationToken cancellationToken = default)
+    public async Task<MessageResponseDto> RevokeAsync(Guid shareLinkId, Guid ownerId, CancellationToken cancellationToken = default)
     {
         if (shareLinkId == Guid.Empty)
         {
             throw new InvalidOperationException("Share link ID is required.");
         }
 
-        var shareLink = await _shareLinkRepository.GetByIdAsync(
-            shareLinkId,
-            cancellationToken);
+        var shareLink = await _shareLinkRepository.GetByIdAsync(shareLinkId, cancellationToken);
 
         if (shareLink is null || shareLink.Ownerid != ownerId)
         {
@@ -123,49 +116,27 @@ public class ShareLinkService : IShareLinkService
         };
     }
 
-    public async Task<(Stream Stream, string ContentType, string FileName)> PreviewByTokenAsync(
-        string shareToken,
-        CancellationToken cancellationToken = default)
+    public async Task<(Stream Stream, string ContentType, string FileName)> PreviewByTokenAsync(string shareToken, CancellationToken cancellationToken = default)
     {
-        var shareLink = await GetValidShareLinkAsync(
-            shareToken,
-            cancellationToken);
+        var shareLink = await GetValidShareLinkAsync(shareToken, cancellationToken);
 
-        var file = await GetSharedActiveFileAsync(
-            shareLink.Fileid,
-            cancellationToken);
+        var file = await GetSharedActiveFileAsync(shareLink.Fileid, cancellationToken);
 
-        return await _userFileService.PreviewAsync(
-            file.Fileid,
-            file.Ownerid,
-            cancellationToken);
+        return await _userFileService.PreviewAsync(file.Fileid, file.Ownerid, cancellationToken);
     }
 
-    public async Task<(Stream Stream, string ContentType, string FileName)> DownloadByTokenAsync(
-        string shareToken,
-        CancellationToken cancellationToken = default)
+    public async Task<(Stream Stream, string ContentType, string FileName)> DownloadByTokenAsync(string shareToken, CancellationToken cancellationToken = default)
     {
-        var shareLink = await GetValidShareLinkAsync(
-            shareToken,
-            cancellationToken);
+        var shareLink = await GetValidShareLinkAsync(shareToken, cancellationToken);
 
-        var file = await GetSharedActiveFileAsync(
-            shareLink.Fileid,
-            cancellationToken);
+        var file = await GetSharedActiveFileAsync(shareLink.Fileid, cancellationToken);
 
-        return await _userFileService.DownloadAsync(
-            file.Fileid,
-            file.Ownerid,
-            cancellationToken);
+        return await _userFileService.DownloadAsync(file.Fileid, file.Ownerid, cancellationToken);
     }
 
-    private async Task<Userfile> GetSharedActiveFileAsync(
-        Guid fileId,
-        CancellationToken cancellationToken)
+    private async Task<Userfile> GetSharedActiveFileAsync(Guid fileId, CancellationToken cancellationToken)
     {
-        var file = await _userFileRepository.GetByIdAsync(
-            fileId,
-            cancellationToken);
+        var file = await _userFileRepository.GetByIdAsync(fileId, cancellationToken);
 
         if (file is null || file.Isdeleted)
         {
@@ -175,9 +146,7 @@ public class ShareLinkService : IShareLinkService
         return file;
     }
 
-    private async Task<Sharelink> GetValidShareLinkAsync(
-        string shareToken,
-        CancellationToken cancellationToken)
+    private async Task<Sharelink> GetValidShareLinkAsync(string shareToken, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(shareToken))
         {
@@ -186,9 +155,7 @@ public class ShareLinkService : IShareLinkService
 
         var normalizedToken = shareToken.Trim();
 
-        var shareLink = await _shareLinkRepository.GetByTokenAsync(
-            normalizedToken,
-            cancellationToken);
+        var shareLink = await _shareLinkRepository.GetByTokenAsync(normalizedToken, cancellationToken);
 
         if (shareLink is null)
         {
@@ -214,9 +181,7 @@ public class ShareLinkService : IShareLinkService
         {
             var candidateToken = GenerateSecureToken();
 
-            var existingShareLink = await _shareLinkRepository.GetByTokenAsync(
-                candidateToken,
-                cancellationToken);
+            var existingShareLink = await _shareLinkRepository.GetByTokenAsync(candidateToken, cancellationToken);
 
             if (existingShareLink is null)
             {
@@ -224,18 +189,13 @@ public class ShareLinkService : IShareLinkService
             }
         }
 
-        throw new InvalidOperationException(
-            "Could not generate a unique share token.");
+        throw new InvalidOperationException("Could not generate a unique share token.");
     }
 
     private static string GenerateSecureToken()
     {
         var tokenBytes = RandomNumberGenerator.GetBytes(ShareTokenSizeBytes);
 
-        return Convert
-            .ToBase64String(tokenBytes)
-            .TrimEnd('=')
-            .Replace('+', '-')
-            .Replace('/', '_');
+        return Convert.ToBase64String(tokenBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
     }
 }

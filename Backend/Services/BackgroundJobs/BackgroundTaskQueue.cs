@@ -27,9 +27,7 @@ public class BackgroundTaskQueue : IBackgroundTaskQueue
         _queue = Channel.CreateBounded<Func<IServiceProvider, CancellationToken, Task>>(channelOptions);
     }
 
-    public async ValueTask QueueAsync(
-        Func<IServiceProvider, CancellationToken, Task> workItem,
-        CancellationToken cancellationToken = default)
+    public async ValueTask QueueAsync(Func<IServiceProvider, CancellationToken, Task> workItem, CancellationToken cancellationToken = default)
     {
         if (workItem is null)
         {
@@ -39,8 +37,7 @@ public class BackgroundTaskQueue : IBackgroundTaskQueue
         await _queue.Writer.WriteAsync(workItem, cancellationToken);
     }
 
-    public async ValueTask<Func<IServiceProvider, CancellationToken, Task>> DequeueAsync(
-        CancellationToken cancellationToken)
+    public async ValueTask<Func<IServiceProvider, CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)
     {
         return await _queue.Reader.ReadAsync(cancellationToken);
     }

@@ -32,12 +32,7 @@ public class EmailConfigurationAdminService : IEmailConfigurationAdminService
     private readonly IDataProtector _dataProtector;
     private readonly IAuditLogService _auditLogService;
 
-    public EmailConfigurationAdminService(
-        IEmailConfigurationRepository repository,
-        IMapper mapper,
-        IUnitOfWork unitOfWork,
-        IDataProtectionProvider dataProtectionProvider,
-        IAuditLogService auditLogService)
+    public EmailConfigurationAdminService(IEmailConfigurationRepository repository, IMapper mapper, IUnitOfWork unitOfWork, IDataProtectionProvider dataProtectionProvider, IAuditLogService auditLogService)
     {
         _repository = repository;
         _mapper = mapper;

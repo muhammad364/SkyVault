@@ -4,9 +4,9 @@ namespace SkyVault.Services.StorageProvider;
 
 public interface IStorageProviderService
 {
-    Task<StorageProviderResponseDto> CreateAsync(CreateStorageProviderRequestDto request,CancellationToken cancellationToken = default);
+    Task<StorageProviderResponseDto> CreateAsync(CreateStorageProviderRequestDto request, CancellationToken cancellationToken = default);
 
-    Task<StorageProviderResponseDto?> GetByIdAsync(Guid providerId,CancellationToken cancellationToken = default);
+    Task<StorageProviderResponseDto?> GetByIdAsync(Guid providerId, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<StorageProviderResponseDto>> GetAllAsync(CancellationToken cancellationToken = default);
 

@@ -34,16 +34,7 @@ public class SubscriptionService : ISubscriptionService
 
     private readonly IUnitOfWork _unitOfWork;
 
-    public SubscriptionService(
-        ISubscriptionRepository subscriptionRepository,
-        IStoragePlanRepository storagePlanRepository,
-        IAdditionalStoragePurchaseService additionalStoragePurchaseService,
-        IStorageQuotaService storageQuotaService,
-        IPaymentService paymentService,
-        IMapper mapper,
-        IEmailJobScheduler emailJobScheduler,
-        IUserRepository userRepository,
-        IUnitOfWork unitOfWork)
+    public SubscriptionService(ISubscriptionRepository subscriptionRepository, IStoragePlanRepository storagePlanRepository, IAdditionalStoragePurchaseService additionalStoragePurchaseService, IStorageQuotaService storageQuotaService, IPaymentService paymentService, IMapper mapper, IEmailJobScheduler emailJobScheduler, IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _subscriptionRepository = subscriptionRepository;
         _storagePlanRepository = storagePlanRepository;
@@ -57,12 +48,9 @@ public class SubscriptionService : ISubscriptionService
 
     }
 
-    public async Task<SubscriptionResponseDto> SubscribeAsync(
-        Guid userId,
-        SubscribeRequestDto request,
-        CancellationToken cancellationToken = default)
+    public async Task<SubscriptionResponseDto> SubscribeAsync(Guid userId, SubscribeRequestDto request, CancellationToken cancellationToken = default)
     {
-        var storagePlan =await _storagePlanRepository.GetByIdAsync(request.StoragePlanId, cancellationToken);
+        var storagePlan = await _storagePlanRepository.GetByIdAsync(request.StoragePlanId, cancellationToken);
 
         if (storagePlan is null)
         {
@@ -79,7 +67,7 @@ public class SubscriptionService : ISubscriptionService
             throw new InvalidOperationException("Selected storage plan has an invalid billing cycle.");
         }
 
-        var subscriptions = await _subscriptionRepository.GetByUserIdAsync( userId, cancellationToken);
+        var subscriptions = await _subscriptionRepository.GetByUserIdAsync(userId, cancellationToken);
 
         var activeSubscription = subscriptions.FirstOrDefault(s => s.Status == ActiveStatus);
 
@@ -146,9 +134,7 @@ public class SubscriptionService : ISubscriptionService
         return _mapper.Map<SubscriptionResponseDto>(subscription);
     }
 
-    public async Task<SubscriptionResponseDto?> GetCurrentSubscriptionAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default)
+    public async Task<SubscriptionResponseDto?> GetCurrentSubscriptionAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var subscriptions = await _subscriptionRepository.GetByUserIdAsync(userId, cancellationToken);
 
@@ -158,13 +144,7 @@ public class SubscriptionService : ISubscriptionService
 
         if (subscription is null)
         {
-            subscription =subscriptions.Where(s =>
-                            (s.Status == CancelledStatus ||
-                             s.Status == ExpiredStatus) &&
-                            s.Graceperiodenddate.HasValue &&
-                            s.Graceperiodenddate.Value > now)
-                    .OrderByDescending(s => s.Startdate)
-                    .FirstOrDefault();
+            subscription = subscriptions.Where(s => (s.Status == CancelledStatus || s.Status == ExpiredStatus) && s.Graceperiodenddate.HasValue && s.Graceperiodenddate.Value > now).OrderByDescending(s => s.Startdate).FirstOrDefault();
         }
 
         if (subscription is null)
@@ -172,7 +152,7 @@ public class SubscriptionService : ISubscriptionService
             return null;
         }
 
-        var storagePlan = await _storagePlanRepository.GetByIdAsync(subscription.Storageplanid,cancellationToken);
+        var storagePlan = await _storagePlanRepository.GetByIdAsync(subscription.Storageplanid, cancellationToken);
 
         if (storagePlan is null)
         {
@@ -184,29 +164,17 @@ public class SubscriptionService : ISubscriptionService
         return _mapper.Map<SubscriptionResponseDto>(subscription);
     }
 
-    public async Task<SubscriptionResponseDto> RenewAsync(
-        Guid userId,
-        RenewSubscriptionRequestDto request,
-        CancellationToken cancellationToken = default)
+    public async Task<SubscriptionResponseDto> RenewAsync(Guid userId, RenewSubscriptionRequestDto request, CancellationToken cancellationToken = default)
     {
         var subscriptions = await _subscriptionRepository.GetByUserIdAsync(userId, cancellationToken);
 
         var now = DateTime.UtcNow;
 
-        var subscription =subscriptions.FirstOrDefault(s => s.Status == ActiveStatus);
+        var subscription = subscriptions.FirstOrDefault(s => s.Status == ActiveStatus);
 
         if (subscription is null)
         {
-            subscription =subscriptions
-                    .Where(
-                        s =>
-                            (s.Status == CancelledStatus ||
-                             s.Status == ExpiredStatus) &&
-                            s.Graceperiodenddate.HasValue &&
-                            s.Graceperiodenddate.Value > now)
-                    .OrderByDescending(
-                        s => s.Startdate)
-                    .FirstOrDefault();
+            subscription = subscriptions.Where(s => (s.Status == CancelledStatus || s.Status == ExpiredStatus) && s.Graceperiodenddate.HasValue && s.Graceperiodenddate.Value > now).OrderByDescending(s => s.Startdate).FirstOrDefault();
         }
 
         if (subscription is null)
@@ -229,7 +197,7 @@ public class SubscriptionService : ISubscriptionService
         await _storageQuotaService.EnsureSubscriptionAllocationSufficientAsync(userId, storagePlan.Storagesizegb, cancellationToken);
 
         // Server determines the payment amount.
-        request.Payment.Amount =storagePlan.Price;
+        request.Payment.Amount = storagePlan.Price;
 
         var paymentResult = await _paymentService.ProcessPaymentAsync(request.Payment, cancellationToken);
 
@@ -243,7 +211,7 @@ public class SubscriptionService : ISubscriptionService
         if (wasActive)
         {
             // Preserve remaining paid time.
-            subscription.Enddate =subscription.Enddate.AddMonths(storagePlan.Billingcycle);
+            subscription.Enddate = subscription.Enddate.AddMonths(storagePlan.Billingcycle);
         }
         else
         {
@@ -276,9 +244,7 @@ public class SubscriptionService : ISubscriptionService
         return _mapper.Map<SubscriptionResponseDto>(subscription);
     }
 
-    public async Task<SubscriptionResponseDto> CancelAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default)
+    public async Task<SubscriptionResponseDto> CancelAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var subscriptions = await _subscriptionRepository.GetByUserIdAsync(userId, cancellationToken);
 
@@ -291,7 +257,7 @@ public class SubscriptionService : ISubscriptionService
 
         activeSubscription.Status = CancelledStatus;
 
-        activeSubscription.Graceperiodenddate =DateTime.UtcNow.AddDays(GracePeriodDays);
+        activeSubscription.Graceperiodenddate = DateTime.UtcNow.AddDays(GracePeriodDays);
 
         _subscriptionRepository.Update(activeSubscription);
 
@@ -333,7 +299,7 @@ public class SubscriptionService : ISubscriptionService
         {
             subscription.Status = ExpiredStatus;
 
-            subscription.Graceperiodenddate =now.AddDays(GracePeriodDays);
+            subscription.Graceperiodenddate = now.AddDays(GracePeriodDays);
 
             _subscriptionRepository.Update(subscription);
 
@@ -345,10 +311,7 @@ public class SubscriptionService : ISubscriptionService
             if (user is not null)
             {
                 var storagePlan = await _storagePlanRepository.GetByIdAsync(subscription.Storageplanid, cancellationToken);
-                await _emailJobScheduler.QueueSubscriptionExpiryEmailAsync(
-                    user.Email,
-                    storagePlan?.Name ?? "SkyVault plan",
-                    cancellationToken);
+                await _emailJobScheduler.QueueSubscriptionExpiryEmailAsync(user.Email, storagePlan?.Name ?? "SkyVault plan", cancellationToken);
             }
         }
 

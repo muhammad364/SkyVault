@@ -23,19 +23,16 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
 
     private readonly IOptions<GoogleDriveOptions> _options;
 
-    public GoogleDriveStorageProvider(
-        IStorageAccountRepository storageAccountRepository,
-        IStorageProviderRepository storageProviderRepository,
-        IOptions<GoogleDriveOptions> options)
+    public GoogleDriveStorageProvider(IStorageAccountRepository storageAccountRepository, IStorageProviderRepository storageProviderRepository, IOptions<GoogleDriveOptions> options)
     {
         _storageAccountRepository = storageAccountRepository;
         _storageProviderRepository = storageProviderRepository;
         _options = options;
     }
 
-    public async Task<ProviderFileResult> UploadAsync(Guid storageAccountId,Stream content,string fileName,string contentType,CancellationToken cancellationToken = default)
+    public async Task<ProviderFileResult> UploadAsync(Guid storageAccountId, Stream content, string fileName, string contentType, CancellationToken cancellationToken = default)
     {
-        var context = await GetDriveContextAsync(storageAccountId,cancellationToken);
+        var context = await GetDriveContextAsync(storageAccountId, cancellationToken);
 
         var fileMetadata = new Google.Apis.Drive.v3.Data.File
         {
@@ -46,7 +43,7 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
             }
         };
 
-        var uploadRequest = context.DriveService.Files.Create(fileMetadata,content,contentType);
+        var uploadRequest = context.DriveService.Files.Create(fileMetadata, content, contentType);
 
         uploadRequest.Fields = "id,name,mimeType,size, createdTime, modifiedTime";
 
@@ -54,10 +51,7 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
 
         if (uploadProgress.Status != UploadStatus.Completed || uploadRequest.ResponseBody?.Id is null)
         {
-            throw new InvalidOperationException(
-                $"Upload failed.\n" +
-                $"Status: {uploadProgress.Status}\n" +
-                $"Exception: {uploadProgress.Exception}");
+            throw new InvalidOperationException($"Upload failed.\n" + $"Status: {uploadProgress.Status}\n" + $"Exception: {uploadProgress.Exception}");
         }
 
         var uploadedFile = uploadRequest.ResponseBody;
@@ -78,20 +72,20 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
         };
     }
 
-    public async Task<Stream> DownloadAsync(Guid storageAccountId,string providerObjectId,CancellationToken cancellationToken = default)
+    public async Task<Stream> DownloadAsync(Guid storageAccountId, string providerObjectId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(providerObjectId))
         {
             throw new ArgumentException("Provider object ID is required.", nameof(providerObjectId));
         }
 
-        var context = await GetDriveContextAsync(storageAccountId,cancellationToken);
+        var context = await GetDriveContextAsync(storageAccountId, cancellationToken);
 
         var downloadStream = new MemoryStream();
 
-        var downloadRequest =context.DriveService.Files.Get(providerObjectId);
+        var downloadRequest = context.DriveService.Files.Get(providerObjectId);
 
-        var downloadProgress =await downloadRequest.DownloadAsync(downloadStream, cancellationToken);
+        var downloadProgress = await downloadRequest.DownloadAsync(downloadStream, cancellationToken);
 
         if (downloadProgress.Status != DownloadStatus.Completed)
         {
@@ -105,21 +99,21 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
         return downloadStream;
     }
 
-    public async Task<ProviderFileResult> ReplaceAsync(Guid storageAccountId,string providerObjectId,Stream content,string fileName,string contentType,CancellationToken cancellationToken = default)
+    public async Task<ProviderFileResult> ReplaceAsync(Guid storageAccountId, string providerObjectId, Stream content, string fileName, string contentType, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(providerObjectId))
         {
-            throw new ArgumentException("Provider object ID is required.",nameof(providerObjectId));
+            throw new ArgumentException("Provider object ID is required.", nameof(providerObjectId));
         }
 
-        var context = await GetDriveContextAsync(storageAccountId,cancellationToken);
+        var context = await GetDriveContextAsync(storageAccountId, cancellationToken);
 
         var fileMetadata = new Google.Apis.Drive.v3.Data.File
             {
                 Name = fileName
             };
 
-        var updateRequest = context.DriveService.Files.Update(fileMetadata,providerObjectId,content,contentType);
+        var updateRequest = context.DriveService.Files.Update(fileMetadata, providerObjectId, content, contentType);
 
         updateRequest.Fields = "id,name,mimeType,size,createdTime,modifiedTime";
 
@@ -148,16 +142,16 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
         };
     }
 
-    public async Task<ProviderFileResult> CopyAsync(Guid storageAccountId,string providerObjectId,string fileName,CancellationToken cancellationToken = default)
+    public async Task<ProviderFileResult> CopyAsync(Guid storageAccountId, string providerObjectId, string fileName, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(providerObjectId))
         {
-            throw new ArgumentException("Provider object ID is required.",nameof(providerObjectId));
+            throw new ArgumentException("Provider object ID is required.", nameof(providerObjectId));
         }
 
-        var context = await GetDriveContextAsync(storageAccountId,cancellationToken);
+        var context = await GetDriveContextAsync(storageAccountId, cancellationToken);
 
-        var metadata =new Google.Apis.Drive.v3.Data.File
+        var metadata = new Google.Apis.Drive.v3.Data.File
             {
                 Name = fileName,
                 Parents = new List<string>
@@ -193,19 +187,19 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
         };
     }
 
-    public async Task DeleteAsync(Guid storageAccountId,string providerObjectId,CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Guid storageAccountId, string providerObjectId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(providerObjectId))
         {
-            throw new ArgumentException("Provider object ID is required.",nameof(providerObjectId));
+            throw new ArgumentException("Provider object ID is required.", nameof(providerObjectId));
         }
 
-        var context = await GetDriveContextAsync(storageAccountId,cancellationToken, requireActiveAccount: false);
+        var context = await GetDriveContextAsync(storageAccountId, cancellationToken, requireActiveAccount: false);
 
         await context.DriveService.Files.Delete(providerObjectId).ExecuteAsync(cancellationToken);
     }
 
-    private async Task<GoogleDriveContext> GetDriveContextAsync(Guid storageAccountId,CancellationToken cancellationToken, bool requireActiveAccount = true)
+    private async Task<GoogleDriveContext> GetDriveContextAsync(Guid storageAccountId, CancellationToken cancellationToken, bool requireActiveAccount = true)
     {
         var storageAccount = await _storageAccountRepository.GetByIdAsync(storageAccountId, cancellationToken);
 
@@ -219,7 +213,7 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
             throw new InvalidOperationException("The selected storage account is inactive.");
         }
 
-        var storageProvider =await _storageProviderRepository.GetByIdAsync(storageAccount.Providerid, cancellationToken);
+        var storageProvider = await _storageProviderRepository.GetByIdAsync(storageAccount.Providerid, cancellationToken);
 
         if (storageProvider is null)
         {
@@ -231,48 +225,31 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
             throw new InvalidOperationException("The storage provider associated with the storage account is inactive.");
         }
 
-        if (!string.Equals(storageProvider.Providertype,GoogleDriveProviderType,StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(storageProvider.Providertype, GoogleDriveProviderType, StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException("The selected storage account does not belong to the Google Drive provider.");
         }
 
-        var accountOptions =_options.Value.Accounts.FirstOrDefault(account => string
-            .Equals(account.AccountName, storageAccount.Accountname, StringComparison.OrdinalIgnoreCase));
+        var accountOptions = _options.Value.Accounts.FirstOrDefault(account => string.Equals(account.AccountName, storageAccount.Accountname, StringComparison.OrdinalIgnoreCase));
 
         if (accountOptions is null)
         {
-            throw new InvalidOperationException(
-                "No Google Drive credentials were configured for the selected storage account.");
+            throw new InvalidOperationException("No Google Drive credentials were configured for the selected storage account.");
         }
 
-        if (string.IsNullOrWhiteSpace(
-                accountOptions.RefreshToken))
+        if (string.IsNullOrWhiteSpace(accountOptions.RefreshToken))
         {
-            throw new InvalidOperationException(
-                "The Google Drive refresh token for the selected storage account is missing.");
+            throw new InvalidOperationException("The Google Drive refresh token for the selected storage account is missing.");
         }
 
-        if (string.IsNullOrWhiteSpace(
-                _options.Value.ClientId) ||
-            string.IsNullOrWhiteSpace(
-                _options.Value.ClientSecret))
+        if (string.IsNullOrWhiteSpace(_options.Value.ClientId) || string.IsNullOrWhiteSpace(_options.Value.ClientSecret))
         {
-            throw new InvalidOperationException(
-                "Google Drive OAuth client credentials are not configured.");
+            throw new InvalidOperationException("Google Drive OAuth client credentials are not configured.");
         }
 
-        var flow =
-            new GoogleAuthorizationCodeFlow(
-                new GoogleAuthorizationCodeFlow.Initializer
-                {
-                    ClientSecrets =
-                        new ClientSecrets
-                        {
-                            ClientId =
-                                _options.Value.ClientId,
+        var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer { ClientSecrets = new ClientSecrets { ClientId = _options.Value.ClientId,
 
-                            ClientSecret =
-                                _options.Value.ClientSecret
+                            ClientSecret = _options.Value.ClientSecret
                         },
 
                     Scopes = new[]
@@ -281,38 +258,23 @@ public class GoogleDriveStorageProvider : IPhysicalStorageProvider
                     }
                 });
 
-        var tokenResponse =
-            new TokenResponse
+        var tokenResponse = new TokenResponse
             {
-                RefreshToken =
-                    accountOptions.RefreshToken
+                RefreshToken = accountOptions.RefreshToken
             };
 
-        var credential =
-            new UserCredential(
-                flow,
-                storageAccount.Accountname,
-                tokenResponse);
+        var credential = new UserCredential(flow, storageAccount.Accountname, tokenResponse);
 
-        var driveService =
-            new DriveService(
-                new BaseClientService.Initializer
-                {
-                    HttpClientInitializer =
-                        credential,
+        var driveService = new DriveService(new BaseClientService.Initializer { HttpClientInitializer = credential,
 
-                    ApplicationName =
-                        _options.Value.ApplicationName
+                    ApplicationName = _options.Value.ApplicationName
                 });
 
         return new GoogleDriveContext
         {
-            DriveService =
-                driveService,
+            DriveService = driveService,
 
-            RootFolderId =
-                string.IsNullOrWhiteSpace(
-                    accountOptions.RootFolderId)
+            RootFolderId = string.IsNullOrWhiteSpace(accountOptions.RootFolderId)
                     ? "root"
                     : accountOptions.RootFolderId
         };
