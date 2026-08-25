@@ -20,15 +20,12 @@ public class StorageAccountRepository : IStorageAccountRepository
 
     public async Task<Storageaccount?> GetByIdAsync(Guid storageAccountId, CancellationToken cancellationToken = default)
     {
-        return await _dbcontext.Storageaccounts
-            .Include(s => s.Provider)
-            .FirstOrDefaultAsync(s => s.Storageaccountid == storageAccountId, cancellationToken);
+        return await _dbcontext.Storageaccounts.Include(s => s.Provider).FirstOrDefaultAsync(s => s.Storageaccountid == storageAccountId, cancellationToken);
     }
 
     public async Task<IEnumerable<Storageaccount>> GetAllAsync(bool? isActive = null, CancellationToken cancellationToken = default)
     {
-        IQueryable<Storageaccount> query = _dbcontext.Storageaccounts
-            .Include(s => s.Provider);
+        IQueryable<Storageaccount> query = _dbcontext.Storageaccounts.Include(s => s.Provider);
 
         if (isActive.HasValue)
         {
@@ -38,22 +35,14 @@ public class StorageAccountRepository : IStorageAccountRepository
         return await query.ToListAsync(cancellationToken);
     }
 
-    public async Task<bool> TryReserveCapacityAsync(Guid storageAccountId,long capacityBytes,CancellationToken cancellationToken = default)
+    public async Task<bool> TryReserveCapacityAsync(Guid storageAccountId, long capacityBytes, CancellationToken cancellationToken = default)
     {
         if (capacityBytes <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(capacityBytes), "Capacity reservation must be greater than zero.");
         }
 
-        var affectedRows = await _dbcontext.Storageaccounts
-            .Where(s =>s.Storageaccountid == storageAccountId && s.Isactive && 
-                s.Provider.Isactive && s.Usedcapacitybytes + capacityBytes <= s.Totalcapacitybytes)
-            .ExecuteUpdateAsync(
-                setters =>
-                    setters.SetProperty(
-                        s => s.Usedcapacitybytes,
-                        s => s.Usedcapacitybytes + capacityBytes),
-                cancellationToken);
+        var affectedRows = await _dbcontext.Storageaccounts.Where(s =>s.Storageaccountid == storageAccountId && s.Isactive && s.Provider.Isactive && s.Usedcapacitybytes + capacityBytes <= s.Totalcapacitybytes).ExecuteUpdateAsync(setters => setters.SetProperty(s => s.Usedcapacitybytes, s => s.Usedcapacitybytes + capacityBytes), cancellationToken);
 
         return affectedRows == 1;
     }
@@ -65,12 +54,7 @@ public class StorageAccountRepository : IStorageAccountRepository
             throw new ArgumentOutOfRangeException(nameof(capacityBytes), "Capacity release must be greater than zero.");
         }
 
-        var affectedRows = await _dbcontext.Storageaccounts.Where(s =>
-            s.Storageaccountid == storageAccountId && s.Usedcapacitybytes >= capacityBytes)
-                .ExecuteUpdateAsync(
-                    setters => setters.SetProperty(
-                        s => s.Usedcapacitybytes,
-                        s => s.Usedcapacitybytes - capacityBytes), cancellationToken);
+        var affectedRows = await _dbcontext.Storageaccounts.Where(s => s.Storageaccountid == storageAccountId && s.Usedcapacitybytes >= capacityBytes).ExecuteUpdateAsync(setters => setters.SetProperty(s => s.Usedcapacitybytes, s => s.Usedcapacitybytes - capacityBytes), cancellationToken);
 
         return affectedRows == 1;
     }

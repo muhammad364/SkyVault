@@ -14,9 +14,7 @@ public class StoragePlanRepository : IStoragePlanRepository
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<Storageplan>> GetAllAsync(
-        bool? isActive = null,
-        CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Storageplan>> GetAllAsync(bool? isActive = null, CancellationToken cancellationToken = default)
     {
         IQueryable<Storageplan> query = _dbContext.Storageplans;
 
@@ -28,32 +26,19 @@ public class StoragePlanRepository : IStoragePlanRepository
         return await query.ToListAsync(cancellationToken);
     }
 
-    public async Task<Storageplan?> GetByIdAsync(
-        Guid storagePlanId,
-        CancellationToken cancellationToken = default)
+    public async Task<Storageplan?> GetByIdAsync(Guid storagePlanId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Storageplans
-            .FirstOrDefaultAsync(
-                p => p.Storageplanid == storagePlanId,
-                cancellationToken);
+        return await _dbContext.Storageplans.FirstOrDefaultAsync(p => p.Storageplanid == storagePlanId, cancellationToken);
     }
 
-    public async Task<Storageplan?> GetByNameAsync(
-        string name,
-        CancellationToken cancellationToken = default)
+    public async Task<Storageplan?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Storageplans
-            .FirstOrDefaultAsync(
-                p => p.Name == name,
-                cancellationToken);
+        return await _dbContext.Storageplans.FirstOrDefaultAsync(p => p.Name == name, cancellationToken);
     }
 
-    public async Task AddAsync(
-        Storageplan storagePlan,
-        CancellationToken cancellationToken = default)
+    public async Task AddAsync(Storageplan storagePlan, CancellationToken cancellationToken = default)
     {
-        await _dbContext.Storageplans
-            .AddAsync(storagePlan, cancellationToken);
+        await _dbContext.Storageplans.AddAsync(storagePlan, cancellationToken);
     }
 
     public void Update(Storageplan storagePlan)

@@ -15,21 +15,17 @@ public class EmailConfigurationRepository : IEmailConfigurationRepository
 
     public async Task<IEnumerable<Emailconfiguration>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Emailconfigurations
-            .OrderByDescending(x => x.Updatedat)
-            .ToListAsync(cancellationToken);
+        return await _dbContext.Emailconfigurations.OrderByDescending(x => x.Updatedat).ToListAsync(cancellationToken);
     }
 
     public async Task<Emailconfiguration?> GetByIdAsync(Guid emailConfigurationId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Emailconfigurations
-            .FirstOrDefaultAsync(x => x.Emailconfigurationid == emailConfigurationId, cancellationToken);
+        return await _dbContext.Emailconfigurations.FirstOrDefaultAsync(x => x.Emailconfigurationid == emailConfigurationId, cancellationToken);
     }
 
     public async Task<Emailconfiguration?> GetActiveAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Emailconfigurations
-            .FirstOrDefaultAsync(x => x.Isactive, cancellationToken);
+        return await _dbContext.Emailconfigurations.FirstOrDefaultAsync(x => x.Isactive, cancellationToken);
     }
 
     public async Task AddAsync(Emailconfiguration emailConfiguration, CancellationToken cancellationToken = default)

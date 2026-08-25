@@ -10,7 +10,7 @@ public interface IStorageProviderRepository
 
     Task AddAsync(Storageprovider storageProvider, CancellationToken cancellationToken = default);
 
-    Task<Storageprovider?> GetByNameAsync(string name,CancellationToken cancellationToken = default);
+    Task<Storageprovider?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
 
     void Update(Storageprovider storageProvider);
 }

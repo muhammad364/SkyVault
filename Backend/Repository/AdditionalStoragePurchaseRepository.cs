@@ -30,8 +30,7 @@ public class AdditionalStoragePurchaseRepository : IAdditionalStoragePurchaseRep
 
     public async Task<IEnumerable<Additionalstoragepurchase>> GetAllAsync(short? status = null, CancellationToken cancellationToken = default)
     {
-        IQueryable<Additionalstoragepurchase> query =
-            _dbcontext.Additionalstoragepurchases;
+        IQueryable<Additionalstoragepurchase> query = _dbcontext.Additionalstoragepurchases;
 
         if (status.HasValue)
         {

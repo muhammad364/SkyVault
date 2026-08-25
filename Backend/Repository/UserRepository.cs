@@ -49,20 +49,7 @@ public class UserRepository : IUserRepository
 
         var now = DateTime.UtcNow;
 
-        var affectedRows = await _dbContext.Users
-            .Where(u =>
-                u.Userid == userId &&
-                u.Isactive &&
-                u.Usedstoragebytes + storageBytes <= u.Allocatedstoragebytes)
-            .ExecuteUpdateAsync(
-                setters => setters
-                    .SetProperty(
-                        u => u.Usedstoragebytes,
-                        u => u.Usedstoragebytes + storageBytes)
-                    .SetProperty(
-                        u => u.Updatedat,
-                        _ => now),
-                cancellationToken);
+        var affectedRows = await _dbContext.Users.Where(u => u.Userid == userId && u.Isactive && u.Usedstoragebytes + storageBytes <= u.Allocatedstoragebytes).ExecuteUpdateAsync(setters => setters.SetProperty(u => u.Usedstoragebytes, u => u.Usedstoragebytes + storageBytes).SetProperty(u => u.Updatedat, _ => now), cancellationToken);
 
         return affectedRows == 1;
     }
@@ -76,19 +63,7 @@ public class UserRepository : IUserRepository
 
         var now = DateTime.UtcNow;
 
-        var affectedRows = await _dbContext.Users
-            .Where(u =>
-                u.Userid == userId &&
-                u.Usedstoragebytes >= storageBytes)
-            .ExecuteUpdateAsync(
-                setters => setters
-                    .SetProperty(
-                        u => u.Usedstoragebytes,
-                        u => u.Usedstoragebytes - storageBytes)
-                    .SetProperty(
-                        u => u.Updatedat,
-                        _ => now),
-                cancellationToken);
+        var affectedRows = await _dbContext.Users.Where(u => u.Userid == userId && u.Usedstoragebytes >= storageBytes).ExecuteUpdateAsync(setters => setters.SetProperty(u => u.Usedstoragebytes, u => u.Usedstoragebytes - storageBytes).SetProperty(u => u.Updatedat, _ => now), cancellationToken);
 
         return affectedRows == 1;
     }

@@ -20,7 +20,7 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task<Subscription?> GetByIdAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Subscriptions.FirstOrDefaultAsync(s => s.Subscriptionid == subscriptionId,cancellationToken);
+        return await _dbContext.Subscriptions.FirstOrDefaultAsync(s => s.Subscriptionid == subscriptionId, cancellationToken);
     }
 
     public async Task<IEnumerable<Subscription>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)

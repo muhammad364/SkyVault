@@ -30,26 +30,18 @@ public class UserFileRepository : IUserFileRepository
 
     public async Task<IEnumerable<Userfile>> GetOwnedActiveFilesAsync(Guid ownerId, CancellationToken cancellationToken = default)
     {
-        return await _dbcontext.Userfiles
-            .Include(f => f.Folder)
-            .Where(f => f.Ownerid == ownerId && !f.Isdeleted)
-            .OrderBy(f => f.Filename)
-            .ToListAsync(cancellationToken);
+        return await _dbcontext.Userfiles.Include(f => f.Folder).Where(f => f.Ownerid == ownerId && !f.Isdeleted).OrderBy(f => f.Filename).ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Userfile>> GetByFolderIdAsync(Guid ownerId, Guid? folderId, CancellationToken cancellationToken = default)
     {
-        return await _dbcontext.Userfiles.Where(f => f.Ownerid == ownerId && f.Folderid == folderId && !f.Isdeleted)
-            .OrderBy(f => f.Filename)
-            .ToListAsync(cancellationToken);
+        return await _dbcontext.Userfiles.Where(f => f.Ownerid == ownerId && f.Folderid == folderId && !f.Isdeleted).OrderBy(f => f.Filename).ToListAsync(cancellationToken);
     }
 
 
-    public async Task<bool> ExistsAsync(Guid? folderId,string fileName,CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(Guid? folderId, string fileName, CancellationToken cancellationToken = default)
     {
-        return await _dbcontext.Userfiles.AnyAsync(
-            f => f.Folderid == folderId && !f.Isdeleted &&
-                f.Filename == fileName, cancellationToken);
+        return await _dbcontext.Userfiles.AnyAsync(f => f.Folderid == folderId && !f.Isdeleted && f.Filename == fileName, cancellationToken);
     }
 
     public void Update(Userfile userFile)
