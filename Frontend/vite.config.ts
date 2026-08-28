@@ -2,8 +2,24 @@ import { fileURLToPath, URL } from 'node:url'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 
+const backendProxy = {
+  '/api': {
+    target: 'https://localhost:7181',
+    changeOrigin: true,
+    // ASP.NET Core's local development certificate is not publicly trusted.
+    secure: false,
+  },
+}
+
 export default defineConfig({
   plugins: [react()],
+  server: {
+    allowedHosts: ['hardcover-earflap-stingray.ngrok-free.dev'],
+    proxy: backendProxy,
+  },
+  preview: {
+    proxy: backendProxy,
+  },
   build: {
     // These groups keep optional 3D/charts and control libraries out of unrelated route entry work.
     chunkSizeWarningLimit: 900,
